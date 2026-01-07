@@ -147,7 +147,7 @@ onMounted(() => {
 
           <v-card class="panel-card" rounded="sm" elevation="1">
             <div class="d-flex align-center justify-space-between mb-2">
-              <div class="text-subtitle-2">我的连接</div>
+              <div class="text-subtitle-2">朋友们</div>
               <v-chip color="secondary" variant="tonal" size="small">
                 {{ connectInfo?.data?.length || 0 }}
               </v-chip>
