@@ -97,16 +97,16 @@ onMounted(() => {
             </div>
           </div>
           <div v-for="moment in moments" :key="moment.id" class="timeline-item">
-            <div class="timeline-dot" />
+            <div class="timeline-dot timeline-dot-offset" />
+            <div class="timeline-meta">
+              <span class="text-caption text-muted">
+                {{ new Date(moment.createdAt).toLocaleString() }}
+              </span>
+              <span class="text-caption text-muted">
+                {{ moment.author.displayName || moment.author.email }}
+              </span>
+            </div>
             <div class="timeline-card">
-              <div class="timeline-meta">
-                <span class="text-caption text-muted">
-                  {{ new Date(moment.createdAt).toLocaleString() }}
-                </span>
-                <span class="text-caption text-muted">
-                  {{ moment.author.displayName || moment.author.email }}
-                </span>
-              </div>
               <div class="text-body-2 whitespace-pre-wrap">
                 {{ moment.content }}
               </div>
@@ -134,7 +134,7 @@ onMounted(() => {
                 <v-icon v-else icon="mdi-account-circle-outline" />
               </v-avatar>
               <div>
-                <div class="text-subtitle-1">{{ localInfo.data.sys_username }}</div>
+                <div class="text-h6 font-display">{{ localInfo.data.sys_username }}</div>
                 <div class="text-caption text-muted">
                   今日 {{ localInfo.data.today_moments }} · 总共 {{ localInfo.data.total_moments }}
                 </div>
@@ -230,6 +230,11 @@ onMounted(() => {
   background: rgba(var(--v-theme-on-surface), 0.5);
 }
 
+.timeline-dot-offset {
+  top: 14px;
+  left: 1px;
+}
+
 .timeline-card {
   background: rgba(var(--v-theme-surface), 0.95);
   border: 1px solid rgba(var(--v-theme-on-surface), 0.08);
@@ -240,6 +245,7 @@ onMounted(() => {
 .timeline-meta {
   display: flex;
   justify-content: space-between;
+  padding-left: 2px;
   margin-bottom: 6px;
 }
 
