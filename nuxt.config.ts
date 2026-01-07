@@ -25,7 +25,9 @@ export default defineNuxtConfig({
   },
 
   css: [],
-  modules: ['vuetify-nuxt-module'],
+  modules: ['@nuxt/eslint', 'vuetify-nuxt-module'],
+
+
 
   runtimeConfig: {},
 

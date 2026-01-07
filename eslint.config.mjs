@@ -1,7 +1,6 @@
-import nuxt from '@nuxt/eslint-config/flat'
+import withNuxt from './.nuxt/eslint.config.mjs'
 
-export default [
-  ...nuxt(),
+export default withNuxt([
   {
     ignores: [
       'node_modules/**',
@@ -13,4 +12,4 @@ export default [
       'coverage/**',
     ],
   },
-]
+])

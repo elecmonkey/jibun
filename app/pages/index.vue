@@ -90,14 +90,14 @@ onMounted(() => {
       <v-col cols="12" md="7">
         <div class="timeline-list">
           <div v-if="moments.length === 0 && !loading" class="timeline-empty">
-            <div class="timeline-dot"></div>
+            <div class="timeline-dot" />
             <div class="timeline-card">
               <div class="text-caption text-muted">暂无动态</div>
               <div class="text-body-2">你的 Moment 动态会显示在这里。</div>
             </div>
           </div>
           <div v-for="moment in moments" :key="moment.id" class="timeline-item">
-            <div class="timeline-dot"></div>
+            <div class="timeline-dot" />
             <div class="timeline-card">
               <div class="timeline-meta">
                 <span class="text-caption text-muted">
