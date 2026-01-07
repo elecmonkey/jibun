@@ -6,10 +6,12 @@ const { token, role } = useAuthToken()
 const isLoggedIn = computed(() => Boolean(token.value))
 const canPost = computed(() => role.value === 'ADMIN' || role.value === 'POSTER')
 const momentContent = ref('')
+const momentTags = ref<string[]>([])
 const moments = ref<Array<{
   id: number
   content: string
   createdAt: string
+  tags: string[]
   author: {
     id: number
     displayName: string | null
@@ -26,6 +28,7 @@ const modalMoment = ref<null | {
   id: number
   content: string
   createdAt: string
+  tags: string[]
   author: {
     id: number
     displayName: string | null
@@ -78,11 +81,12 @@ const postMoment = async () => {
       {
         method: 'POST',
         headers: token.value ? { Authorization: `Bearer ${token.value}` } : undefined,
-        body: { content: momentContent.value.trim() },
+        body: { content: momentContent.value.trim(), tags: momentTags.value },
       },
     )
     if (resp.code === 1) {
       momentContent.value = ''
+      momentTags.value = []
       moments.value = []
       page.value = 1
       hasMore.value = true
@@ -150,6 +154,18 @@ watch(
               <div class="text-body-2 whitespace-pre-wrap">
                 {{ moment.content }}
               </div>
+              <div v-if="moment.tags?.length" class="moment-tags">
+                <v-chip
+                  v-for="tag in moment.tags"
+                  :key="tag"
+                  size="x-small"
+                  variant="tonal"
+                  color="secondary"
+                  class="me-1"
+                >
+                  {{ tag }}
+                </v-chip>
+              </div>
             </div>
           </div>
           <div v-if="loading" class="timeline-loading text-caption text-muted">
@@ -214,6 +230,17 @@ watch(
               auto-grow
               :disabled="!isLoggedIn"
             />
+            <v-combobox
+              v-model="momentTags"
+              class="mt-2"
+              label="添加标签"
+              variant="outlined"
+              density="compact"
+              chips
+              multiple
+              clearable
+              :disabled="!isLoggedIn"
+            />
             <v-btn color="accent" block class="mt-3" :disabled="!isLoggedIn || posting" @click="postMoment">
               发布
             </v-btn>
@@ -235,6 +262,18 @@ watch(
           </div>
           <div class="text-body-2 whitespace-pre-wrap">
             {{ modalMoment.content }}
+          </div>
+          <div v-if="modalMoment.tags?.length" class="moment-tags mt-2">
+            <v-chip
+              v-for="tag in modalMoment.tags"
+              :key="tag"
+              size="x-small"
+              variant="tonal"
+              color="secondary"
+              class="me-1"
+            >
+              {{ tag }}
+            </v-chip>
           </div>
         </div>
       </v-card>
@@ -295,6 +334,10 @@ watch(
   border: 1px solid rgba(var(--v-theme-on-surface), 0.08);
   border-radius: 6px;
   padding: 12px 14px;
+}
+
+.moment-tags {
+  margin-top: 8px;
 }
 
 .timeline-meta {
