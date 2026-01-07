@@ -1,6 +1,6 @@
 <template>
   <v-footer class="app-footer" height="48" app>
-    <v-container class="footer-inner d-flex align-center justify-space-between">
+    <v-container class="footer-inner d-flex align-center justify-space-between app-shell">
       <div class="text-caption text-muted">
         © 2026 自分 (じぶん, Jibun) Made with ❤️ by
         <a class="author-link" href="https://www.elecmonkey.com" target="_blank" rel="noopener">Elecmonkey</a>.
@@ -29,6 +29,10 @@
 
 .footer-inner {
   height: 48px;
+}
+
+.app-shell {
+  max-width: 1280px;
 }
 
 .author-link {

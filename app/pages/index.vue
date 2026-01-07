@@ -135,7 +135,7 @@ onMounted(() => {
                 <v-icon v-else icon="mdi-account-circle-outline" />
               </v-avatar>
               <div>
-                <div class="text-h6 font-display">{{ localInfo.data.sys_username }}</div>
+                <div class="name-serif name-serif--mid">{{ localInfo.data.sys_username }}</div>
                 <div class="text-caption text-muted">
                   今日 {{ localInfo.data.today_moments }} · 总共 {{ localInfo.data.total_moments }}
                 </div>
@@ -258,5 +258,15 @@ onMounted(() => {
 
 .whitespace-pre-wrap {
   white-space: pre-wrap;
+}
+
+.name-serif {
+  font-family: "Noto Serif SC", "Songti SC", "STSong", "Times New Roman", serif;
+  font-weight: 900;
+}
+
+.name-serif--mid {
+  font-size: 1.8rem;
+  line-height: 1.9rem;
 }
 </style>

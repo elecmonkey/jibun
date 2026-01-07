@@ -3,7 +3,7 @@ definePageMeta({
   middleware: 'auth',
 })
 
-const { token, clearToken } = useAuthToken()
+const { token } = useAuthToken()
 
 const connectUrlInput = ref('')
 const message = ref('')
@@ -141,27 +141,16 @@ onMounted(() => {
 </script>
 
 <template>
-  <v-container class="py-8">
+  <v-container class="py-8 admin-wrap">
     <div class="d-flex align-center justify-space-between mb-8">
       <div>
-        <div class="text-overline text-muted">ADMIN</div>
         <h1 class="text-h5">管理端</h1>
       </div>
-      <v-btn variant="tonal" to="/">
-        返回主页
-      </v-btn>
     </div>
 
     <v-row>
       <v-col cols="12" lg="4">
         <v-card class="panel-card" rounded="md">
-          <div class="text-subtitle-1 mb-4">管理操作</div>
-          <v-btn variant="text" @click="clearToken">
-            退出登录
-          </v-btn>
-        </v-card>
-
-        <v-card class="panel-card mt-4" rounded="md">
           <div class="text-subtitle-1 mb-4">基础配置</div>
           <v-text-field
             v-model="serverName"
@@ -274,6 +263,10 @@ onMounted(() => {
 </template>
 
 <style scoped>
+.admin-wrap {
+  max-width: 1280px;
+}
+
 .panel-card {
   background: rgba(var(--v-theme-surface), 0.98);
   border: 1px solid rgba(var(--v-theme-on-surface), 0.08);

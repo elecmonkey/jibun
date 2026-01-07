@@ -1,5 +1,5 @@
 <script setup lang="ts">
-const { setToken, setRole } = useAuthToken()
+const { setToken, setRole, setProfile } = useAuthToken()
 
 const email = ref('')
 const password = ref('')
@@ -8,7 +8,7 @@ const error = ref('')
 const login = async () => {
   error.value = ''
   try {
-    const resp = await $fetch<{ code: number; msg: string; data?: { token?: string; user?: { role?: string } } }>('/api/auth/login', {
+    const resp = await $fetch<{ code: number; msg: string; data?: { token?: string; user?: { role?: string; displayName?: string | null; email?: string } } }>('/api/auth/login', {
       method: 'POST',
       body: {
         email: email.value,
@@ -24,6 +24,9 @@ const login = async () => {
     setToken(resp.data.token)
     if (resp.data.user?.role) {
       setRole(resp.data.user.role)
+    }
+    if (resp.data.user?.email) {
+      setProfile(resp.data.user.displayName || resp.data.user.email, resp.data.user.email)
     }
     await navigateTo('/admin')
   } catch {
