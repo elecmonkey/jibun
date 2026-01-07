@@ -5,6 +5,7 @@ import { requireRole } from '../utils/auth'
 
 type MomentBody = {
   content?: string
+  tags?: string[]
 }
 
 export default defineEventHandler(async (event) => {
@@ -19,10 +20,15 @@ export default defineEventHandler(async (event) => {
     return fail('content is required', null)
   }
 
+  const tagNames = Array.isArray(body?.tags)
+    ? body?.tags.map((tag) => tag.trim()).filter((tag) => tag.length > 0)
+    : []
+
   const created = await prisma.moment.create({
     data: {
       content,
       authorId: auth.user.id,
+      tags: tagNames,
     },
     include: {
       author: {

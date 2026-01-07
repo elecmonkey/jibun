@@ -51,6 +51,8 @@ export default defineEventHandler(async (event) => {
 
   const echoes = items.map((moment) => {
     const username = moment.author.displayName || moment.author.email
+    const tagList = moment.tags || []
+    const firstTag = tagList.length > 0 ? tagList[0] : null
     return {
       id: moment.id,
       content: moment.content,
@@ -58,7 +60,7 @@ export default defineEventHandler(async (event) => {
       username,
       user_id: moment.author.id,
       images: [],
-      tags: [],
+      tags: firstTag ? [{ id: firstTag, name: firstTag }] : null,
       layout: null,
       extension: null,
       extension_type: null,

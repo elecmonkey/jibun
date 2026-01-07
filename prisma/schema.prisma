@@ -31,6 +31,7 @@ model Moment {
   content   String
   author    User     @relation(fields: [authorId], references: [id])
   authorId  Int
+  tags      String[] @default([])
   createdAt DateTime @default(now())
 }
 

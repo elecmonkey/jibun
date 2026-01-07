@@ -54,6 +54,7 @@ export type MomentCountAggregateOutputType = {
   id: number
   content: number
   authorId: number
+  tags: number
   createdAt: number
   _all: number
 }
@@ -87,6 +88,7 @@ export type MomentCountAggregateInputType = {
   id?: true
   content?: true
   authorId?: true
+  tags?: true
   createdAt?: true
   _all?: true
 }
@@ -181,6 +183,7 @@ export type MomentGroupByOutputType = {
   id: number
   content: string
   authorId: number
+  tags: string[]
   createdAt: Date
   _count: MomentCountAggregateOutputType | null
   _avg: MomentAvgAggregateOutputType | null
@@ -211,6 +214,7 @@ export type MomentWhereInput = {
   id?: Prisma.IntFilter<"Moment"> | number
   content?: Prisma.StringFilter<"Moment"> | string
   authorId?: Prisma.IntFilter<"Moment"> | number
+  tags?: Prisma.StringNullableListFilter<"Moment">
   createdAt?: Prisma.DateTimeFilter<"Moment"> | Date | string
   author?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
 }
@@ -219,6 +223,7 @@ export type MomentOrderByWithRelationInput = {
   id?: Prisma.SortOrder
   content?: Prisma.SortOrder
   authorId?: Prisma.SortOrder
+  tags?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   author?: Prisma.UserOrderByWithRelationInput
 }
@@ -230,6 +235,7 @@ export type MomentWhereUniqueInput = Prisma.AtLeast<{
   NOT?: Prisma.MomentWhereInput | Prisma.MomentWhereInput[]
   content?: Prisma.StringFilter<"Moment"> | string
   authorId?: Prisma.IntFilter<"Moment"> | number
+  tags?: Prisma.StringNullableListFilter<"Moment">
   createdAt?: Prisma.DateTimeFilter<"Moment"> | Date | string
   author?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
 }, "id">
@@ -238,6 +244,7 @@ export type MomentOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
   content?: Prisma.SortOrder
   authorId?: Prisma.SortOrder
+  tags?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   _count?: Prisma.MomentCountOrderByAggregateInput
   _avg?: Prisma.MomentAvgOrderByAggregateInput
@@ -253,11 +260,13 @@ export type MomentScalarWhereWithAggregatesInput = {
   id?: Prisma.IntWithAggregatesFilter<"Moment"> | number
   content?: Prisma.StringWithAggregatesFilter<"Moment"> | string
   authorId?: Prisma.IntWithAggregatesFilter<"Moment"> | number
+  tags?: Prisma.StringNullableListFilter<"Moment">
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Moment"> | Date | string
 }
 
 export type MomentCreateInput = {
   content: string
+  tags?: Prisma.MomentCreatetagsInput | string[]
   createdAt?: Date | string
   author: Prisma.UserCreateNestedOneWithoutMomentsInput
 }
@@ -266,11 +275,13 @@ export type MomentUncheckedCreateInput = {
   id?: number
   content: string
   authorId: number
+  tags?: Prisma.MomentCreatetagsInput | string[]
   createdAt?: Date | string
 }
 
 export type MomentUpdateInput = {
   content?: Prisma.StringFieldUpdateOperationsInput | string
+  tags?: Prisma.MomentUpdatetagsInput | string[]
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   author?: Prisma.UserUpdateOneRequiredWithoutMomentsNestedInput
 }
@@ -279,6 +290,7 @@ export type MomentUncheckedUpdateInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   content?: Prisma.StringFieldUpdateOperationsInput | string
   authorId?: Prisma.IntFieldUpdateOperationsInput | number
+  tags?: Prisma.MomentUpdatetagsInput | string[]
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -286,11 +298,13 @@ export type MomentCreateManyInput = {
   id?: number
   content: string
   authorId: number
+  tags?: Prisma.MomentCreatetagsInput | string[]
   createdAt?: Date | string
 }
 
 export type MomentUpdateManyMutationInput = {
   content?: Prisma.StringFieldUpdateOperationsInput | string
+  tags?: Prisma.MomentUpdatetagsInput | string[]
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -298,6 +312,7 @@ export type MomentUncheckedUpdateManyInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   content?: Prisma.StringFieldUpdateOperationsInput | string
   authorId?: Prisma.IntFieldUpdateOperationsInput | number
+  tags?: Prisma.MomentUpdatetagsInput | string[]
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -311,10 +326,19 @@ export type MomentOrderByRelationAggregateInput = {
   _count?: Prisma.SortOrder
 }
 
+export type StringNullableListFilter<$PrismaModel = never> = {
+  equals?: string[] | Prisma.ListStringFieldRefInput<$PrismaModel> | null
+  has?: string | Prisma.StringFieldRefInput<$PrismaModel> | null
+  hasEvery?: string[] | Prisma.ListStringFieldRefInput<$PrismaModel>
+  hasSome?: string[] | Prisma.ListStringFieldRefInput<$PrismaModel>
+  isEmpty?: boolean
+}
+
 export type MomentCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   content?: Prisma.SortOrder
   authorId?: Prisma.SortOrder
+  tags?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
 
@@ -384,14 +408,25 @@ export type MomentUncheckedUpdateManyWithoutAuthorNestedInput = {
   deleteMany?: Prisma.MomentScalarWhereInput | Prisma.MomentScalarWhereInput[]
 }
 
+export type MomentCreatetagsInput = {
+  set: string[]
+}
+
+export type MomentUpdatetagsInput = {
+  set?: string[]
+  push?: string | string[]
+}
+
 export type MomentCreateWithoutAuthorInput = {
   content: string
+  tags?: Prisma.MomentCreatetagsInput | string[]
   createdAt?: Date | string
 }
 
 export type MomentUncheckedCreateWithoutAuthorInput = {
   id?: number
   content: string
+  tags?: Prisma.MomentCreatetagsInput | string[]
   createdAt?: Date | string
 }
 
@@ -428,29 +463,34 @@ export type MomentScalarWhereInput = {
   id?: Prisma.IntFilter<"Moment"> | number
   content?: Prisma.StringFilter<"Moment"> | string
   authorId?: Prisma.IntFilter<"Moment"> | number
+  tags?: Prisma.StringNullableListFilter<"Moment">
   createdAt?: Prisma.DateTimeFilter<"Moment"> | Date | string
 }
 
 export type MomentCreateManyAuthorInput = {
   id?: number
   content: string
+  tags?: Prisma.MomentCreatetagsInput | string[]
   createdAt?: Date | string
 }
 
 export type MomentUpdateWithoutAuthorInput = {
   content?: Prisma.StringFieldUpdateOperationsInput | string
+  tags?: Prisma.MomentUpdatetagsInput | string[]
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type MomentUncheckedUpdateWithoutAuthorInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   content?: Prisma.StringFieldUpdateOperationsInput | string
+  tags?: Prisma.MomentUpdatetagsInput | string[]
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type MomentUncheckedUpdateManyWithoutAuthorInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   content?: Prisma.StringFieldUpdateOperationsInput | string
+  tags?: Prisma.MomentUpdatetagsInput | string[]
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -460,6 +500,7 @@ export type MomentSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs =
   id?: boolean
   content?: boolean
   authorId?: boolean
+  tags?: boolean
   createdAt?: boolean
   author?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["moment"]>
@@ -468,6 +509,7 @@ export type MomentSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extens
   id?: boolean
   content?: boolean
   authorId?: boolean
+  tags?: boolean
   createdAt?: boolean
   author?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["moment"]>
@@ -476,6 +518,7 @@ export type MomentSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extens
   id?: boolean
   content?: boolean
   authorId?: boolean
+  tags?: boolean
   createdAt?: boolean
   author?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["moment"]>
@@ -484,10 +527,11 @@ export type MomentSelectScalar = {
   id?: boolean
   content?: boolean
   authorId?: boolean
+  tags?: boolean
   createdAt?: boolean
 }
 
-export type MomentOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "content" | "authorId" | "createdAt", ExtArgs["result"]["moment"]>
+export type MomentOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "content" | "authorId" | "tags" | "createdAt", ExtArgs["result"]["moment"]>
 export type MomentInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   author?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }
@@ -507,6 +551,7 @@ export type $MomentPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs
     id: number
     content: string
     authorId: number
+    tags: string[]
     createdAt: Date
   }, ExtArgs["result"]["moment"]>
   composites: {}
@@ -935,6 +980,7 @@ export interface MomentFieldRefs {
   readonly id: Prisma.FieldRef<"Moment", 'Int'>
   readonly content: Prisma.FieldRef<"Moment", 'String'>
   readonly authorId: Prisma.FieldRef<"Moment", 'Int'>
+  readonly tags: Prisma.FieldRef<"Moment", 'String[]'>
   readonly createdAt: Prisma.FieldRef<"Moment", 'DateTime'>
 }
     
