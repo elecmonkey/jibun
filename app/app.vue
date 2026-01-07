@@ -1,5 +1,6 @@
 <script setup lang="ts">
 const { toggle, isDark } = useThemeMode()
+const { role } = useAuthToken()
 const { data: profile } = useFetch('/api/connect')
 
 useHead(() => ({
@@ -13,15 +14,15 @@ useHead(() => ({
       <v-container class="d-flex align-center justify-space-between">
         <div class="d-flex align-center">
           <v-avatar size="28" class="me-2">
-            <v-img src="/jibun-logo.svg" alt="Jibun logo" />
+            <v-img src="/jibun-logo.svg" alt="Jibun logo" :class="{ 'logo-invert': isDark }" />
           </v-avatar>
           <span class="text-subtitle-1 font-weight-semibold">
             {{ profile?.data?.server_name || 'Jibun' }}
           </span>
         </div>
         <div class="d-flex align-center gap-2">
-          <v-btn variant="text" to="/">首页</v-btn>
-          <v-btn variant="text" to="/admin">管理端</v-btn>
+          <v-btn variant="text" to="/">Moments</v-btn>
+          <v-btn v-if="role === 'ADMIN'" variant="text" to="/admin">Admin</v-btn>
           <v-divider vertical class="mx-2" />
           <v-btn icon variant="text" @click="toggle">
             <v-icon :icon="isDark ? 'mdi-white-balance-sunny' : 'mdi-weather-night'" />
@@ -56,5 +57,9 @@ useHead(() => ({
 
 .gap-2 {
   gap: 8px;
+}
+
+.logo-invert {
+  filter: invert(1);
 }
 </style>

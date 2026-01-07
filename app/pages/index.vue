@@ -1,9 +1,10 @@
 <script lang="ts" setup>
 const { data: localInfo, pending: localPending } = useFetch('/api/connect')
 const { data: connectInfo, pending: connectPending } = useFetch('/api/connects/info')
-const { token } = useAuthToken()
+const { token, role } = useAuthToken()
 
 const isLoggedIn = computed(() => Boolean(token.value))
+const canPost = computed(() => role.value === 'ADMIN' || role.value === 'POSTER')
 const momentContent = ref('')
 const moments = ref<Array<{
   id: number
@@ -163,7 +164,7 @@ onMounted(() => {
             </v-alert>
           </v-card>
 
-          <v-card class="panel-card" rounded="sm" elevation="1">
+          <v-card v-if="canPost" class="panel-card" rounded="sm" elevation="1">
             <div class="text-subtitle-2 mb-2">写一条</div>
             <v-textarea
               v-model="momentContent"
@@ -177,9 +178,6 @@ onMounted(() => {
             <v-btn color="accent" block class="mt-3" :disabled="!isLoggedIn || posting" @click="postMoment">
               发布
             </v-btn>
-            <div v-if="!isLoggedIn" class="text-caption text-muted mt-2">
-              登录后才能发布 Moment。
-            </div>
           </v-card>
         </div>
       </v-col>
