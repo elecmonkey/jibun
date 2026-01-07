@@ -12,7 +12,9 @@ useHead(() => ({
     <v-app-bar elevation="0" class="app-bar">
       <v-container class="d-flex align-center justify-space-between">
         <div class="d-flex align-center">
-          <v-icon icon="mdi-orbit" class="me-2" />
+          <v-avatar size="28" class="me-2">
+            <v-img src="/jibun-logo.svg" alt="Jibun logo" />
+          </v-avatar>
           <span class="text-subtitle-1 font-weight-semibold">
             {{ profile?.data?.server_name || 'Jibun' }}
           </span>

@@ -27,7 +27,13 @@ export default defineNuxtConfig({
   css: [],
   modules: ['@nuxt/eslint', 'vuetify-nuxt-module'],
 
-
+  app: {
+    head: {
+      link: [
+        { rel: 'icon', type: 'image/x-icon', href: '/jibun-logo.svg' },
+      ],
+    },
+  },
 
   runtimeConfig: {},
 

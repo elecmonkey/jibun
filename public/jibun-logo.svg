@@ -1,0 +1,14 @@
+<svg width="120" height="120" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <circle cx="50" cy="50" r="28" fill="currentColor"/>
+  <circle
+    cx="50"
+    cy="50"
+    r="38"
+    stroke="currentColor"
+    stroke-width="5"
+    fill="none"
+    stroke-dasharray="204 90"
+    transform="rotate(-20 50 50)"
+  />
+  <circle cx="77" cy="23" r="6.5" fill="currentColor"/>
+</svg>
