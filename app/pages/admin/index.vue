@@ -9,7 +9,16 @@ const connectUrlInput = ref('')
 const message = ref('')
 const messageType = ref<'success' | 'error' | 'info'>('info')
 const loading = ref(false)
-const connectList = ref<Array<{ id: number; connectUrl: string }>>([])
+const connectList = ref<Array<{ id: number; connectUrl: string; instanceType: string }>>([])
+const displayInstanceType = (value: string) => {
+  if (value === 'ECH0') {
+    return 'Ech0'
+  }
+  if (value === 'JIBUN') {
+    return 'Jibun'
+  }
+  return 'Unknown'
+}
 
 const sysUsername = ref('')
 const serverName = ref('')
@@ -19,7 +28,7 @@ const serverLogo = ref('')
 const refreshConnects = async () => {
   loading.value = true
   try {
-    const resp = await $fetch<{ code: number; data: Array<{ id: number; connectUrl: string }> }>('/api/connect/list')
+    const resp = await $fetch<{ code: number; data: Array<{ id: number; connectUrl: string; instanceType: string }> }>('/api/connect/list')
     if (resp.code === 1) {
       connectList.value = resp.data
     }
@@ -142,12 +151,6 @@ onMounted(() => {
 
 <template>
   <v-container class="py-8 admin-wrap">
-    <div class="d-flex align-center justify-space-between mb-8">
-      <div>
-        <h1 class="text-h5">管理端</h1>
-      </div>
-    </div>
-
     <v-row>
       <v-col cols="12" lg="4">
         <v-card class="panel-card" rounded="md">
@@ -211,13 +214,26 @@ onMounted(() => {
 
           <v-skeleton-loader v-if="loading" type="list-item-two-line" />
 
-          <v-list v-else class="connect-list">
+          <v-list v-else class="connect-list" density="compact">
             <v-list-item
               v-for="conn in connectList"
               :key="conn.id"
-              :title="conn.connectUrl"
-              subtitle="已添加"
+              class="connect-item"
             >
+              <v-list-item-title class="connect-title">
+                <div class="connect-row">
+                  <span class="connect-url">{{ conn.connectUrl }}</span>
+                  <v-chip
+                    size="x-small"
+                    variant="tonal"
+                    color="secondary"
+                    class="connect-chip"
+                    :class="{ 'chip-jibun': conn.instanceType === 'JIBUN' }"
+                  >
+                    {{ displayInstanceType(conn.instanceType) }}
+                  </v-chip>
+                </div>
+              </v-list-item-title>
               <template #append>
                 <v-btn icon="mdi-delete-outline" variant="text" @click="deleteConnect(conn.id)" />
               </template>
@@ -231,25 +247,6 @@ onMounted(() => {
     </v-row>
 
     <v-row class="mt-4">
-      <v-col cols="12" md="6">
-        <v-card class="panel-card" rounded="md">
-          <div class="text-subtitle-1 mb-3">发布 Moment</div>
-          <v-alert type="info" variant="tonal" class="mb-4">
-            Moment 发布接口尚未接入，等后端完成后这里会自动解锁。
-          </v-alert>
-          <v-textarea
-            label="写点什么..."
-            auto-grow
-            variant="outlined"
-            rows="4"
-            disabled
-          />
-          <v-btn color="accent" class="mt-4" disabled>
-            发布
-          </v-btn>
-        </v-card>
-      </v-col>
-
       <v-col cols="12" md="6">
         <v-card class="panel-card" rounded="md">
           <div class="text-subtitle-1 mb-3">用户管理</div>
@@ -283,5 +280,38 @@ onMounted(() => {
 
 .connect-list {
   background: transparent;
+}
+
+.connect-list :deep(.v-list-item) {
+  min-height: 0px;
+  padding: 0px 2px;
+}
+
+.connect-item :deep(.v-list-item__content) {
+  padding: 2px 0;
+}
+
+.connect-item :deep(.v-list-item__append) {
+  align-items: center;
+}
+
+.connect-chip {
+  font-size: 0.78rem;
+}
+
+.connect-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  white-space: nowrap;
+}
+
+.connect-url {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.chip-jibun {
+  border: 2px solid rgba(var(--v-theme-primary), 0.6);
 }
 </style>

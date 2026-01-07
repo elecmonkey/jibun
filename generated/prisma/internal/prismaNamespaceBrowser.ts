@@ -101,6 +101,7 @@ export type MomentScalarFieldEnum = (typeof MomentScalarFieldEnum)[keyof typeof 
 export const ConnectScalarFieldEnum = {
   id: 'id',
   connectUrl: 'connectUrl',
+  instanceType: 'instanceType',
   createdAt: 'createdAt'
 } as const
 

@@ -36,9 +36,10 @@ model Moment {
 }
 
 model Connect {
-  id         Int      @id @default(autoincrement())
-  connectUrl String   @unique
-  createdAt  DateTime @default(now())
+  id           Int      @id @default(autoincrement())
+  connectUrl   String   @unique
+  instanceType String   @default("UNKNOWN")
+  createdAt    DateTime @default(now())
 }
 
 model SystemSetting {

@@ -37,18 +37,21 @@ export type ConnectSumAggregateOutputType = {
 export type ConnectMinAggregateOutputType = {
   id: number | null
   connectUrl: string | null
+  instanceType: string | null
   createdAt: Date | null
 }
 
 export type ConnectMaxAggregateOutputType = {
   id: number | null
   connectUrl: string | null
+  instanceType: string | null
   createdAt: Date | null
 }
 
 export type ConnectCountAggregateOutputType = {
   id: number
   connectUrl: number
+  instanceType: number
   createdAt: number
   _all: number
 }
@@ -65,18 +68,21 @@ export type ConnectSumAggregateInputType = {
 export type ConnectMinAggregateInputType = {
   id?: true
   connectUrl?: true
+  instanceType?: true
   createdAt?: true
 }
 
 export type ConnectMaxAggregateInputType = {
   id?: true
   connectUrl?: true
+  instanceType?: true
   createdAt?: true
 }
 
 export type ConnectCountAggregateInputType = {
   id?: true
   connectUrl?: true
+  instanceType?: true
   createdAt?: true
   _all?: true
 }
@@ -170,6 +176,7 @@ export type ConnectGroupByArgs<ExtArgs extends runtime.Types.Extensions.Internal
 export type ConnectGroupByOutputType = {
   id: number
   connectUrl: string
+  instanceType: string
   createdAt: Date
   _count: ConnectCountAggregateOutputType | null
   _avg: ConnectAvgAggregateOutputType | null
@@ -199,12 +206,14 @@ export type ConnectWhereInput = {
   NOT?: Prisma.ConnectWhereInput | Prisma.ConnectWhereInput[]
   id?: Prisma.IntFilter<"Connect"> | number
   connectUrl?: Prisma.StringFilter<"Connect"> | string
+  instanceType?: Prisma.StringFilter<"Connect"> | string
   createdAt?: Prisma.DateTimeFilter<"Connect"> | Date | string
 }
 
 export type ConnectOrderByWithRelationInput = {
   id?: Prisma.SortOrder
   connectUrl?: Prisma.SortOrder
+  instanceType?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
 
@@ -214,12 +223,14 @@ export type ConnectWhereUniqueInput = Prisma.AtLeast<{
   AND?: Prisma.ConnectWhereInput | Prisma.ConnectWhereInput[]
   OR?: Prisma.ConnectWhereInput[]
   NOT?: Prisma.ConnectWhereInput | Prisma.ConnectWhereInput[]
+  instanceType?: Prisma.StringFilter<"Connect"> | string
   createdAt?: Prisma.DateTimeFilter<"Connect"> | Date | string
 }, "id" | "connectUrl">
 
 export type ConnectOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
   connectUrl?: Prisma.SortOrder
+  instanceType?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   _count?: Prisma.ConnectCountOrderByAggregateInput
   _avg?: Prisma.ConnectAvgOrderByAggregateInput
@@ -234,51 +245,60 @@ export type ConnectScalarWhereWithAggregatesInput = {
   NOT?: Prisma.ConnectScalarWhereWithAggregatesInput | Prisma.ConnectScalarWhereWithAggregatesInput[]
   id?: Prisma.IntWithAggregatesFilter<"Connect"> | number
   connectUrl?: Prisma.StringWithAggregatesFilter<"Connect"> | string
+  instanceType?: Prisma.StringWithAggregatesFilter<"Connect"> | string
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Connect"> | Date | string
 }
 
 export type ConnectCreateInput = {
   connectUrl: string
+  instanceType?: string
   createdAt?: Date | string
 }
 
 export type ConnectUncheckedCreateInput = {
   id?: number
   connectUrl: string
+  instanceType?: string
   createdAt?: Date | string
 }
 
 export type ConnectUpdateInput = {
   connectUrl?: Prisma.StringFieldUpdateOperationsInput | string
+  instanceType?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type ConnectUncheckedUpdateInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   connectUrl?: Prisma.StringFieldUpdateOperationsInput | string
+  instanceType?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type ConnectCreateManyInput = {
   id?: number
   connectUrl: string
+  instanceType?: string
   createdAt?: Date | string
 }
 
 export type ConnectUpdateManyMutationInput = {
   connectUrl?: Prisma.StringFieldUpdateOperationsInput | string
+  instanceType?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type ConnectUncheckedUpdateManyInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   connectUrl?: Prisma.StringFieldUpdateOperationsInput | string
+  instanceType?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type ConnectCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   connectUrl?: Prisma.SortOrder
+  instanceType?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
 
@@ -289,12 +309,14 @@ export type ConnectAvgOrderByAggregateInput = {
 export type ConnectMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
   connectUrl?: Prisma.SortOrder
+  instanceType?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
 
 export type ConnectMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
   connectUrl?: Prisma.SortOrder
+  instanceType?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
 
@@ -307,28 +329,32 @@ export type ConnectSumOrderByAggregateInput = {
 export type ConnectSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   connectUrl?: boolean
+  instanceType?: boolean
   createdAt?: boolean
 }, ExtArgs["result"]["connect"]>
 
 export type ConnectSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   connectUrl?: boolean
+  instanceType?: boolean
   createdAt?: boolean
 }, ExtArgs["result"]["connect"]>
 
 export type ConnectSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   connectUrl?: boolean
+  instanceType?: boolean
   createdAt?: boolean
 }, ExtArgs["result"]["connect"]>
 
 export type ConnectSelectScalar = {
   id?: boolean
   connectUrl?: boolean
+  instanceType?: boolean
   createdAt?: boolean
 }
 
-export type ConnectOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "connectUrl" | "createdAt", ExtArgs["result"]["connect"]>
+export type ConnectOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "connectUrl" | "instanceType" | "createdAt", ExtArgs["result"]["connect"]>
 
 export type $ConnectPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "Connect"
@@ -336,6 +362,7 @@ export type $ConnectPayload<ExtArgs extends runtime.Types.Extensions.InternalArg
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: number
     connectUrl: string
+    instanceType: string
     createdAt: Date
   }, ExtArgs["result"]["connect"]>
   composites: {}
@@ -762,6 +789,7 @@ export interface Prisma__ConnectClient<T, Null = never, ExtArgs extends runtime.
 export interface ConnectFieldRefs {
   readonly id: Prisma.FieldRef<"Connect", 'Int'>
   readonly connectUrl: Prisma.FieldRef<"Connect", 'String'>
+  readonly instanceType: Prisma.FieldRef<"Connect", 'String'>
   readonly createdAt: Prisma.FieldRef<"Connect", 'DateTime'>
 }
     
