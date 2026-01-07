@@ -21,6 +21,19 @@ const page = ref(1)
 const hasMore = ref(true)
 const loading = ref(false)
 const posting = ref(false)
+const modalOpen = ref(false)
+const modalMoment = ref<null | {
+  id: number
+  content: string
+  createdAt: string
+  author: {
+    id: number
+    displayName: string | null
+    email: string
+    role: string
+  }
+}>(null)
+const route = useRoute()
 type ConnectCardInfo = {
   server_name: string
   server_url: string
@@ -80,9 +93,35 @@ const postMoment = async () => {
   }
 }
 
+const openMomentModal = async (id: number) => {
+  try {
+    const resp = await $fetch<{ code: number; data?: typeof modalMoment.value }>('/api/moments/' + id)
+    if (resp.code === 1 && resp.data) {
+      modalMoment.value = resp.data
+      modalOpen.value = true
+    }
+  } catch {
+    // ignore
+  }
+}
+
 onMounted(() => {
   loadMoments()
+  const queryId = Number(route.query.moment)
+  if (Number.isInteger(queryId) && queryId > 0) {
+    openMomentModal(queryId)
+  }
 })
+
+watch(
+  () => route.query.moment,
+  (value) => {
+    const queryId = Number(value)
+    if (Number.isInteger(queryId) && queryId > 0) {
+      openMomentModal(queryId)
+    }
+  },
+)
 </script>
 
 <template>
@@ -107,7 +146,7 @@ onMounted(() => {
                 {{ moment.author.displayName || moment.author.email }}
               </span>
             </div>
-            <div class="timeline-card">
+            <div class="timeline-card" @click="openMomentModal(moment.id)">
               <div class="text-body-2 whitespace-pre-wrap">
                 {{ moment.content }}
               </div>
@@ -182,6 +221,24 @@ onMounted(() => {
         </div>
       </v-col>
     </v-row>
+
+    <v-dialog v-model="modalOpen" max-width="640" @update:model-value="(v) => { if (!v) navigateTo({ path: '/', query: {} }) }">
+      <v-card class="panel-card" rounded="sm" elevation="2">
+        <div v-if="modalMoment" class="timeline-modal">
+          <div class="timeline-meta mb-3">
+            <span class="text-caption text-muted">
+              {{ new Date(modalMoment.createdAt).toLocaleString() }}
+            </span>
+            <span class="text-caption text-muted">
+              {{ modalMoment.author.displayName || modalMoment.author.email }}
+            </span>
+          </div>
+          <div class="text-body-2 whitespace-pre-wrap">
+            {{ modalMoment.content }}
+          </div>
+        </div>
+      </v-card>
+    </v-dialog>
   </v-container>
 </template>
 
