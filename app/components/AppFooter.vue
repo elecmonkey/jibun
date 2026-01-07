@@ -20,7 +20,7 @@
 
 <style scoped>
 .app-footer {
-  background: transparent;
+  background: rgba(var(--v-theme-surface), 0.98);
   border-top: 1px solid rgba(var(--v-theme-on-surface), 0.08);
   height: 48px !important;
   min-height: 48px !important;
