@@ -1,4 +1,6 @@
 <script lang="ts" setup>
+import { MarkdownExit } from 'markdown-exit'
+import DOMPurify from 'isomorphic-dompurify'
 const { data: localInfo, pending: localPending } = useFetch('/api/connect')
 const { data: connectInfo, pending: connectPending } = useFetch('/api/connects/info', { server: false })
 const { token, role } = useAuthToken()
@@ -92,6 +94,43 @@ const commentPosting = ref(false)
 const replyTarget = ref<null | { id: number; name: string; content: string; time: string }>(null)
 const route = useRoute()
 const showFriends = ref(false)
+const markdown = new MarkdownExit({ linkify: true, breaks: true })
+markdown.renderer.rules.link_open = (tokens, idx, options, env, self) => {
+  const token = tokens[idx]
+  if (!token) {
+    return ''
+  }
+  const targetIndex = token.attrIndex('target')
+  if (targetIndex < 0) {
+    token.attrPush(['target', '_blank'])
+  } else if (token.attrs?.[targetIndex]) {
+    token.attrs[targetIndex][1] = '_blank'
+  }
+  const relIndex = token.attrIndex('rel')
+  if (relIndex < 0) {
+    token.attrPush(['rel', 'noopener noreferrer'])
+  } else if (token.attrs?.[relIndex]) {
+    token.attrs[relIndex][1] = 'noopener noreferrer'
+  }
+  return self.renderToken(tokens, idx, options)
+}
+let domPurifyHooked = false
+const ensureDomPurifyHooks = () => {
+  if (domPurifyHooked) {
+    return
+  }
+  domPurifyHooked = true
+  DOMPurify.addHook('afterSanitizeAttributes', (node) => {
+    if (node.tagName === 'A') {
+      node.setAttribute('target', '_blank')
+      node.setAttribute('rel', 'noopener noreferrer')
+    }
+  })
+}
+const renderMarkdown = (content: string) => {
+  ensureDomPurifyHooks()
+  return DOMPurify.sanitize(markdown.render(content || ''))
+}
 type ConnectCardInfo = {
   server_name: string
   server_url: string
@@ -507,9 +546,7 @@ watch(
                   </span>
                 </v-chip>
               </div>
-              <div class="text-body-2 whitespace-pre-wrap">
-                {{ moment.content }}
-              </div>
+              <div class="text-body-2 markdown-body" v-html="renderMarkdown(moment.content)" />
               <div v-if="moment.kind === 'local' && moment.tags?.length" class="moment-tags">
                 <v-chip
                   v-for="tag in moment.tags"
@@ -660,9 +697,7 @@ watch(
               {{ modalMoment.author.displayName || modalMoment.author.email }}
             </span>
           </div>
-          <div class="text-body-2 whitespace-pre-wrap">
-            {{ modalMoment.content }}
-          </div>
+          <div class="text-body-2 markdown-body" v-html="renderMarkdown(modalMoment.content)" />
           <div v-if="modalMoment.tags?.length" class="moment-tags mt-2">
             <v-chip
               v-for="tag in modalMoment.tags"
@@ -723,13 +758,9 @@ watch(
                   <div class="comment-quote-name">
                       {{ comment.replyTo.author.displayName || comment.replyTo.author.email || '匿名' }}
                   </div>
-                    <div class="comment-quote-content">
-                      {{ comment.replyTo.content }}
-                    </div>
+                  <div class="comment-quote-content markdown-body" v-html="renderMarkdown(comment.replyTo.content)" />
                   </div>
-                  <div class="text-body-2 whitespace-pre-wrap">
-                    {{ comment.content }}
-                  </div>
+                  <div class="text-body-2 markdown-body" v-html="renderMarkdown(comment.content)" />
                 </div>
               </div>
             </div>
@@ -743,9 +774,7 @@ watch(
                   </div>
                   <v-btn size="x-small" variant="outlined" @click="replyTarget = null">取消</v-btn>
                 </div>
-                <div class="reply-content text-body-2 whitespace-pre-wrap">
-                  {{ replyTarget.content }}
-                </div>
+                <div class="reply-content text-body-2 markdown-body" v-html="renderMarkdown(replyTarget.content)" />
               </div>
               <v-textarea
                 v-model="commentContent"
@@ -1027,6 +1056,18 @@ watch(
   color: rgba(var(--v-theme-on-surface), 0.8);
 }
 
+.markdown-body :deep(blockquote) {
+  margin: 6px 0;
+  padding: 6px 10px;
+  border-left: 3px solid rgba(var(--v-theme-on-surface), 0.35);
+  background: rgba(var(--v-theme-on-surface), 0.06);
+  border-radius: 4px;
+}
+
+.markdown-body :deep(blockquote p) {
+  margin: 0;
+}
+
 .comment-actions {
   margin-top: 4px;
 }
@@ -1046,6 +1087,25 @@ watch(
 
 .whitespace-pre-wrap {
   white-space: pre-wrap;
+}
+
+.markdown-body :deep(p) {
+  margin: 0 0 6px;
+}
+
+.markdown-body :deep(p:last-child) {
+  margin-bottom: 0;
+}
+
+.markdown-body :deep(a) {
+  color: rgb(var(--v-theme-primary));
+}
+
+.markdown-body :deep(pre) {
+  background: rgba(var(--v-theme-on-surface), 0.06);
+  padding: 8px 10px;
+  border-radius: 6px;
+  overflow-x: auto;
 }
 
 .name-serif {
