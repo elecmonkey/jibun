@@ -19,6 +19,7 @@ const moments = ref<Array<{
     displayName: string | null
     email: string
     role: string
+    isOwner: boolean
   }
 }>>([])
 const page = ref(1)
@@ -37,6 +38,7 @@ const modalMoment = ref<null | {
     displayName: string | null
     email: string
     role: string
+    isOwner: boolean
   }
 }>(null)
 const route = useRoute()
@@ -196,7 +198,7 @@ watch(
               <span class="text-caption text-muted">
                 {{ new Date(moment.createdAt).toLocaleString() }}
               </span>
-              <span class="text-caption text-muted">
+              <span v-if="!moment.author.isOwner" class="text-caption text-muted">
                 {{ moment.author.displayName || moment.author.email }}
               </span>
             </div>
@@ -233,7 +235,7 @@ watch(
             加载中...
           </div>
           <div v-if="hasMore && !loading" class="timeline-load-more">
-            <v-btn variant="text" @click="loadMoments">继续装填</v-btn>
+            <v-btn variant="text" @click="loadMoments">加载更多</v-btn>
           </div>
           <div v-if="!hasMore && moments.length > 0" class="timeline-end text-caption text-muted">
             没有啦
@@ -317,7 +319,7 @@ watch(
             <span class="text-caption text-muted">
               {{ new Date(modalMoment.createdAt).toLocaleString() }}
             </span>
-            <span class="text-caption text-muted">
+            <span v-if="!modalMoment.author.isOwner" class="text-caption text-muted">
               {{ modalMoment.author.displayName || modalMoment.author.email }}
             </span>
           </div>

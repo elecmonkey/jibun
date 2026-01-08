@@ -20,6 +20,7 @@ export default defineEventHandler(async (event) => {
             displayName: true,
             email: true,
             role: true,
+            isOwner: true,
           },
         },
       },
