@@ -57,6 +57,7 @@ const modalComments = ref<Array<{
     email: string
     role: string
     isOwner: boolean
+    avatarUrl?: string | null
   }
   replyTo?: {
     id: number
@@ -66,6 +67,7 @@ const modalComments = ref<Array<{
       displayName: string | null
       email: string
       isOwner: boolean
+      avatarUrl?: string | null
     }
   } | null
 }>>([])
@@ -447,6 +449,10 @@ watch(
               <div v-for="comment in modalComments" :key="comment.id" class="comment-item">
                 <div class="comment-header">
                   <div class="comment-meta text-caption text-muted">
+                    <v-avatar size="18" class="comment-avatar" color="surface-variant">
+                      <v-img v-if="comment.author.avatarUrl" :src="comment.author.avatarUrl" />
+                      <v-icon v-else icon="mdi-account" size="14" />
+                    </v-avatar>
                     <span>{{ comment.author.displayName || comment.author.email }}</span>
                     <span>{{ new Date(comment.createdAt).toLocaleString() }}</span>
                   </div>
@@ -466,9 +472,9 @@ watch(
                 </div>
                 <div class="comment-body">
                   <div v-if="comment.replyTo" class="comment-quote">
-                    <div class="comment-quote-name">
+                  <div class="comment-quote-name">
                       {{ comment.replyTo.author.displayName || comment.replyTo.author.email || '匿名' }}
-                    </div>
+                  </div>
                     <div class="comment-quote-content">
                       {{ comment.replyTo.content }}
                     </div>
@@ -603,7 +609,7 @@ watch(
 
 .comments-list {
   display: grid;
-  gap: 10px;
+  gap: 16px;
   margin-bottom: 12px;
 }
 
@@ -664,6 +670,7 @@ watch(
 .comment-meta {
   display: inline-flex;
   gap: 8px;
+  align-items: center;
 }
 
 .comment-body {
@@ -682,6 +689,10 @@ watch(
   font-size: 0.75rem;
   color: rgba(var(--v-theme-on-surface), 0.6);
   margin-bottom: 2px;
+}
+
+.comment-avatar {
+  border: 1px solid rgba(var(--v-theme-on-surface), 0.08);
 }
 
 .comment-quote-content {

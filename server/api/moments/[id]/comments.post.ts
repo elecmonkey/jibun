@@ -53,6 +53,7 @@ export default defineEventHandler(async (event) => {
             email: true,
             role: true,
             isOwner: true,
+            avatarUrl: true,
           },
         },
         replyTo: {
@@ -65,6 +66,7 @@ export default defineEventHandler(async (event) => {
                 displayName: true,
                 email: true,
                 isOwner: true,
+                avatarUrl: true,
               },
             },
           },
