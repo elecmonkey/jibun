@@ -137,7 +137,7 @@ const loadRemoteMoments = async () => {
         `${baseUrl}/api/echo/page`,
         {
           method: 'POST',
-          body: { page: remotePage.value, pageSize: 10 },
+          body: { page: remotePage.value, pageSize: 5 },
           timeout: 5000,
         },
       )
@@ -180,7 +180,7 @@ const loadMoments = async () => {
   try {
     const resp = await $fetch<{ code: number; data: { items: typeof moments.value; hasMore: boolean } }>(
       '/api/moments',
-      { query: { page: page.value, pageSize: 10 } },
+      { query: { page: page.value, pageSize: 5 } },
     )
     if (resp.code === 1) {
       moments.value = moments.value.concat(resp.data.items)
@@ -353,7 +353,7 @@ const refreshRemoteMoment = async (sourceUrl: string, id: number, sourcePage: nu
       `${sourceUrl}/api/echo/page`,
       {
         method: 'POST',
-        body: { page: sourcePage, pageSize: 10 },
+        body: { page: sourcePage, pageSize: 5 },
         timeout: 5000,
       },
     )
