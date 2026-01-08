@@ -32,7 +32,7 @@ const login = async () => {
         resp.data.user.avatarUrl || '',
       )
     }
-    await navigateTo('/admin')
+    await navigateTo('/')
   } catch {
     error.value = '登录失败'
   }
