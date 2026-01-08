@@ -388,6 +388,7 @@ export const ModelName = {
   Moment: 'Moment',
   Comment: 'Comment',
   Connect: 'Connect',
+  InboundConnect: 'InboundConnect',
   SystemSetting: 'SystemSetting'
 } as const
 
@@ -404,7 +405,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "moment" | "comment" | "connect" | "systemSetting"
+    modelProps: "user" | "moment" | "comment" | "connect" | "inboundConnect" | "systemSetting"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -704,6 +705,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    InboundConnect: {
+      payload: Prisma.$InboundConnectPayload<ExtArgs>
+      fields: Prisma.InboundConnectFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.InboundConnectFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InboundConnectPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.InboundConnectFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InboundConnectPayload>
+        }
+        findFirst: {
+          args: Prisma.InboundConnectFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InboundConnectPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.InboundConnectFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InboundConnectPayload>
+        }
+        findMany: {
+          args: Prisma.InboundConnectFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InboundConnectPayload>[]
+        }
+        create: {
+          args: Prisma.InboundConnectCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InboundConnectPayload>
+        }
+        createMany: {
+          args: Prisma.InboundConnectCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.InboundConnectCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InboundConnectPayload>[]
+        }
+        delete: {
+          args: Prisma.InboundConnectDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InboundConnectPayload>
+        }
+        update: {
+          args: Prisma.InboundConnectUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InboundConnectPayload>
+        }
+        deleteMany: {
+          args: Prisma.InboundConnectDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.InboundConnectUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.InboundConnectUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InboundConnectPayload>[]
+        }
+        upsert: {
+          args: Prisma.InboundConnectUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InboundConnectPayload>
+        }
+        aggregate: {
+          args: Prisma.InboundConnectAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateInboundConnect>
+        }
+        groupBy: {
+          args: Prisma.InboundConnectGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.InboundConnectGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.InboundConnectCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.InboundConnectCountAggregateOutputType> | number
+        }
+      }
+    }
     SystemSetting: {
       payload: Prisma.$SystemSettingPayload<ExtArgs>
       fields: Prisma.SystemSettingFieldRefs
@@ -826,6 +901,8 @@ export const UserScalarFieldEnum = {
   role: 'role',
   isOwner: 'isOwner',
   isActive: 'isActive',
+  connectId: 'connectId',
+  invitedByConnectId: 'invitedByConnectId',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
@@ -861,10 +938,26 @@ export const ConnectScalarFieldEnum = {
   id: 'id',
   connectUrl: 'connectUrl',
   instanceType: 'instanceType',
+  inviteToken: 'inviteToken',
+  inviteExpiresAt: 'inviteExpiresAt',
   createdAt: 'createdAt'
 } as const
 
 export type ConnectScalarFieldEnum = (typeof ConnectScalarFieldEnum)[keyof typeof ConnectScalarFieldEnum]
+
+
+export const InboundConnectScalarFieldEnum = {
+  id: 'id',
+  serverName: 'serverName',
+  serverUrl: 'serverUrl',
+  serverLogo: 'serverLogo',
+  sysUsername: 'sysUsername',
+  tokenHint: 'tokenHint',
+  verifiedAt: 'verifiedAt',
+  createdAt: 'createdAt'
+} as const
+
+export type InboundConnectScalarFieldEnum = (typeof InboundConnectScalarFieldEnum)[keyof typeof InboundConnectScalarFieldEnum]
 
 
 export const SystemSettingScalarFieldEnum = {
@@ -1083,6 +1176,7 @@ export type GlobalOmitConfig = {
   moment?: Prisma.MomentOmit
   comment?: Prisma.CommentOmit
   connect?: Prisma.ConnectOmit
+  inboundConnect?: Prisma.InboundConnectOmit
   systemSetting?: Prisma.SystemSettingOmit
 }
 

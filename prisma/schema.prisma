@@ -22,6 +22,10 @@ model User {
   role          UserRole @default(GUEST)
   isOwner       Boolean  @default(false)
   isActive      Boolean  @default(true)
+  connectId     Int?
+  connect       Connect? @relation("ConnectUsers", fields: [connectId], references: [id])
+  invitedByConnectId Int?
+  invitedByConnect   Connect? @relation("ConnectInvitedUsers", fields: [invitedByConnectId], references: [id])
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 
@@ -57,6 +61,21 @@ model Connect {
   id           Int      @id @default(autoincrement())
   connectUrl   String   @unique
   instanceType String   @default("UNKNOWN")
+  inviteToken  String?
+  inviteExpiresAt DateTime?
+  invitedUsers User[]   @relation("ConnectInvitedUsers")
+  users        User[]   @relation("ConnectUsers")
+  createdAt    DateTime @default(now())
+}
+
+model InboundConnect {
+  id           Int      @id @default(autoincrement())
+  serverName   String
+  serverUrl    String   @unique
+  serverLogo   String
+  sysUsername  String
+  tokenHint    String?
+  verifiedAt   DateTime?
   createdAt    DateTime @default(now())
 }
 

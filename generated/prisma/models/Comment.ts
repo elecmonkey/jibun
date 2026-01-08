@@ -542,14 +542,6 @@ export type CommentUpdateManyWithoutReplyToNestedInput = {
   deleteMany?: Prisma.CommentScalarWhereInput | Prisma.CommentScalarWhereInput[]
 }
 
-export type NullableIntFieldUpdateOperationsInput = {
-  set?: number | null
-  increment?: number
-  decrement?: number
-  multiply?: number
-  divide?: number
-}
-
 export type CommentUncheckedUpdateManyWithoutReplyToNestedInput = {
   create?: Prisma.XOR<Prisma.CommentCreateWithoutReplyToInput, Prisma.CommentUncheckedCreateWithoutReplyToInput> | Prisma.CommentCreateWithoutReplyToInput[] | Prisma.CommentUncheckedCreateWithoutReplyToInput[]
   connectOrCreate?: Prisma.CommentCreateOrConnectWithoutReplyToInput | Prisma.CommentCreateOrConnectWithoutReplyToInput[]

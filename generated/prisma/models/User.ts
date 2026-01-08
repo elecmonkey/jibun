@@ -28,10 +28,14 @@ export type AggregateUser = {
 
 export type UserAvgAggregateOutputType = {
   id: number | null
+  connectId: number | null
+  invitedByConnectId: number | null
 }
 
 export type UserSumAggregateOutputType = {
   id: number | null
+  connectId: number | null
+  invitedByConnectId: number | null
 }
 
 export type UserMinAggregateOutputType = {
@@ -43,6 +47,8 @@ export type UserMinAggregateOutputType = {
   role: $Enums.UserRole | null
   isOwner: boolean | null
   isActive: boolean | null
+  connectId: number | null
+  invitedByConnectId: number | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -56,6 +62,8 @@ export type UserMaxAggregateOutputType = {
   role: $Enums.UserRole | null
   isOwner: boolean | null
   isActive: boolean | null
+  connectId: number | null
+  invitedByConnectId: number | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -69,6 +77,8 @@ export type UserCountAggregateOutputType = {
   role: number
   isOwner: number
   isActive: number
+  connectId: number
+  invitedByConnectId: number
   createdAt: number
   updatedAt: number
   _all: number
@@ -77,10 +87,14 @@ export type UserCountAggregateOutputType = {
 
 export type UserAvgAggregateInputType = {
   id?: true
+  connectId?: true
+  invitedByConnectId?: true
 }
 
 export type UserSumAggregateInputType = {
   id?: true
+  connectId?: true
+  invitedByConnectId?: true
 }
 
 export type UserMinAggregateInputType = {
@@ -92,6 +106,8 @@ export type UserMinAggregateInputType = {
   role?: true
   isOwner?: true
   isActive?: true
+  connectId?: true
+  invitedByConnectId?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -105,6 +121,8 @@ export type UserMaxAggregateInputType = {
   role?: true
   isOwner?: true
   isActive?: true
+  connectId?: true
+  invitedByConnectId?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -118,6 +136,8 @@ export type UserCountAggregateInputType = {
   role?: true
   isOwner?: true
   isActive?: true
+  connectId?: true
+  invitedByConnectId?: true
   createdAt?: true
   updatedAt?: true
   _all?: true
@@ -218,6 +238,8 @@ export type UserGroupByOutputType = {
   role: $Enums.UserRole
   isOwner: boolean
   isActive: boolean
+  connectId: number | null
+  invitedByConnectId: number | null
   createdAt: Date
   updatedAt: Date
   _count: UserCountAggregateOutputType | null
@@ -254,8 +276,12 @@ export type UserWhereInput = {
   role?: Prisma.EnumUserRoleFilter<"User"> | $Enums.UserRole
   isOwner?: Prisma.BoolFilter<"User"> | boolean
   isActive?: Prisma.BoolFilter<"User"> | boolean
+  connectId?: Prisma.IntNullableFilter<"User"> | number | null
+  invitedByConnectId?: Prisma.IntNullableFilter<"User"> | number | null
   createdAt?: Prisma.DateTimeFilter<"User"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"User"> | Date | string
+  connect?: Prisma.XOR<Prisma.ConnectNullableScalarRelationFilter, Prisma.ConnectWhereInput> | null
+  invitedByConnect?: Prisma.XOR<Prisma.ConnectNullableScalarRelationFilter, Prisma.ConnectWhereInput> | null
   moments?: Prisma.MomentListRelationFilter
   comments?: Prisma.CommentListRelationFilter
 }
@@ -269,8 +295,12 @@ export type UserOrderByWithRelationInput = {
   role?: Prisma.SortOrder
   isOwner?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
+  connectId?: Prisma.SortOrderInput | Prisma.SortOrder
+  invitedByConnectId?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  connect?: Prisma.ConnectOrderByWithRelationInput
+  invitedByConnect?: Prisma.ConnectOrderByWithRelationInput
   moments?: Prisma.MomentOrderByRelationAggregateInput
   comments?: Prisma.CommentOrderByRelationAggregateInput
 }
@@ -287,8 +317,12 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   role?: Prisma.EnumUserRoleFilter<"User"> | $Enums.UserRole
   isOwner?: Prisma.BoolFilter<"User"> | boolean
   isActive?: Prisma.BoolFilter<"User"> | boolean
+  connectId?: Prisma.IntNullableFilter<"User"> | number | null
+  invitedByConnectId?: Prisma.IntNullableFilter<"User"> | number | null
   createdAt?: Prisma.DateTimeFilter<"User"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"User"> | Date | string
+  connect?: Prisma.XOR<Prisma.ConnectNullableScalarRelationFilter, Prisma.ConnectWhereInput> | null
+  invitedByConnect?: Prisma.XOR<Prisma.ConnectNullableScalarRelationFilter, Prisma.ConnectWhereInput> | null
   moments?: Prisma.MomentListRelationFilter
   comments?: Prisma.CommentListRelationFilter
 }, "id" | "email">
@@ -302,6 +336,8 @@ export type UserOrderByWithAggregationInput = {
   role?: Prisma.SortOrder
   isOwner?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
+  connectId?: Prisma.SortOrderInput | Prisma.SortOrder
+  invitedByConnectId?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   _count?: Prisma.UserCountOrderByAggregateInput
@@ -323,6 +359,8 @@ export type UserScalarWhereWithAggregatesInput = {
   role?: Prisma.EnumUserRoleWithAggregatesFilter<"User"> | $Enums.UserRole
   isOwner?: Prisma.BoolWithAggregatesFilter<"User"> | boolean
   isActive?: Prisma.BoolWithAggregatesFilter<"User"> | boolean
+  connectId?: Prisma.IntNullableWithAggregatesFilter<"User"> | number | null
+  invitedByConnectId?: Prisma.IntNullableWithAggregatesFilter<"User"> | number | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"User"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"User"> | Date | string
 }
@@ -337,6 +375,8 @@ export type UserCreateInput = {
   isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
+  connect?: Prisma.ConnectCreateNestedOneWithoutUsersInput
+  invitedByConnect?: Prisma.ConnectCreateNestedOneWithoutInvitedUsersInput
   moments?: Prisma.MomentCreateNestedManyWithoutAuthorInput
   comments?: Prisma.CommentCreateNestedManyWithoutAuthorInput
 }
@@ -350,6 +390,8 @@ export type UserUncheckedCreateInput = {
   role?: $Enums.UserRole
   isOwner?: boolean
   isActive?: boolean
+  connectId?: number | null
+  invitedByConnectId?: number | null
   createdAt?: Date | string
   updatedAt?: Date | string
   moments?: Prisma.MomentUncheckedCreateNestedManyWithoutAuthorInput
@@ -366,6 +408,8 @@ export type UserUpdateInput = {
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  connect?: Prisma.ConnectUpdateOneWithoutUsersNestedInput
+  invitedByConnect?: Prisma.ConnectUpdateOneWithoutInvitedUsersNestedInput
   moments?: Prisma.MomentUpdateManyWithoutAuthorNestedInput
   comments?: Prisma.CommentUpdateManyWithoutAuthorNestedInput
 }
@@ -379,6 +423,8 @@ export type UserUncheckedUpdateInput = {
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
   isOwner?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  connectId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  invitedByConnectId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   moments?: Prisma.MomentUncheckedUpdateManyWithoutAuthorNestedInput
@@ -394,6 +440,8 @@ export type UserCreateManyInput = {
   role?: $Enums.UserRole
   isOwner?: boolean
   isActive?: boolean
+  connectId?: number | null
+  invitedByConnectId?: number | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -419,6 +467,8 @@ export type UserUncheckedUpdateManyInput = {
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
   isOwner?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  connectId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  invitedByConnectId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -432,12 +482,16 @@ export type UserCountOrderByAggregateInput = {
   role?: Prisma.SortOrder
   isOwner?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
+  connectId?: Prisma.SortOrder
+  invitedByConnectId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
 
 export type UserAvgOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  connectId?: Prisma.SortOrder
+  invitedByConnectId?: Prisma.SortOrder
 }
 
 export type UserMaxOrderByAggregateInput = {
@@ -449,6 +503,8 @@ export type UserMaxOrderByAggregateInput = {
   role?: Prisma.SortOrder
   isOwner?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
+  connectId?: Prisma.SortOrder
+  invitedByConnectId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -462,17 +518,31 @@ export type UserMinOrderByAggregateInput = {
   role?: Prisma.SortOrder
   isOwner?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
+  connectId?: Prisma.SortOrder
+  invitedByConnectId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
 
 export type UserSumOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  connectId?: Prisma.SortOrder
+  invitedByConnectId?: Prisma.SortOrder
 }
 
 export type UserScalarRelationFilter = {
   is?: Prisma.UserWhereInput
   isNot?: Prisma.UserWhereInput
+}
+
+export type UserListRelationFilter = {
+  every?: Prisma.UserWhereInput
+  some?: Prisma.UserWhereInput
+  none?: Prisma.UserWhereInput
+}
+
+export type UserOrderByRelationAggregateInput = {
+  _count?: Prisma.SortOrder
 }
 
 export type StringFieldUpdateOperationsInput = {
@@ -497,6 +567,14 @@ export type DateTimeFieldUpdateOperationsInput = {
 
 export type IntFieldUpdateOperationsInput = {
   set?: number
+  increment?: number
+  decrement?: number
+  multiply?: number
+  divide?: number
+}
+
+export type NullableIntFieldUpdateOperationsInput = {
+  set?: number | null
   increment?: number
   decrement?: number
   multiply?: number
@@ -531,6 +609,90 @@ export type UserUpdateOneRequiredWithoutCommentsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutCommentsInput, Prisma.UserUpdateWithoutCommentsInput>, Prisma.UserUncheckedUpdateWithoutCommentsInput>
 }
 
+export type UserCreateNestedManyWithoutInvitedByConnectInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutInvitedByConnectInput, Prisma.UserUncheckedCreateWithoutInvitedByConnectInput> | Prisma.UserCreateWithoutInvitedByConnectInput[] | Prisma.UserUncheckedCreateWithoutInvitedByConnectInput[]
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutInvitedByConnectInput | Prisma.UserCreateOrConnectWithoutInvitedByConnectInput[]
+  createMany?: Prisma.UserCreateManyInvitedByConnectInputEnvelope
+  connect?: Prisma.UserWhereUniqueInput | Prisma.UserWhereUniqueInput[]
+}
+
+export type UserCreateNestedManyWithoutConnectInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutConnectInput, Prisma.UserUncheckedCreateWithoutConnectInput> | Prisma.UserCreateWithoutConnectInput[] | Prisma.UserUncheckedCreateWithoutConnectInput[]
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutConnectInput | Prisma.UserCreateOrConnectWithoutConnectInput[]
+  createMany?: Prisma.UserCreateManyConnectInputEnvelope
+  connect?: Prisma.UserWhereUniqueInput | Prisma.UserWhereUniqueInput[]
+}
+
+export type UserUncheckedCreateNestedManyWithoutInvitedByConnectInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutInvitedByConnectInput, Prisma.UserUncheckedCreateWithoutInvitedByConnectInput> | Prisma.UserCreateWithoutInvitedByConnectInput[] | Prisma.UserUncheckedCreateWithoutInvitedByConnectInput[]
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutInvitedByConnectInput | Prisma.UserCreateOrConnectWithoutInvitedByConnectInput[]
+  createMany?: Prisma.UserCreateManyInvitedByConnectInputEnvelope
+  connect?: Prisma.UserWhereUniqueInput | Prisma.UserWhereUniqueInput[]
+}
+
+export type UserUncheckedCreateNestedManyWithoutConnectInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutConnectInput, Prisma.UserUncheckedCreateWithoutConnectInput> | Prisma.UserCreateWithoutConnectInput[] | Prisma.UserUncheckedCreateWithoutConnectInput[]
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutConnectInput | Prisma.UserCreateOrConnectWithoutConnectInput[]
+  createMany?: Prisma.UserCreateManyConnectInputEnvelope
+  connect?: Prisma.UserWhereUniqueInput | Prisma.UserWhereUniqueInput[]
+}
+
+export type UserUpdateManyWithoutInvitedByConnectNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutInvitedByConnectInput, Prisma.UserUncheckedCreateWithoutInvitedByConnectInput> | Prisma.UserCreateWithoutInvitedByConnectInput[] | Prisma.UserUncheckedCreateWithoutInvitedByConnectInput[]
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutInvitedByConnectInput | Prisma.UserCreateOrConnectWithoutInvitedByConnectInput[]
+  upsert?: Prisma.UserUpsertWithWhereUniqueWithoutInvitedByConnectInput | Prisma.UserUpsertWithWhereUniqueWithoutInvitedByConnectInput[]
+  createMany?: Prisma.UserCreateManyInvitedByConnectInputEnvelope
+  set?: Prisma.UserWhereUniqueInput | Prisma.UserWhereUniqueInput[]
+  disconnect?: Prisma.UserWhereUniqueInput | Prisma.UserWhereUniqueInput[]
+  delete?: Prisma.UserWhereUniqueInput | Prisma.UserWhereUniqueInput[]
+  connect?: Prisma.UserWhereUniqueInput | Prisma.UserWhereUniqueInput[]
+  update?: Prisma.UserUpdateWithWhereUniqueWithoutInvitedByConnectInput | Prisma.UserUpdateWithWhereUniqueWithoutInvitedByConnectInput[]
+  updateMany?: Prisma.UserUpdateManyWithWhereWithoutInvitedByConnectInput | Prisma.UserUpdateManyWithWhereWithoutInvitedByConnectInput[]
+  deleteMany?: Prisma.UserScalarWhereInput | Prisma.UserScalarWhereInput[]
+}
+
+export type UserUpdateManyWithoutConnectNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutConnectInput, Prisma.UserUncheckedCreateWithoutConnectInput> | Prisma.UserCreateWithoutConnectInput[] | Prisma.UserUncheckedCreateWithoutConnectInput[]
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutConnectInput | Prisma.UserCreateOrConnectWithoutConnectInput[]
+  upsert?: Prisma.UserUpsertWithWhereUniqueWithoutConnectInput | Prisma.UserUpsertWithWhereUniqueWithoutConnectInput[]
+  createMany?: Prisma.UserCreateManyConnectInputEnvelope
+  set?: Prisma.UserWhereUniqueInput | Prisma.UserWhereUniqueInput[]
+  disconnect?: Prisma.UserWhereUniqueInput | Prisma.UserWhereUniqueInput[]
+  delete?: Prisma.UserWhereUniqueInput | Prisma.UserWhereUniqueInput[]
+  connect?: Prisma.UserWhereUniqueInput | Prisma.UserWhereUniqueInput[]
+  update?: Prisma.UserUpdateWithWhereUniqueWithoutConnectInput | Prisma.UserUpdateWithWhereUniqueWithoutConnectInput[]
+  updateMany?: Prisma.UserUpdateManyWithWhereWithoutConnectInput | Prisma.UserUpdateManyWithWhereWithoutConnectInput[]
+  deleteMany?: Prisma.UserScalarWhereInput | Prisma.UserScalarWhereInput[]
+}
+
+export type UserUncheckedUpdateManyWithoutInvitedByConnectNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutInvitedByConnectInput, Prisma.UserUncheckedCreateWithoutInvitedByConnectInput> | Prisma.UserCreateWithoutInvitedByConnectInput[] | Prisma.UserUncheckedCreateWithoutInvitedByConnectInput[]
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutInvitedByConnectInput | Prisma.UserCreateOrConnectWithoutInvitedByConnectInput[]
+  upsert?: Prisma.UserUpsertWithWhereUniqueWithoutInvitedByConnectInput | Prisma.UserUpsertWithWhereUniqueWithoutInvitedByConnectInput[]
+  createMany?: Prisma.UserCreateManyInvitedByConnectInputEnvelope
+  set?: Prisma.UserWhereUniqueInput | Prisma.UserWhereUniqueInput[]
+  disconnect?: Prisma.UserWhereUniqueInput | Prisma.UserWhereUniqueInput[]
+  delete?: Prisma.UserWhereUniqueInput | Prisma.UserWhereUniqueInput[]
+  connect?: Prisma.UserWhereUniqueInput | Prisma.UserWhereUniqueInput[]
+  update?: Prisma.UserUpdateWithWhereUniqueWithoutInvitedByConnectInput | Prisma.UserUpdateWithWhereUniqueWithoutInvitedByConnectInput[]
+  updateMany?: Prisma.UserUpdateManyWithWhereWithoutInvitedByConnectInput | Prisma.UserUpdateManyWithWhereWithoutInvitedByConnectInput[]
+  deleteMany?: Prisma.UserScalarWhereInput | Prisma.UserScalarWhereInput[]
+}
+
+export type UserUncheckedUpdateManyWithoutConnectNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutConnectInput, Prisma.UserUncheckedCreateWithoutConnectInput> | Prisma.UserCreateWithoutConnectInput[] | Prisma.UserUncheckedCreateWithoutConnectInput[]
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutConnectInput | Prisma.UserCreateOrConnectWithoutConnectInput[]
+  upsert?: Prisma.UserUpsertWithWhereUniqueWithoutConnectInput | Prisma.UserUpsertWithWhereUniqueWithoutConnectInput[]
+  createMany?: Prisma.UserCreateManyConnectInputEnvelope
+  set?: Prisma.UserWhereUniqueInput | Prisma.UserWhereUniqueInput[]
+  disconnect?: Prisma.UserWhereUniqueInput | Prisma.UserWhereUniqueInput[]
+  delete?: Prisma.UserWhereUniqueInput | Prisma.UserWhereUniqueInput[]
+  connect?: Prisma.UserWhereUniqueInput | Prisma.UserWhereUniqueInput[]
+  update?: Prisma.UserUpdateWithWhereUniqueWithoutConnectInput | Prisma.UserUpdateWithWhereUniqueWithoutConnectInput[]
+  updateMany?: Prisma.UserUpdateManyWithWhereWithoutConnectInput | Prisma.UserUpdateManyWithWhereWithoutConnectInput[]
+  deleteMany?: Prisma.UserScalarWhereInput | Prisma.UserScalarWhereInput[]
+}
+
 export type UserCreateWithoutMomentsInput = {
   email: string
   displayName?: string | null
@@ -541,6 +703,8 @@ export type UserCreateWithoutMomentsInput = {
   isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
+  connect?: Prisma.ConnectCreateNestedOneWithoutUsersInput
+  invitedByConnect?: Prisma.ConnectCreateNestedOneWithoutInvitedUsersInput
   comments?: Prisma.CommentCreateNestedManyWithoutAuthorInput
 }
 
@@ -553,6 +717,8 @@ export type UserUncheckedCreateWithoutMomentsInput = {
   role?: $Enums.UserRole
   isOwner?: boolean
   isActive?: boolean
+  connectId?: number | null
+  invitedByConnectId?: number | null
   createdAt?: Date | string
   updatedAt?: Date | string
   comments?: Prisma.CommentUncheckedCreateNestedManyWithoutAuthorInput
@@ -584,6 +750,8 @@ export type UserUpdateWithoutMomentsInput = {
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  connect?: Prisma.ConnectUpdateOneWithoutUsersNestedInput
+  invitedByConnect?: Prisma.ConnectUpdateOneWithoutInvitedUsersNestedInput
   comments?: Prisma.CommentUpdateManyWithoutAuthorNestedInput
 }
 
@@ -596,6 +764,8 @@ export type UserUncheckedUpdateWithoutMomentsInput = {
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
   isOwner?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  connectId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  invitedByConnectId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   comments?: Prisma.CommentUncheckedUpdateManyWithoutAuthorNestedInput
@@ -611,6 +781,8 @@ export type UserCreateWithoutCommentsInput = {
   isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
+  connect?: Prisma.ConnectCreateNestedOneWithoutUsersInput
+  invitedByConnect?: Prisma.ConnectCreateNestedOneWithoutInvitedUsersInput
   moments?: Prisma.MomentCreateNestedManyWithoutAuthorInput
 }
 
@@ -623,6 +795,8 @@ export type UserUncheckedCreateWithoutCommentsInput = {
   role?: $Enums.UserRole
   isOwner?: boolean
   isActive?: boolean
+  connectId?: number | null
+  invitedByConnectId?: number | null
   createdAt?: Date | string
   updatedAt?: Date | string
   moments?: Prisma.MomentUncheckedCreateNestedManyWithoutAuthorInput
@@ -654,6 +828,8 @@ export type UserUpdateWithoutCommentsInput = {
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  connect?: Prisma.ConnectUpdateOneWithoutUsersNestedInput
+  invitedByConnect?: Prisma.ConnectUpdateOneWithoutInvitedUsersNestedInput
   moments?: Prisma.MomentUpdateManyWithoutAuthorNestedInput
 }
 
@@ -666,9 +842,261 @@ export type UserUncheckedUpdateWithoutCommentsInput = {
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
   isOwner?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  connectId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  invitedByConnectId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   moments?: Prisma.MomentUncheckedUpdateManyWithoutAuthorNestedInput
+}
+
+export type UserCreateWithoutInvitedByConnectInput = {
+  email: string
+  displayName?: string | null
+  avatarUrl?: string | null
+  passwordHash: string
+  role?: $Enums.UserRole
+  isOwner?: boolean
+  isActive?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  connect?: Prisma.ConnectCreateNestedOneWithoutUsersInput
+  moments?: Prisma.MomentCreateNestedManyWithoutAuthorInput
+  comments?: Prisma.CommentCreateNestedManyWithoutAuthorInput
+}
+
+export type UserUncheckedCreateWithoutInvitedByConnectInput = {
+  id?: number
+  email: string
+  displayName?: string | null
+  avatarUrl?: string | null
+  passwordHash: string
+  role?: $Enums.UserRole
+  isOwner?: boolean
+  isActive?: boolean
+  connectId?: number | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  moments?: Prisma.MomentUncheckedCreateNestedManyWithoutAuthorInput
+  comments?: Prisma.CommentUncheckedCreateNestedManyWithoutAuthorInput
+}
+
+export type UserCreateOrConnectWithoutInvitedByConnectInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutInvitedByConnectInput, Prisma.UserUncheckedCreateWithoutInvitedByConnectInput>
+}
+
+export type UserCreateManyInvitedByConnectInputEnvelope = {
+  data: Prisma.UserCreateManyInvitedByConnectInput | Prisma.UserCreateManyInvitedByConnectInput[]
+  skipDuplicates?: boolean
+}
+
+export type UserCreateWithoutConnectInput = {
+  email: string
+  displayName?: string | null
+  avatarUrl?: string | null
+  passwordHash: string
+  role?: $Enums.UserRole
+  isOwner?: boolean
+  isActive?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  invitedByConnect?: Prisma.ConnectCreateNestedOneWithoutInvitedUsersInput
+  moments?: Prisma.MomentCreateNestedManyWithoutAuthorInput
+  comments?: Prisma.CommentCreateNestedManyWithoutAuthorInput
+}
+
+export type UserUncheckedCreateWithoutConnectInput = {
+  id?: number
+  email: string
+  displayName?: string | null
+  avatarUrl?: string | null
+  passwordHash: string
+  role?: $Enums.UserRole
+  isOwner?: boolean
+  isActive?: boolean
+  invitedByConnectId?: number | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  moments?: Prisma.MomentUncheckedCreateNestedManyWithoutAuthorInput
+  comments?: Prisma.CommentUncheckedCreateNestedManyWithoutAuthorInput
+}
+
+export type UserCreateOrConnectWithoutConnectInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutConnectInput, Prisma.UserUncheckedCreateWithoutConnectInput>
+}
+
+export type UserCreateManyConnectInputEnvelope = {
+  data: Prisma.UserCreateManyConnectInput | Prisma.UserCreateManyConnectInput[]
+  skipDuplicates?: boolean
+}
+
+export type UserUpsertWithWhereUniqueWithoutInvitedByConnectInput = {
+  where: Prisma.UserWhereUniqueInput
+  update: Prisma.XOR<Prisma.UserUpdateWithoutInvitedByConnectInput, Prisma.UserUncheckedUpdateWithoutInvitedByConnectInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutInvitedByConnectInput, Prisma.UserUncheckedCreateWithoutInvitedByConnectInput>
+}
+
+export type UserUpdateWithWhereUniqueWithoutInvitedByConnectInput = {
+  where: Prisma.UserWhereUniqueInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutInvitedByConnectInput, Prisma.UserUncheckedUpdateWithoutInvitedByConnectInput>
+}
+
+export type UserUpdateManyWithWhereWithoutInvitedByConnectInput = {
+  where: Prisma.UserScalarWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateManyMutationInput, Prisma.UserUncheckedUpdateManyWithoutInvitedByConnectInput>
+}
+
+export type UserScalarWhereInput = {
+  AND?: Prisma.UserScalarWhereInput | Prisma.UserScalarWhereInput[]
+  OR?: Prisma.UserScalarWhereInput[]
+  NOT?: Prisma.UserScalarWhereInput | Prisma.UserScalarWhereInput[]
+  id?: Prisma.IntFilter<"User"> | number
+  email?: Prisma.StringFilter<"User"> | string
+  displayName?: Prisma.StringNullableFilter<"User"> | string | null
+  avatarUrl?: Prisma.StringNullableFilter<"User"> | string | null
+  passwordHash?: Prisma.StringFilter<"User"> | string
+  role?: Prisma.EnumUserRoleFilter<"User"> | $Enums.UserRole
+  isOwner?: Prisma.BoolFilter<"User"> | boolean
+  isActive?: Prisma.BoolFilter<"User"> | boolean
+  connectId?: Prisma.IntNullableFilter<"User"> | number | null
+  invitedByConnectId?: Prisma.IntNullableFilter<"User"> | number | null
+  createdAt?: Prisma.DateTimeFilter<"User"> | Date | string
+  updatedAt?: Prisma.DateTimeFilter<"User"> | Date | string
+}
+
+export type UserUpsertWithWhereUniqueWithoutConnectInput = {
+  where: Prisma.UserWhereUniqueInput
+  update: Prisma.XOR<Prisma.UserUpdateWithoutConnectInput, Prisma.UserUncheckedUpdateWithoutConnectInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutConnectInput, Prisma.UserUncheckedCreateWithoutConnectInput>
+}
+
+export type UserUpdateWithWhereUniqueWithoutConnectInput = {
+  where: Prisma.UserWhereUniqueInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutConnectInput, Prisma.UserUncheckedUpdateWithoutConnectInput>
+}
+
+export type UserUpdateManyWithWhereWithoutConnectInput = {
+  where: Prisma.UserScalarWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateManyMutationInput, Prisma.UserUncheckedUpdateManyWithoutConnectInput>
+}
+
+export type UserCreateManyInvitedByConnectInput = {
+  id?: number
+  email: string
+  displayName?: string | null
+  avatarUrl?: string | null
+  passwordHash: string
+  role?: $Enums.UserRole
+  isOwner?: boolean
+  isActive?: boolean
+  connectId?: number | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+}
+
+export type UserCreateManyConnectInput = {
+  id?: number
+  email: string
+  displayName?: string | null
+  avatarUrl?: string | null
+  passwordHash: string
+  role?: $Enums.UserRole
+  isOwner?: boolean
+  isActive?: boolean
+  invitedByConnectId?: number | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+}
+
+export type UserUpdateWithoutInvitedByConnectInput = {
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  displayName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  isOwner?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  connect?: Prisma.ConnectUpdateOneWithoutUsersNestedInput
+  moments?: Prisma.MomentUpdateManyWithoutAuthorNestedInput
+  comments?: Prisma.CommentUpdateManyWithoutAuthorNestedInput
+}
+
+export type UserUncheckedUpdateWithoutInvitedByConnectInput = {
+  id?: Prisma.IntFieldUpdateOperationsInput | number
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  displayName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  isOwner?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  connectId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  moments?: Prisma.MomentUncheckedUpdateManyWithoutAuthorNestedInput
+  comments?: Prisma.CommentUncheckedUpdateManyWithoutAuthorNestedInput
+}
+
+export type UserUncheckedUpdateManyWithoutInvitedByConnectInput = {
+  id?: Prisma.IntFieldUpdateOperationsInput | number
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  displayName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  isOwner?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  connectId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type UserUpdateWithoutConnectInput = {
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  displayName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  isOwner?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  invitedByConnect?: Prisma.ConnectUpdateOneWithoutInvitedUsersNestedInput
+  moments?: Prisma.MomentUpdateManyWithoutAuthorNestedInput
+  comments?: Prisma.CommentUpdateManyWithoutAuthorNestedInput
+}
+
+export type UserUncheckedUpdateWithoutConnectInput = {
+  id?: Prisma.IntFieldUpdateOperationsInput | number
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  displayName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  isOwner?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  invitedByConnectId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  moments?: Prisma.MomentUncheckedUpdateManyWithoutAuthorNestedInput
+  comments?: Prisma.CommentUncheckedUpdateManyWithoutAuthorNestedInput
+}
+
+export type UserUncheckedUpdateManyWithoutConnectInput = {
+  id?: Prisma.IntFieldUpdateOperationsInput | number
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  displayName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  isOwner?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  invitedByConnectId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 
@@ -720,8 +1148,12 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   role?: boolean
   isOwner?: boolean
   isActive?: boolean
+  connectId?: boolean
+  invitedByConnectId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  connect?: boolean | Prisma.User$connectArgs<ExtArgs>
+  invitedByConnect?: boolean | Prisma.User$invitedByConnectArgs<ExtArgs>
   moments?: boolean | Prisma.User$momentsArgs<ExtArgs>
   comments?: boolean | Prisma.User$commentsArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
@@ -736,8 +1168,12 @@ export type UserSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   role?: boolean
   isOwner?: boolean
   isActive?: boolean
+  connectId?: boolean
+  invitedByConnectId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  connect?: boolean | Prisma.User$connectArgs<ExtArgs>
+  invitedByConnect?: boolean | Prisma.User$invitedByConnectArgs<ExtArgs>
 }, ExtArgs["result"]["user"]>
 
 export type UserSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -749,8 +1185,12 @@ export type UserSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   role?: boolean
   isOwner?: boolean
   isActive?: boolean
+  connectId?: boolean
+  invitedByConnectId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  connect?: boolean | Prisma.User$connectArgs<ExtArgs>
+  invitedByConnect?: boolean | Prisma.User$invitedByConnectArgs<ExtArgs>
 }, ExtArgs["result"]["user"]>
 
 export type UserSelectScalar = {
@@ -762,22 +1202,34 @@ export type UserSelectScalar = {
   role?: boolean
   isOwner?: boolean
   isActive?: boolean
+  connectId?: boolean
+  invitedByConnectId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "email" | "displayName" | "avatarUrl" | "passwordHash" | "role" | "isOwner" | "isActive" | "createdAt" | "updatedAt", ExtArgs["result"]["user"]>
+export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "email" | "displayName" | "avatarUrl" | "passwordHash" | "role" | "isOwner" | "isActive" | "connectId" | "invitedByConnectId" | "createdAt" | "updatedAt", ExtArgs["result"]["user"]>
 export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  connect?: boolean | Prisma.User$connectArgs<ExtArgs>
+  invitedByConnect?: boolean | Prisma.User$invitedByConnectArgs<ExtArgs>
   moments?: boolean | Prisma.User$momentsArgs<ExtArgs>
   comments?: boolean | Prisma.User$commentsArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }
-export type UserIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
-export type UserIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
+export type UserIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  connect?: boolean | Prisma.User$connectArgs<ExtArgs>
+  invitedByConnect?: boolean | Prisma.User$invitedByConnectArgs<ExtArgs>
+}
+export type UserIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  connect?: boolean | Prisma.User$connectArgs<ExtArgs>
+  invitedByConnect?: boolean | Prisma.User$invitedByConnectArgs<ExtArgs>
+}
 
 export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "User"
   objects: {
+    connect: Prisma.$ConnectPayload<ExtArgs> | null
+    invitedByConnect: Prisma.$ConnectPayload<ExtArgs> | null
     moments: Prisma.$MomentPayload<ExtArgs>[]
     comments: Prisma.$CommentPayload<ExtArgs>[]
   }
@@ -790,6 +1242,8 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     role: $Enums.UserRole
     isOwner: boolean
     isActive: boolean
+    connectId: number | null
+    invitedByConnectId: number | null
     createdAt: Date
     updatedAt: Date
   }, ExtArgs["result"]["user"]>
@@ -1186,6 +1640,8 @@ readonly fields: UserFieldRefs;
  */
 export interface Prisma__UserClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
+  connect<T extends Prisma.User$connectArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$connectArgs<ExtArgs>>): Prisma.Prisma__ConnectClient<runtime.Types.Result.GetResult<Prisma.$ConnectPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  invitedByConnect<T extends Prisma.User$invitedByConnectArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$invitedByConnectArgs<ExtArgs>>): Prisma.Prisma__ConnectClient<runtime.Types.Result.GetResult<Prisma.$ConnectPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   moments<T extends Prisma.User$momentsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$momentsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$MomentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   comments<T extends Prisma.User$commentsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$commentsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$CommentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
@@ -1225,6 +1681,8 @@ export interface UserFieldRefs {
   readonly role: Prisma.FieldRef<"User", 'UserRole'>
   readonly isOwner: Prisma.FieldRef<"User", 'Boolean'>
   readonly isActive: Prisma.FieldRef<"User", 'Boolean'>
+  readonly connectId: Prisma.FieldRef<"User", 'Int'>
+  readonly invitedByConnectId: Prisma.FieldRef<"User", 'Int'>
   readonly createdAt: Prisma.FieldRef<"User", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"User", 'DateTime'>
 }
@@ -1476,6 +1934,10 @@ export type UserCreateManyAndReturnArgs<ExtArgs extends runtime.Types.Extensions
    */
   data: Prisma.UserCreateManyInput | Prisma.UserCreateManyInput[]
   skipDuplicates?: boolean
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.UserIncludeCreateManyAndReturn<ExtArgs> | null
 }
 
 /**
@@ -1546,6 +2008,10 @@ export type UserUpdateManyAndReturnArgs<ExtArgs extends runtime.Types.Extensions
    * Limit how many Users to update.
    */
   limit?: number
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.UserIncludeUpdateManyAndReturn<ExtArgs> | null
 }
 
 /**
@@ -1612,6 +2078,44 @@ export type UserDeleteManyArgs<ExtArgs extends runtime.Types.Extensions.Internal
    * Limit how many Users to delete.
    */
   limit?: number
+}
+
+/**
+ * User.connect
+ */
+export type User$connectArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Connect
+   */
+  select?: Prisma.ConnectSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Connect
+   */
+  omit?: Prisma.ConnectOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ConnectInclude<ExtArgs> | null
+  where?: Prisma.ConnectWhereInput
+}
+
+/**
+ * User.invitedByConnect
+ */
+export type User$invitedByConnectArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Connect
+   */
+  select?: Prisma.ConnectSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Connect
+   */
+  omit?: Prisma.ConnectOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ConnectInclude<ExtArgs> | null
+  where?: Prisma.ConnectWhereInput
 }
 
 /**

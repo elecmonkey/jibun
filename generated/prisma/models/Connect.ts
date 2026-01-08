@@ -38,6 +38,8 @@ export type ConnectMinAggregateOutputType = {
   id: number | null
   connectUrl: string | null
   instanceType: string | null
+  inviteToken: string | null
+  inviteExpiresAt: Date | null
   createdAt: Date | null
 }
 
@@ -45,6 +47,8 @@ export type ConnectMaxAggregateOutputType = {
   id: number | null
   connectUrl: string | null
   instanceType: string | null
+  inviteToken: string | null
+  inviteExpiresAt: Date | null
   createdAt: Date | null
 }
 
@@ -52,6 +56,8 @@ export type ConnectCountAggregateOutputType = {
   id: number
   connectUrl: number
   instanceType: number
+  inviteToken: number
+  inviteExpiresAt: number
   createdAt: number
   _all: number
 }
@@ -69,6 +75,8 @@ export type ConnectMinAggregateInputType = {
   id?: true
   connectUrl?: true
   instanceType?: true
+  inviteToken?: true
+  inviteExpiresAt?: true
   createdAt?: true
 }
 
@@ -76,6 +84,8 @@ export type ConnectMaxAggregateInputType = {
   id?: true
   connectUrl?: true
   instanceType?: true
+  inviteToken?: true
+  inviteExpiresAt?: true
   createdAt?: true
 }
 
@@ -83,6 +93,8 @@ export type ConnectCountAggregateInputType = {
   id?: true
   connectUrl?: true
   instanceType?: true
+  inviteToken?: true
+  inviteExpiresAt?: true
   createdAt?: true
   _all?: true
 }
@@ -177,6 +189,8 @@ export type ConnectGroupByOutputType = {
   id: number
   connectUrl: string
   instanceType: string
+  inviteToken: string | null
+  inviteExpiresAt: Date | null
   createdAt: Date
   _count: ConnectCountAggregateOutputType | null
   _avg: ConnectAvgAggregateOutputType | null
@@ -207,14 +221,22 @@ export type ConnectWhereInput = {
   id?: Prisma.IntFilter<"Connect"> | number
   connectUrl?: Prisma.StringFilter<"Connect"> | string
   instanceType?: Prisma.StringFilter<"Connect"> | string
+  inviteToken?: Prisma.StringNullableFilter<"Connect"> | string | null
+  inviteExpiresAt?: Prisma.DateTimeNullableFilter<"Connect"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"Connect"> | Date | string
+  invitedUsers?: Prisma.UserListRelationFilter
+  users?: Prisma.UserListRelationFilter
 }
 
 export type ConnectOrderByWithRelationInput = {
   id?: Prisma.SortOrder
   connectUrl?: Prisma.SortOrder
   instanceType?: Prisma.SortOrder
+  inviteToken?: Prisma.SortOrderInput | Prisma.SortOrder
+  inviteExpiresAt?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+  invitedUsers?: Prisma.UserOrderByRelationAggregateInput
+  users?: Prisma.UserOrderByRelationAggregateInput
 }
 
 export type ConnectWhereUniqueInput = Prisma.AtLeast<{
@@ -224,13 +246,19 @@ export type ConnectWhereUniqueInput = Prisma.AtLeast<{
   OR?: Prisma.ConnectWhereInput[]
   NOT?: Prisma.ConnectWhereInput | Prisma.ConnectWhereInput[]
   instanceType?: Prisma.StringFilter<"Connect"> | string
+  inviteToken?: Prisma.StringNullableFilter<"Connect"> | string | null
+  inviteExpiresAt?: Prisma.DateTimeNullableFilter<"Connect"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"Connect"> | Date | string
+  invitedUsers?: Prisma.UserListRelationFilter
+  users?: Prisma.UserListRelationFilter
 }, "id" | "connectUrl">
 
 export type ConnectOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
   connectUrl?: Prisma.SortOrder
   instanceType?: Prisma.SortOrder
+  inviteToken?: Prisma.SortOrderInput | Prisma.SortOrder
+  inviteExpiresAt?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   _count?: Prisma.ConnectCountOrderByAggregateInput
   _avg?: Prisma.ConnectAvgOrderByAggregateInput
@@ -246,45 +274,67 @@ export type ConnectScalarWhereWithAggregatesInput = {
   id?: Prisma.IntWithAggregatesFilter<"Connect"> | number
   connectUrl?: Prisma.StringWithAggregatesFilter<"Connect"> | string
   instanceType?: Prisma.StringWithAggregatesFilter<"Connect"> | string
+  inviteToken?: Prisma.StringNullableWithAggregatesFilter<"Connect"> | string | null
+  inviteExpiresAt?: Prisma.DateTimeNullableWithAggregatesFilter<"Connect"> | Date | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Connect"> | Date | string
 }
 
 export type ConnectCreateInput = {
   connectUrl: string
   instanceType?: string
+  inviteToken?: string | null
+  inviteExpiresAt?: Date | string | null
   createdAt?: Date | string
+  invitedUsers?: Prisma.UserCreateNestedManyWithoutInvitedByConnectInput
+  users?: Prisma.UserCreateNestedManyWithoutConnectInput
 }
 
 export type ConnectUncheckedCreateInput = {
   id?: number
   connectUrl: string
   instanceType?: string
+  inviteToken?: string | null
+  inviteExpiresAt?: Date | string | null
   createdAt?: Date | string
+  invitedUsers?: Prisma.UserUncheckedCreateNestedManyWithoutInvitedByConnectInput
+  users?: Prisma.UserUncheckedCreateNestedManyWithoutConnectInput
 }
 
 export type ConnectUpdateInput = {
   connectUrl?: Prisma.StringFieldUpdateOperationsInput | string
   instanceType?: Prisma.StringFieldUpdateOperationsInput | string
+  inviteToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  inviteExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  invitedUsers?: Prisma.UserUpdateManyWithoutInvitedByConnectNestedInput
+  users?: Prisma.UserUpdateManyWithoutConnectNestedInput
 }
 
 export type ConnectUncheckedUpdateInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   connectUrl?: Prisma.StringFieldUpdateOperationsInput | string
   instanceType?: Prisma.StringFieldUpdateOperationsInput | string
+  inviteToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  inviteExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  invitedUsers?: Prisma.UserUncheckedUpdateManyWithoutInvitedByConnectNestedInput
+  users?: Prisma.UserUncheckedUpdateManyWithoutConnectNestedInput
 }
 
 export type ConnectCreateManyInput = {
   id?: number
   connectUrl: string
   instanceType?: string
+  inviteToken?: string | null
+  inviteExpiresAt?: Date | string | null
   createdAt?: Date | string
 }
 
 export type ConnectUpdateManyMutationInput = {
   connectUrl?: Prisma.StringFieldUpdateOperationsInput | string
   instanceType?: Prisma.StringFieldUpdateOperationsInput | string
+  inviteToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  inviteExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -292,13 +342,22 @@ export type ConnectUncheckedUpdateManyInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   connectUrl?: Prisma.StringFieldUpdateOperationsInput | string
   instanceType?: Prisma.StringFieldUpdateOperationsInput | string
+  inviteToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  inviteExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type ConnectNullableScalarRelationFilter = {
+  is?: Prisma.ConnectWhereInput | null
+  isNot?: Prisma.ConnectWhereInput | null
 }
 
 export type ConnectCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   connectUrl?: Prisma.SortOrder
   instanceType?: Prisma.SortOrder
+  inviteToken?: Prisma.SortOrder
+  inviteExpiresAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
 
@@ -310,6 +369,8 @@ export type ConnectMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
   connectUrl?: Prisma.SortOrder
   instanceType?: Prisma.SortOrder
+  inviteToken?: Prisma.SortOrder
+  inviteExpiresAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
 
@@ -317,6 +378,8 @@ export type ConnectMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
   connectUrl?: Prisma.SortOrder
   instanceType?: Prisma.SortOrder
+  inviteToken?: Prisma.SortOrder
+  inviteExpiresAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
 
@@ -324,19 +387,208 @@ export type ConnectSumOrderByAggregateInput = {
   id?: Prisma.SortOrder
 }
 
+export type ConnectCreateNestedOneWithoutUsersInput = {
+  create?: Prisma.XOR<Prisma.ConnectCreateWithoutUsersInput, Prisma.ConnectUncheckedCreateWithoutUsersInput>
+  connectOrCreate?: Prisma.ConnectCreateOrConnectWithoutUsersInput
+  connect?: Prisma.ConnectWhereUniqueInput
+}
+
+export type ConnectCreateNestedOneWithoutInvitedUsersInput = {
+  create?: Prisma.XOR<Prisma.ConnectCreateWithoutInvitedUsersInput, Prisma.ConnectUncheckedCreateWithoutInvitedUsersInput>
+  connectOrCreate?: Prisma.ConnectCreateOrConnectWithoutInvitedUsersInput
+  connect?: Prisma.ConnectWhereUniqueInput
+}
+
+export type ConnectUpdateOneWithoutUsersNestedInput = {
+  create?: Prisma.XOR<Prisma.ConnectCreateWithoutUsersInput, Prisma.ConnectUncheckedCreateWithoutUsersInput>
+  connectOrCreate?: Prisma.ConnectCreateOrConnectWithoutUsersInput
+  upsert?: Prisma.ConnectUpsertWithoutUsersInput
+  disconnect?: Prisma.ConnectWhereInput | boolean
+  delete?: Prisma.ConnectWhereInput | boolean
+  connect?: Prisma.ConnectWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.ConnectUpdateToOneWithWhereWithoutUsersInput, Prisma.ConnectUpdateWithoutUsersInput>, Prisma.ConnectUncheckedUpdateWithoutUsersInput>
+}
+
+export type ConnectUpdateOneWithoutInvitedUsersNestedInput = {
+  create?: Prisma.XOR<Prisma.ConnectCreateWithoutInvitedUsersInput, Prisma.ConnectUncheckedCreateWithoutInvitedUsersInput>
+  connectOrCreate?: Prisma.ConnectCreateOrConnectWithoutInvitedUsersInput
+  upsert?: Prisma.ConnectUpsertWithoutInvitedUsersInput
+  disconnect?: Prisma.ConnectWhereInput | boolean
+  delete?: Prisma.ConnectWhereInput | boolean
+  connect?: Prisma.ConnectWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.ConnectUpdateToOneWithWhereWithoutInvitedUsersInput, Prisma.ConnectUpdateWithoutInvitedUsersInput>, Prisma.ConnectUncheckedUpdateWithoutInvitedUsersInput>
+}
+
+export type NullableDateTimeFieldUpdateOperationsInput = {
+  set?: Date | string | null
+}
+
+export type ConnectCreateWithoutUsersInput = {
+  connectUrl: string
+  instanceType?: string
+  inviteToken?: string | null
+  inviteExpiresAt?: Date | string | null
+  createdAt?: Date | string
+  invitedUsers?: Prisma.UserCreateNestedManyWithoutInvitedByConnectInput
+}
+
+export type ConnectUncheckedCreateWithoutUsersInput = {
+  id?: number
+  connectUrl: string
+  instanceType?: string
+  inviteToken?: string | null
+  inviteExpiresAt?: Date | string | null
+  createdAt?: Date | string
+  invitedUsers?: Prisma.UserUncheckedCreateNestedManyWithoutInvitedByConnectInput
+}
+
+export type ConnectCreateOrConnectWithoutUsersInput = {
+  where: Prisma.ConnectWhereUniqueInput
+  create: Prisma.XOR<Prisma.ConnectCreateWithoutUsersInput, Prisma.ConnectUncheckedCreateWithoutUsersInput>
+}
+
+export type ConnectCreateWithoutInvitedUsersInput = {
+  connectUrl: string
+  instanceType?: string
+  inviteToken?: string | null
+  inviteExpiresAt?: Date | string | null
+  createdAt?: Date | string
+  users?: Prisma.UserCreateNestedManyWithoutConnectInput
+}
+
+export type ConnectUncheckedCreateWithoutInvitedUsersInput = {
+  id?: number
+  connectUrl: string
+  instanceType?: string
+  inviteToken?: string | null
+  inviteExpiresAt?: Date | string | null
+  createdAt?: Date | string
+  users?: Prisma.UserUncheckedCreateNestedManyWithoutConnectInput
+}
+
+export type ConnectCreateOrConnectWithoutInvitedUsersInput = {
+  where: Prisma.ConnectWhereUniqueInput
+  create: Prisma.XOR<Prisma.ConnectCreateWithoutInvitedUsersInput, Prisma.ConnectUncheckedCreateWithoutInvitedUsersInput>
+}
+
+export type ConnectUpsertWithoutUsersInput = {
+  update: Prisma.XOR<Prisma.ConnectUpdateWithoutUsersInput, Prisma.ConnectUncheckedUpdateWithoutUsersInput>
+  create: Prisma.XOR<Prisma.ConnectCreateWithoutUsersInput, Prisma.ConnectUncheckedCreateWithoutUsersInput>
+  where?: Prisma.ConnectWhereInput
+}
+
+export type ConnectUpdateToOneWithWhereWithoutUsersInput = {
+  where?: Prisma.ConnectWhereInput
+  data: Prisma.XOR<Prisma.ConnectUpdateWithoutUsersInput, Prisma.ConnectUncheckedUpdateWithoutUsersInput>
+}
+
+export type ConnectUpdateWithoutUsersInput = {
+  connectUrl?: Prisma.StringFieldUpdateOperationsInput | string
+  instanceType?: Prisma.StringFieldUpdateOperationsInput | string
+  inviteToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  inviteExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  invitedUsers?: Prisma.UserUpdateManyWithoutInvitedByConnectNestedInput
+}
+
+export type ConnectUncheckedUpdateWithoutUsersInput = {
+  id?: Prisma.IntFieldUpdateOperationsInput | number
+  connectUrl?: Prisma.StringFieldUpdateOperationsInput | string
+  instanceType?: Prisma.StringFieldUpdateOperationsInput | string
+  inviteToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  inviteExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  invitedUsers?: Prisma.UserUncheckedUpdateManyWithoutInvitedByConnectNestedInput
+}
+
+export type ConnectUpsertWithoutInvitedUsersInput = {
+  update: Prisma.XOR<Prisma.ConnectUpdateWithoutInvitedUsersInput, Prisma.ConnectUncheckedUpdateWithoutInvitedUsersInput>
+  create: Prisma.XOR<Prisma.ConnectCreateWithoutInvitedUsersInput, Prisma.ConnectUncheckedCreateWithoutInvitedUsersInput>
+  where?: Prisma.ConnectWhereInput
+}
+
+export type ConnectUpdateToOneWithWhereWithoutInvitedUsersInput = {
+  where?: Prisma.ConnectWhereInput
+  data: Prisma.XOR<Prisma.ConnectUpdateWithoutInvitedUsersInput, Prisma.ConnectUncheckedUpdateWithoutInvitedUsersInput>
+}
+
+export type ConnectUpdateWithoutInvitedUsersInput = {
+  connectUrl?: Prisma.StringFieldUpdateOperationsInput | string
+  instanceType?: Prisma.StringFieldUpdateOperationsInput | string
+  inviteToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  inviteExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  users?: Prisma.UserUpdateManyWithoutConnectNestedInput
+}
+
+export type ConnectUncheckedUpdateWithoutInvitedUsersInput = {
+  id?: Prisma.IntFieldUpdateOperationsInput | number
+  connectUrl?: Prisma.StringFieldUpdateOperationsInput | string
+  instanceType?: Prisma.StringFieldUpdateOperationsInput | string
+  inviteToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  inviteExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  users?: Prisma.UserUncheckedUpdateManyWithoutConnectNestedInput
+}
+
+
+/**
+ * Count Type ConnectCountOutputType
+ */
+
+export type ConnectCountOutputType = {
+  invitedUsers: number
+  users: number
+}
+
+export type ConnectCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  invitedUsers?: boolean | ConnectCountOutputTypeCountInvitedUsersArgs
+  users?: boolean | ConnectCountOutputTypeCountUsersArgs
+}
+
+/**
+ * ConnectCountOutputType without action
+ */
+export type ConnectCountOutputTypeDefaultArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the ConnectCountOutputType
+   */
+  select?: Prisma.ConnectCountOutputTypeSelect<ExtArgs> | null
+}
+
+/**
+ * ConnectCountOutputType without action
+ */
+export type ConnectCountOutputTypeCountInvitedUsersArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.UserWhereInput
+}
+
+/**
+ * ConnectCountOutputType without action
+ */
+export type ConnectCountOutputTypeCountUsersArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.UserWhereInput
+}
 
 
 export type ConnectSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   connectUrl?: boolean
   instanceType?: boolean
+  inviteToken?: boolean
+  inviteExpiresAt?: boolean
   createdAt?: boolean
+  invitedUsers?: boolean | Prisma.Connect$invitedUsersArgs<ExtArgs>
+  users?: boolean | Prisma.Connect$usersArgs<ExtArgs>
+  _count?: boolean | Prisma.ConnectCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["connect"]>
 
 export type ConnectSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   connectUrl?: boolean
   instanceType?: boolean
+  inviteToken?: boolean
+  inviteExpiresAt?: boolean
   createdAt?: boolean
 }, ExtArgs["result"]["connect"]>
 
@@ -344,6 +596,8 @@ export type ConnectSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exten
   id?: boolean
   connectUrl?: boolean
   instanceType?: boolean
+  inviteToken?: boolean
+  inviteExpiresAt?: boolean
   createdAt?: boolean
 }, ExtArgs["result"]["connect"]>
 
@@ -351,18 +605,32 @@ export type ConnectSelectScalar = {
   id?: boolean
   connectUrl?: boolean
   instanceType?: boolean
+  inviteToken?: boolean
+  inviteExpiresAt?: boolean
   createdAt?: boolean
 }
 
-export type ConnectOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "connectUrl" | "instanceType" | "createdAt", ExtArgs["result"]["connect"]>
+export type ConnectOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "connectUrl" | "instanceType" | "inviteToken" | "inviteExpiresAt" | "createdAt", ExtArgs["result"]["connect"]>
+export type ConnectInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  invitedUsers?: boolean | Prisma.Connect$invitedUsersArgs<ExtArgs>
+  users?: boolean | Prisma.Connect$usersArgs<ExtArgs>
+  _count?: boolean | Prisma.ConnectCountOutputTypeDefaultArgs<ExtArgs>
+}
+export type ConnectIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
+export type ConnectIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
 
 export type $ConnectPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "Connect"
-  objects: {}
+  objects: {
+    invitedUsers: Prisma.$UserPayload<ExtArgs>[]
+    users: Prisma.$UserPayload<ExtArgs>[]
+  }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: number
     connectUrl: string
     instanceType: string
+    inviteToken: string | null
+    inviteExpiresAt: Date | null
     createdAt: Date
   }, ExtArgs["result"]["connect"]>
   composites: {}
@@ -758,6 +1026,8 @@ readonly fields: ConnectFieldRefs;
  */
 export interface Prisma__ConnectClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
+  invitedUsers<T extends Prisma.Connect$invitedUsersArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Connect$invitedUsersArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  users<T extends Prisma.Connect$usersArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Connect$usersArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -790,6 +1060,8 @@ export interface ConnectFieldRefs {
   readonly id: Prisma.FieldRef<"Connect", 'Int'>
   readonly connectUrl: Prisma.FieldRef<"Connect", 'String'>
   readonly instanceType: Prisma.FieldRef<"Connect", 'String'>
+  readonly inviteToken: Prisma.FieldRef<"Connect", 'String'>
+  readonly inviteExpiresAt: Prisma.FieldRef<"Connect", 'DateTime'>
   readonly createdAt: Prisma.FieldRef<"Connect", 'DateTime'>
 }
     
@@ -807,6 +1079,10 @@ export type ConnectFindUniqueArgs<ExtArgs extends runtime.Types.Extensions.Inter
    * Omit specific fields from the Connect
    */
   omit?: Prisma.ConnectOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ConnectInclude<ExtArgs> | null
   /**
    * Filter, which Connect to fetch.
    */
@@ -826,6 +1102,10 @@ export type ConnectFindUniqueOrThrowArgs<ExtArgs extends runtime.Types.Extension
    */
   omit?: Prisma.ConnectOmit<ExtArgs> | null
   /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ConnectInclude<ExtArgs> | null
+  /**
    * Filter, which Connect to fetch.
    */
   where: Prisma.ConnectWhereUniqueInput
@@ -843,6 +1123,10 @@ export type ConnectFindFirstArgs<ExtArgs extends runtime.Types.Extensions.Intern
    * Omit specific fields from the Connect
    */
   omit?: Prisma.ConnectOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ConnectInclude<ExtArgs> | null
   /**
    * Filter, which Connect to fetch.
    */
@@ -892,6 +1176,10 @@ export type ConnectFindFirstOrThrowArgs<ExtArgs extends runtime.Types.Extensions
    */
   omit?: Prisma.ConnectOmit<ExtArgs> | null
   /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ConnectInclude<ExtArgs> | null
+  /**
    * Filter, which Connect to fetch.
    */
   where?: Prisma.ConnectWhereInput
@@ -940,6 +1228,10 @@ export type ConnectFindManyArgs<ExtArgs extends runtime.Types.Extensions.Interna
    */
   omit?: Prisma.ConnectOmit<ExtArgs> | null
   /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ConnectInclude<ExtArgs> | null
+  /**
    * Filter, which Connects to fetch.
    */
   where?: Prisma.ConnectWhereInput
@@ -982,6 +1274,10 @@ export type ConnectCreateArgs<ExtArgs extends runtime.Types.Extensions.InternalA
    * Omit specific fields from the Connect
    */
   omit?: Prisma.ConnectOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ConnectInclude<ExtArgs> | null
   /**
    * The data needed to create a Connect.
    */
@@ -1030,6 +1326,10 @@ export type ConnectUpdateArgs<ExtArgs extends runtime.Types.Extensions.InternalA
    * Omit specific fields from the Connect
    */
   omit?: Prisma.ConnectOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ConnectInclude<ExtArgs> | null
   /**
    * The data needed to update a Connect.
    */
@@ -1097,6 +1397,10 @@ export type ConnectUpsertArgs<ExtArgs extends runtime.Types.Extensions.InternalA
    */
   omit?: Prisma.ConnectOmit<ExtArgs> | null
   /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ConnectInclude<ExtArgs> | null
+  /**
    * The filter to search for the Connect to update in case it exists.
    */
   where: Prisma.ConnectWhereUniqueInput
@@ -1123,6 +1427,10 @@ export type ConnectDeleteArgs<ExtArgs extends runtime.Types.Extensions.InternalA
    */
   omit?: Prisma.ConnectOmit<ExtArgs> | null
   /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ConnectInclude<ExtArgs> | null
+  /**
    * Filter which Connect to delete.
    */
   where: Prisma.ConnectWhereUniqueInput
@@ -1143,6 +1451,54 @@ export type ConnectDeleteManyArgs<ExtArgs extends runtime.Types.Extensions.Inter
 }
 
 /**
+ * Connect.invitedUsers
+ */
+export type Connect$invitedUsersArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the User
+   */
+  select?: Prisma.UserSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the User
+   */
+  omit?: Prisma.UserOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.UserInclude<ExtArgs> | null
+  where?: Prisma.UserWhereInput
+  orderBy?: Prisma.UserOrderByWithRelationInput | Prisma.UserOrderByWithRelationInput[]
+  cursor?: Prisma.UserWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.UserScalarFieldEnum | Prisma.UserScalarFieldEnum[]
+}
+
+/**
+ * Connect.users
+ */
+export type Connect$usersArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the User
+   */
+  select?: Prisma.UserSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the User
+   */
+  omit?: Prisma.UserOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.UserInclude<ExtArgs> | null
+  where?: Prisma.UserWhereInput
+  orderBy?: Prisma.UserOrderByWithRelationInput | Prisma.UserOrderByWithRelationInput[]
+  cursor?: Prisma.UserWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.UserScalarFieldEnum | Prisma.UserScalarFieldEnum[]
+}
+
+/**
  * Connect without action
  */
 export type ConnectDefaultArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1154,4 +1510,8 @@ export type ConnectDefaultArgs<ExtArgs extends runtime.Types.Extensions.Internal
    * Omit specific fields from the Connect
    */
   omit?: Prisma.ConnectOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ConnectInclude<ExtArgs> | null
 }

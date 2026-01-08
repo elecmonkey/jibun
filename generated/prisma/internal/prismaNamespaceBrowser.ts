@@ -55,6 +55,7 @@ export const ModelName = {
   Moment: 'Moment',
   Comment: 'Comment',
   Connect: 'Connect',
+  InboundConnect: 'InboundConnect',
   SystemSetting: 'SystemSetting'
 } as const
 
@@ -83,6 +84,8 @@ export const UserScalarFieldEnum = {
   role: 'role',
   isOwner: 'isOwner',
   isActive: 'isActive',
+  connectId: 'connectId',
+  invitedByConnectId: 'invitedByConnectId',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
@@ -118,10 +121,26 @@ export const ConnectScalarFieldEnum = {
   id: 'id',
   connectUrl: 'connectUrl',
   instanceType: 'instanceType',
+  inviteToken: 'inviteToken',
+  inviteExpiresAt: 'inviteExpiresAt',
   createdAt: 'createdAt'
 } as const
 
 export type ConnectScalarFieldEnum = (typeof ConnectScalarFieldEnum)[keyof typeof ConnectScalarFieldEnum]
+
+
+export const InboundConnectScalarFieldEnum = {
+  id: 'id',
+  serverName: 'serverName',
+  serverUrl: 'serverUrl',
+  serverLogo: 'serverLogo',
+  sysUsername: 'sysUsername',
+  tokenHint: 'tokenHint',
+  verifiedAt: 'verifiedAt',
+  createdAt: 'createdAt'
+} as const
+
+export type InboundConnectScalarFieldEnum = (typeof InboundConnectScalarFieldEnum)[keyof typeof InboundConnectScalarFieldEnum]
 
 
 export const SystemSettingScalarFieldEnum = {

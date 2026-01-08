@@ -60,6 +60,11 @@ export type Comment = Prisma.CommentModel
  */
 export type Connect = Prisma.ConnectModel
 /**
+ * Model InboundConnect
+ * 
+ */
+export type InboundConnect = Prisma.InboundConnectModel
+/**
  * Model SystemSetting
  * 
  */
