@@ -25,14 +25,20 @@ export default defineNuxtConfig({
   },
 
   css: [],
-  modules: ['@nuxt/eslint', 'vuetify-nuxt-module'],
+  modules: ['@nuxt/eslint', 'vuetify-nuxt-module', '@vite-pwa/nuxt'],
 
   app: {
     head: {
       link: [
         { rel: 'icon', type: 'image/x-icon', href: '/jibun-logo.svg' },
+        { rel: 'manifest', href: '/manifest.webmanifest' },
       ],
     },
+  },
+
+  pwa: {
+    registerType: 'prompt',
+    manifest: false,
   },
 
   runtimeConfig: {},
