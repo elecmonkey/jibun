@@ -761,6 +761,7 @@ export const MomentScalarFieldEnum = {
   content: 'content',
   authorId: 'authorId',
   tags: 'tags',
+  favCount: 'favCount',
   createdAt: 'createdAt'
 } as const
 

@@ -65,7 +65,7 @@ export default defineEventHandler(async (event) => {
       extension: null,
       extension_type: null,
       private: false,
-      fav_count: 0,
+      fav_count: moment.favCount ?? 0,
       // redundant moment fields for Jibun detection
       moment_id: moment.id,
       moment_content: moment.content,

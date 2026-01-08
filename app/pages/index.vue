@@ -7,11 +7,13 @@ const isLoggedIn = computed(() => Boolean(token.value))
 const canPost = computed(() => role.value === 'ADMIN' || role.value === 'POSTER')
 const momentContent = ref('')
 const momentTags = ref<string[]>([])
+const likedMoments = ref<number[]>([])
 const moments = ref<Array<{
   id: number
   content: string
   createdAt: string
   tags: string[]
+  favCount: number
   author: {
     id: number
     displayName: string | null
@@ -29,6 +31,7 @@ const modalMoment = ref<null | {
   content: string
   createdAt: string
   tags: string[]
+  favCount: number
   author: {
     id: number
     displayName: string | null
@@ -97,6 +100,52 @@ const postMoment = async () => {
   }
 }
 
+const LIKE_STORE_KEY = 'jibun-liked-moments'
+const loadLikedMoments = () => {
+  if (!import.meta.client) {
+    return
+  }
+  try {
+    const stored = localStorage.getItem(LIKE_STORE_KEY)
+    likedMoments.value = stored ? JSON.parse(stored) : []
+  } catch {
+    likedMoments.value = []
+  }
+}
+
+const saveLikedMoments = () => {
+  if (!import.meta.client) {
+    return
+  }
+  localStorage.setItem(LIKE_STORE_KEY, JSON.stringify(likedMoments.value))
+}
+
+const hasLikedMoment = (id: number) => likedMoments.value.includes(id)
+
+const likeMoment = async (id: number) => {
+  if (hasLikedMoment(id)) {
+    return
+  }
+  try {
+    const resp = await $fetch<{ code: number; data?: { id: number; favCount: number } }>(`/api/moments/like/${id}`, {
+      method: 'PUT',
+    })
+    if (resp.code === 1 && resp.data) {
+      const target = moments.value.find((item) => item.id === id)
+      if (target) {
+        target.favCount = resp.data.favCount
+      }
+      if (modalMoment.value && modalMoment.value.id === id) {
+        modalMoment.value.favCount = resp.data.favCount
+      }
+      likedMoments.value.push(id)
+      saveLikedMoments()
+    }
+  } catch {
+    // ignore
+  }
+}
+
 const openMomentModal = async (id: number) => {
   try {
     const resp = await $fetch<{ code: number; data?: typeof modalMoment.value }>('/api/moments/' + id)
@@ -110,6 +159,7 @@ const openMomentModal = async (id: number) => {
 }
 
 onMounted(() => {
+  loadLikedMoments()
   loadMoments()
   const queryId = Number(route.query.moment)
   if (Number.isInteger(queryId) && queryId > 0) {
@@ -166,6 +216,17 @@ watch(
                   {{ tag }}
                 </v-chip>
               </div>
+            </div>
+            <div class="moment-actions-left">
+              <v-btn
+                size="x-small"
+                variant="text"
+                :color="hasLikedMoment(moment.id) ? 'secondary' : undefined"
+                @click.stop="likeMoment(moment.id)"
+              >
+                <v-icon size="16" :icon="hasLikedMoment(moment.id) ? 'mdi-heart' : 'mdi-heart-outline'" />
+                <span class="moment-like-count">{{ moment.favCount || 0 }}</span>
+              </v-btn>
             </div>
           </div>
           <div v-if="loading" class="timeline-loading text-caption text-muted">
@@ -275,6 +336,17 @@ watch(
               {{ tag }}
             </v-chip>
           </div>
+          <div class="moment-actions mt-2">
+            <v-btn
+              size="x-small"
+              variant="text"
+              :color="hasLikedMoment(modalMoment.id) ? 'secondary' : undefined"
+              @click.stop="likeMoment(modalMoment.id)"
+            >
+              <v-icon size="16" :icon="hasLikedMoment(modalMoment.id) ? 'mdi-heart' : 'mdi-heart-outline'" />
+              <span class="moment-like-count">{{ modalMoment.favCount || 0 }}</span>
+            </v-btn>
+          </div>
         </div>
       </v-card>
     </v-dialog>
@@ -338,6 +410,22 @@ watch(
 
 .moment-tags {
   margin-top: 8px;
+}
+
+.moment-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 6px;
+}
+
+.moment-like-count {
+  margin-left: 4px;
+  font-size: 0.75rem;
+}
+
+.moment-actions-left {
+  margin-top: 6px;
+  padding-left: 0;
 }
 
 .timeline-meta {
