@@ -131,7 +131,7 @@ watch(
 <template>
   <v-container class="py-8 timeline-wrap">
     <v-row class="timeline-grid">
-      <v-col cols="12" md="7">
+      <v-col cols="12" lg="7">
         <div class="timeline-list">
           <div v-if="moments.length === 0 && !loading" class="timeline-empty">
             <div class="timeline-dot" />
@@ -180,7 +180,7 @@ watch(
         </div>
       </v-col>
 
-      <v-col cols="12" md="5">
+      <v-col cols="12" lg="5">
         <div class="timeline-top">
           <v-card class="panel-card" rounded="sm" elevation="1">
             <v-skeleton-loader v-if="localPending" type="list-item-two-line" />
