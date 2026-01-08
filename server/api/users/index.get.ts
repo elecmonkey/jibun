@@ -14,6 +14,7 @@ export default defineEventHandler(async (event) => {
       id: true,
       email: true,
       displayName: true,
+      avatarUrl: true,
       role: true,
       isOwner: true,
       isActive: true,

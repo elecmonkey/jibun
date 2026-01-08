@@ -18,6 +18,7 @@ type UserItem = {
   id: number
   email: string
   displayName: string
+  avatarUrl?: string | null
   role: 'ADMIN' | 'POSTER' | 'GUEST'
   isOwner: boolean
   isActive: boolean
@@ -34,6 +35,7 @@ const editUserId = ref<number | null>(null)
 const editForm = reactive({
   email: '',
   displayName: '',
+  avatarUrl: '',
   role: 'POSTER' as UserItem['role'],
   isOwner: false,
   isActive: true,
@@ -42,6 +44,7 @@ const editForm = reactive({
 const createForm = reactive({
   email: '',
   displayName: '',
+  avatarUrl: '',
   role: 'POSTER' as UserItem['role'],
   isOwner: false,
   password: '',
@@ -158,6 +161,7 @@ const fetchUsers = async () => {
       users.value = resp.data.map((user) => ({
         ...user,
         displayName: user.displayName ?? '',
+        avatarUrl: user.avatarUrl ?? '',
       }))
     }
   } finally {
@@ -168,6 +172,7 @@ const fetchUsers = async () => {
 const openCreateModal = () => {
   createForm.email = ''
   createForm.displayName = ''
+  createForm.avatarUrl = ''
   createForm.role = 'POSTER'
   createForm.isOwner = false
   createForm.password = ''
@@ -187,6 +192,7 @@ const createUser = async () => {
         email: createForm.email.trim(),
         password: createForm.password,
         displayName: createForm.displayName.trim(),
+        avatarUrl: createForm.avatarUrl.trim(),
         role: createForm.role,
         isOwner: createForm.isOwner,
       },
@@ -209,6 +215,7 @@ const openEditModal = (user: UserItem) => {
   editUserId.value = user.id
   editForm.email = user.email
   editForm.displayName = user.displayName
+  editForm.avatarUrl = user.avatarUrl || ''
   editForm.role = user.role
   editForm.isOwner = user.isOwner
   editForm.isActive = user.isActive
@@ -227,6 +234,7 @@ const updateUser = async () => {
       body: {
         email: editForm.email.trim(),
         displayName: editForm.displayName || '',
+        avatarUrl: editForm.avatarUrl.trim(),
         role: editForm.role,
         isOwner: editForm.isOwner,
         isActive: editForm.isActive,
@@ -507,6 +515,7 @@ onMounted(() => {
         <v-text-field v-model="createForm.email" label="邮箱" variant="outlined" density="compact" />
         <v-text-field v-model="createForm.password" label="密码" type="password" variant="outlined" density="compact" />
         <v-text-field v-model="createForm.displayName" label="显示名称" variant="outlined" density="compact" />
+        <v-text-field v-model="createForm.avatarUrl" label="头像 URL" variant="outlined" density="compact" />
         <v-select v-model="createForm.role" :items="userRoles" label="角色" variant="outlined" density="compact" />
         <v-switch v-model="createForm.isOwner" label="设为站主" />
         <div class="d-flex justify-end gap-2 mt-4">
@@ -521,6 +530,7 @@ onMounted(() => {
         <div class="text-subtitle-1 mb-4">编辑用户</div>
         <v-text-field v-model="editForm.email" label="邮箱" variant="outlined" density="compact" />
         <v-text-field v-model="editForm.displayName" label="显示名称" variant="outlined" density="compact" />
+        <v-text-field v-model="editForm.avatarUrl" label="头像 URL" variant="outlined" density="compact" />
         <v-select v-model="editForm.role" :items="userRoles" label="角色" variant="outlined" density="compact" />
         <v-switch v-model="editDisableLogin" label="禁止登录" />
         <v-text-field v-model="editForm.password" label="重置密码（可选）" type="password" variant="outlined" density="compact" />

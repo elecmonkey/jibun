@@ -9,6 +9,7 @@ type CreateUserBody = {
   password?: string
   role?: 'ADMIN' | 'POSTER' | 'GUEST'
   displayName?: string
+  avatarUrl?: string
   isOwner?: boolean
   isActive?: boolean
 }
@@ -40,6 +41,7 @@ export default defineEventHandler(async (event) => {
       passwordHash,
       role,
       displayName: body?.displayName?.trim() || null,
+      avatarUrl: body?.avatarUrl?.trim() || null,
       isOwner: Boolean(body?.isOwner),
       isActive: body?.isActive ?? true,
     },
@@ -47,6 +49,7 @@ export default defineEventHandler(async (event) => {
       id: true,
       email: true,
       displayName: true,
+      avatarUrl: true,
       role: true,
       isOwner: true,
       isActive: true,

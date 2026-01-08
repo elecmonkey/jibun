@@ -40,13 +40,14 @@ export default defineEventHandler(async (event) => {
     const token = await signAccessToken(created.id, created.role)
     return ok({
       token,
-      user: {
-        id: created.id,
-        email: created.email,
-        role: created.role,
-        displayName: created.displayName,
-      },
-    }, 'login ok')
+    user: {
+      id: created.id,
+      email: created.email,
+      role: created.role,
+      displayName: created.displayName,
+      avatarUrl: created.avatarUrl,
+    },
+  }, 'login ok')
   }
 
   const user = await prisma.user.findUnique({ where: { email } })
@@ -67,6 +68,7 @@ export default defineEventHandler(async (event) => {
       email: user.email,
       role: user.role,
       displayName: user.displayName,
+      avatarUrl: user.avatarUrl,
     },
   }, 'login ok')
 })

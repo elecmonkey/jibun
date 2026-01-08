@@ -9,6 +9,7 @@ type UpdateUserBody = {
   password?: string
   role?: 'ADMIN' | 'POSTER' | 'GUEST'
   displayName?: string
+  avatarUrl?: string
   isOwner?: boolean
   isActive?: boolean
 }
@@ -35,6 +36,10 @@ export default defineEventHandler(async (event) => {
     const name = body.displayName.trim()
     data.displayName = name.length > 0 ? name : null
   }
+  if (body?.avatarUrl !== undefined) {
+    const avatar = body.avatarUrl.trim()
+    data.avatarUrl = avatar.length > 0 ? avatar : null
+  }
   if (body?.role) {
     data.role = body.role
   }
@@ -59,11 +64,12 @@ export default defineEventHandler(async (event) => {
       select: {
         id: true,
         email: true,
-        displayName: true,
-        role: true,
-        isOwner: true,
-        isActive: true,
-        createdAt: true,
+      displayName: true,
+      avatarUrl: true,
+      role: true,
+      isOwner: true,
+      isActive: true,
+      createdAt: true,
       },
     })
 

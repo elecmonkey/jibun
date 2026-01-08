@@ -17,6 +17,7 @@ model User {
   id            Int      @id @default(autoincrement())
   email         String   @unique
   displayName   String?
+  avatarUrl     String?
   passwordHash  String
   role          UserRole @default(GUEST)
   isOwner       Boolean  @default(false)
