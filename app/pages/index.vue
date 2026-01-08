@@ -400,6 +400,19 @@ const getMomentAvatar = (moment: TimelineItem) => {
   return moment.kind === 'local' ? moment.author.avatarUrl || undefined : moment.logo || undefined
 }
 
+const formatMomentTime = (input: string) => {
+  const date = new Date(input)
+  const now = new Date()
+  const sameYear = date.getFullYear() === now.getFullYear()
+  const pad = (value: number) => String(value).padStart(2, '0')
+  const month = pad(date.getMonth() + 1)
+  const day = pad(date.getDate())
+  const hour = pad(date.getHours())
+  const minute = pad(date.getMinutes())
+  const datePart = sameYear ? `${month}/${day}` : `${date.getFullYear()}/${month}/${day}`
+  return `${datePart} ${hour}:${minute}`
+}
+
 onMounted(() => {
   loadLikedMoments()
   loadMoments()
@@ -476,11 +489,11 @@ watch(
                     <v-icon v-else icon="mdi-account" size="14" />
                   </v-avatar>
                   <v-chip size="x-small" class="moment-chip">
-                    <span class="moment-chip-text">
+                    <span class="moment-chip-text" :class="{ 'moment-chip-owner': moment.kind === 'local' && moment.author.isOwner }">
                       {{
                         moment.kind === 'local'
                           ? (moment.author.displayName || moment.author.email)
-                          : `${moment.server_name}@${moment.username}`
+                          : `${moment.server_name} @${moment.username}`
                       }}
                     </span>
                   </v-chip>
@@ -490,7 +503,7 @@ watch(
                 </div>
                 <v-chip size="x-small" class="moment-chip">
                   <span class="moment-chip-text">
-                    {{ new Date(moment.kind === 'local' ? moment.createdAt : moment.created_at).toLocaleString() }}
+                    {{ formatMomentTime(moment.kind === 'local' ? moment.createdAt : moment.created_at) }}
                   </span>
                 </v-chip>
               </div>
@@ -842,6 +855,12 @@ watch(
 
 .moment-chip-text {
   font-size: 0.8rem;
+}
+
+.moment-chip-owner {
+  /* font-family: "Noto Serif SC", "Songti SC", "STSong", "Times New Roman", serif; */
+  /* font-size: 1.0rem; */
+  font-weight: 900;
 }
 
 .moment-chip :deep(.v-chip) {
