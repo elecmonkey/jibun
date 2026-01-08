@@ -23,6 +23,7 @@ const moments = ref<Array<{
     email: string
     role: string
     isOwner: boolean
+    avatarUrl?: string | null
   }
 }>>([])
 const page = ref(1)
@@ -45,6 +46,7 @@ const modalMoment = ref<null | {
     email: string
     role: string
     isOwner: boolean
+    avatarUrl?: string | null
   }
 }>(null)
 const modalComments = ref<Array<{
@@ -275,15 +277,26 @@ watch(
           </div>
           <div v-for="moment in moments" :key="moment.id" class="timeline-item">
             <div class="timeline-dot timeline-dot-offset" />
-            <div class="timeline-meta">
-              <span class="text-caption text-muted">
-                {{ new Date(moment.createdAt).toLocaleString() }}
-              </span>
-              <span v-if="!moment.author.isOwner" class="text-caption text-muted">
-                {{ moment.author.displayName || moment.author.email }}
-              </span>
-            </div>
-            <div class="timeline-card" @click="openMomentModal(moment.id)">
+            <div class="timeline-card moment-card" @click="openMomentModal(moment.id)">
+              <div class="moment-header">
+                <div class="moment-header-left">
+                  <v-avatar size="24" class="moment-avatar" color="surface-variant">
+                    <v-img v-if="moment.author.avatarUrl" :src="moment.author.avatarUrl" />
+                    <v-icon v-else icon="mdi-account" size="14" />
+                  </v-avatar>
+                  <v-chip size="x-small" class="moment-chip">
+                    <span class="moment-chip-text">{{ moment.author.displayName || moment.author.email }}</span>
+                  </v-chip>
+                  <v-chip v-if="moment.author.isOwner" size="x-small" class="owner-chip">
+                    ★
+                  </v-chip>
+                </div>
+                <v-chip size="x-small" class="moment-chip">
+                  <span class="moment-chip-text">
+                    {{ new Date(moment.createdAt).toLocaleString() }}
+                  </span>
+                </v-chip>
+              </div>
               <div class="text-body-2 whitespace-pre-wrap">
                 {{ moment.content }}
               </div>
@@ -551,7 +564,7 @@ watch(
 .timeline-empty,
 .timeline-item {
   position: relative;
-  padding: 8px 0 8px 16px;
+  padding: 16px 0 16px 16px;
 }
 
 .timeline-dot {
@@ -575,6 +588,75 @@ watch(
   border-radius: 6px;
   padding: 12px 14px;
 }
+
+.moment-card {
+  position: relative;
+  padding-top: 26px;
+}
+
+.moment-header {
+  position: absolute;
+  top: -12px;
+  left: 18px;
+  right: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: transparent;
+  padding: 0;
+}
+
+.moment-header-left {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: -6px;
+}
+
+.moment-chip {
+  background: rgba(var(--v-theme-surface), 0.5);
+  border: none;
+}
+
+.moment-chip-text {
+  font-size: 0.8rem;
+}
+
+.moment-chip :deep(.v-chip) {
+  height: 20px;
+}
+
+.moment-chip :deep(.v-chip__content) {
+  line-height: 20px;
+  padding: 0 4px;
+}
+
+.owner-chip {
+  margin-left: 1px;
+  background: #ffd84d;
+  border: none;
+  color: #6b4a00;
+  border-radius: 999px;
+  width: 20px;
+  height: 20px;
+  min-width: 20px;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.owner-chip :deep(.v-chip__content) {
+  padding: 0;
+  line-height: 20px;
+  font-size: 0.7rem;
+}
+
+.v-theme--dark .owner-chip {
+  background: #2b5bd8;
+  color: #e8f1ff;
+}
+
 
 .moment-tags {
   margin-top: 8px;
@@ -710,13 +792,6 @@ watch(
 
 .comment-divider {
   margin: 16px 0 14px;
-}
-
-.timeline-meta {
-  display: flex;
-  justify-content: space-between;
-  padding-left: 2px;
-  margin-bottom: 6px;
 }
 
 .timeline-loading,

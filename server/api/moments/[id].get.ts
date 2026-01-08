@@ -18,6 +18,7 @@ export default defineEventHandler(async (event) => {
           email: true,
           role: true,
           isOwner: true,
+          avatarUrl: true,
         },
       },
       _count: {
