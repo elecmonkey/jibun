@@ -11,7 +11,14 @@ const messageType = ref<'success' | 'error' | 'info'>('info')
 const userMessage = ref('')
 const userMessageType = ref<'success' | 'error' | 'info'>('info')
 const loading = ref(false)
-const connectList = ref<Array<{ id: number; connectUrl: string; instanceType: string }>>([])
+const connectList = ref<Array<{
+  id: number
+  connectUrl: string
+  instanceType: string
+  inviteToken?: string | null
+  inviteExpiresAt?: string | null
+  _count?: { invitedUsers: number }
+}>>([])
 const userLoading = ref(false)
 
 type UserItem = {
@@ -81,7 +88,14 @@ const serverLogo = ref('')
 const refreshConnects = async () => {
   loading.value = true
   try {
-    const resp = await $fetch<{ code: number; data: Array<{ id: number; connectUrl: string; instanceType: string }> }>('/api/connect/list')
+    const resp = await $fetch<{ code: number; data: Array<{
+      id: number
+      connectUrl: string
+      instanceType: string
+      inviteToken?: string | null
+      inviteExpiresAt?: string | null
+      _count?: { invitedUsers: number }
+    }> }>('/api/connect/list')
     if (resp.code === 1) {
       connectList.value = resp.data
     }
@@ -295,6 +309,55 @@ const deleteUser = async (id: number) => {
   }
 }
 
+const isInviteActive = (conn: { inviteToken?: string | null; inviteExpiresAt?: string | null }) => {
+  if (!conn.inviteToken || !conn.inviteExpiresAt) {
+    return false
+  }
+  return new Date(conn.inviteExpiresAt).getTime() > Date.now()
+}
+
+const getInviteLink = (tokenValue?: string | null) => {
+  if (!tokenValue || !serverUrl.value.trim()) {
+    return ''
+  }
+  return `${serverUrl.value.replace(/\/+$/, '')}/invite/ech0?token=${tokenValue}`
+}
+
+const generateInvite = async (connId: number) => {
+  try {
+    const resp = await $fetch<{ code: number; msg: string; data?: { inviteToken?: string; inviteExpiresAt?: string } }>(
+      '/api/connect/invite',
+      {
+        method: 'POST',
+        headers: token.value ? { Authorization: `Bearer ${token.value}` } : undefined,
+        body: { connect_id: connId },
+      },
+    )
+    if (resp.code !== 1) {
+      showMessage('error', resp.msg || '生成失败')
+      return
+    }
+    showMessage('success', '邀请链接已更新')
+    await refreshConnects()
+  } catch {
+    showMessage('error', '生成失败，请检查账号权限')
+  }
+}
+
+const copyInviteLink = async (conn: { inviteToken?: string | null }) => {
+  const link = getInviteLink(conn.inviteToken)
+  if (!link) {
+    showMessage('error', '站点地址未配置')
+    return
+  }
+  try {
+    await navigator.clipboard.writeText(link)
+    showMessage('success', '邀请链接已复制')
+  } catch {
+    showMessage('error', '复制失败')
+  }
+}
+
 const loadProfile = async () => {
   try {
     const resp = await $fetch<{ code: number; data?: { sysUsername?: string; serverName?: string; serverUrl?: string; serverLogo?: string } }>('/api/settings/profile', {
@@ -438,10 +501,36 @@ onMounted(() => {
                   >
                     {{ displayInstanceType(conn.instanceType) }}
                   </v-chip>
+                  <v-chip
+                    v-if="conn.instanceType === 'ECH0'"
+                    size="x-small"
+                    variant="tonal"
+                    color="secondary"
+                  >
+                    {{ (conn._count?.invitedUsers || 0) > 0 ? '已注册' : '邀请链接' }}
+                  </v-chip>
                 </div>
               </v-list-item-title>
               <template #append>
-                <v-btn icon="mdi-delete-outline" variant="text" @click="deleteConnect(conn.id)" />
+                <div class="d-flex align-center gap-1">
+                  <v-btn
+                    v-if="conn.instanceType === 'ECH0'"
+                    size="small"
+                    variant="text"
+                    @click="generateInvite(conn.id)"
+                  >
+                    生成链接
+                  </v-btn>
+                  <v-btn
+                    v-if="conn.instanceType === 'ECH0' && isInviteActive(conn)"
+                    size="small"
+                    variant="text"
+                    @click="copyInviteLink(conn)"
+                  >
+                    复制
+                  </v-btn>
+                  <v-btn icon="mdi-delete-outline" variant="text" @click="deleteConnect(conn.id)" />
+                </div>
               </template>
             </v-list-item>
             <v-list-item v-if="connectList.length === 0">
