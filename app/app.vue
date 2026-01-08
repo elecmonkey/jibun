@@ -1,11 +1,18 @@
 <script setup lang="ts">
 const { toggle, isDark } = useThemeMode()
-const { role, name, email, token } = useAuthToken()
+const { role, name, email, token, clearToken } = useAuthToken()
 const { data: profile } = useFetch('/api/connect')
 
 useHead(() => ({
   title: profile.value?.data?.server_name || 'Jibun',
 }))
+
+const isLoggedIn = computed(() => Boolean(token.value))
+
+const logout = () => {
+  clearToken()
+  navigateTo('/login')
+}
 </script>
 
 <template>
@@ -23,10 +30,10 @@ useHead(() => ({
           </div>
           <div class="d-flex align-center gap-2">
             <v-btn variant="text" to="/">Moments</v-btn>
-            <v-btn v-if="token" variant="text" to="/mine">Mine</v-btn>
-            <v-btn v-if="role === 'ADMIN'" variant="text" to="/admin">Admin</v-btn>
-            <v-divider v-if="role" vertical class="mx-2" />
-            <v-menu v-if="role" open-on-hover location="bottom end">
+            <v-btn v-if="isLoggedIn" variant="text" to="/mine">Mine</v-btn>
+            <v-btn v-if="isLoggedIn && role === 'ADMIN'" variant="text" to="/admin">Admin</v-btn>
+            <v-divider v-if="isLoggedIn" vertical class="mx-2" />
+            <v-menu v-if="isLoggedIn" open-on-hover location="bottom end">
               <template #activator="{ props }">
                 <div class="role-pill text-caption text-muted" v-bind="props">
                   {{ name || email }}
@@ -37,6 +44,9 @@ useHead(() => ({
                 <div class="text-body-2 mb-2">{{ role }}</div>
                 <div class="text-caption text-muted">邮箱</div>
                 <div class="text-body-2">{{ email }}</div>
+                <v-btn size="small" variant="tonal" class="mt-3" block @click="logout">
+                  退出登录
+                </v-btn>
               </v-card>
             </v-menu>
             <v-divider vertical class="mx-2" />
@@ -68,10 +78,10 @@ useHead(() => ({
               <v-card class="mobile-menu-card" rounded="md" elevation="2">
                 <v-list density="compact">
                   <v-list-item to="/" title="Moments" />
-                  <v-list-item v-if="token" to="/mine" title="Mine" />
-                  <v-list-item v-if="role === 'ADMIN'" to="/admin" title="Admin" />
+                  <v-list-item v-if="isLoggedIn" to="/mine" title="Mine" />
+                  <v-list-item v-if="isLoggedIn && role === 'ADMIN'" to="/admin" title="Admin" />
                   <v-divider class="my-2" />
-                  <v-list-item v-if="role" class="mobile-user-item">
+                  <v-list-item v-if="isLoggedIn" class="mobile-user-item">
                     <div class="mobile-role-tag">
                       <v-chip size="x-small" variant="tonal" color="secondary">
                         {{ role }}
@@ -79,6 +89,9 @@ useHead(() => ({
                     </div>
                     <v-list-item-title>{{ name || email }}</v-list-item-title>
                     <v-list-item-subtitle>{{ email }}</v-list-item-subtitle>
+                  </v-list-item>
+                  <v-list-item v-if="isLoggedIn" @click="logout">
+                    <v-list-item-title>退出登录</v-list-item-title>
                   </v-list-item>
                   <v-list-item v-else title="未登录" subtitle="请先登录" />
                 </v-list>
