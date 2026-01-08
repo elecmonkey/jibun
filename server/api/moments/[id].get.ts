@@ -20,6 +20,11 @@ export default defineEventHandler(async (event) => {
           isOwner: true,
         },
       },
+      _count: {
+        select: {
+          comments: true,
+        },
+      },
     },
   })
 

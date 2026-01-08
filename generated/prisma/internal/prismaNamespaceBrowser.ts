@@ -53,6 +53,7 @@ export const AnyNull = runtime.AnyNull
 export const ModelName = {
   User: 'User',
   Moment: 'Moment',
+  Comment: 'Comment',
   Connect: 'Connect',
   SystemSetting: 'SystemSetting'
 } as const
@@ -98,6 +99,18 @@ export const MomentScalarFieldEnum = {
 } as const
 
 export type MomentScalarFieldEnum = (typeof MomentScalarFieldEnum)[keyof typeof MomentScalarFieldEnum]
+
+
+export const CommentScalarFieldEnum = {
+  id: 'id',
+  content: 'content',
+  momentId: 'momentId',
+  authorId: 'authorId',
+  replyToId: 'replyToId',
+  createdAt: 'createdAt'
+} as const
+
+export type CommentScalarFieldEnum = (typeof CommentScalarFieldEnum)[keyof typeof CommentScalarFieldEnum]
 
 
 export const ConnectScalarFieldEnum = {

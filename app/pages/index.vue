@@ -14,6 +14,9 @@ const moments = ref<Array<{
   createdAt: string
   tags: string[]
   favCount: number
+  _count: {
+    comments: number
+  }
   author: {
     id: number
     displayName: string | null
@@ -33,6 +36,9 @@ const modalMoment = ref<null | {
   createdAt: string
   tags: string[]
   favCount: number
+  _count: {
+    comments: number
+  }
   author: {
     id: number
     displayName: string | null
@@ -41,6 +47,31 @@ const modalMoment = ref<null | {
     isOwner: boolean
   }
 }>(null)
+const modalComments = ref<Array<{
+  id: number
+  content: string
+  createdAt: string
+  author: {
+    id: number
+    displayName: string | null
+    email: string
+    role: string
+    isOwner: boolean
+  }
+  replyTo?: {
+    id: number
+    content: string
+    author: {
+      id: number
+      displayName: string | null
+      email: string
+      isOwner: boolean
+    }
+  } | null
+}>>([])
+const commentContent = ref('')
+const commentPosting = ref(false)
+const replyTarget = ref<null | { id: number; name: string; content: string; time: string }>(null)
 const route = useRoute()
 type ConnectCardInfo = {
   server_name: string
@@ -148,11 +179,59 @@ const likeMoment = async (id: number) => {
   }
 }
 
+const loadComments = async (id: number) => {
+  try {
+    const resp = await $fetch<{ code: number; data: typeof modalComments.value }>(`/api/moments/${id}/comments`)
+    if (resp.code === 1) {
+      modalComments.value = resp.data
+    }
+  } catch {
+    modalComments.value = []
+  }
+}
+
+const postComment = async () => {
+  if (!modalMoment.value || !commentContent.value.trim()) {
+    return
+  }
+  commentPosting.value = true
+  try {
+    const resp = await $fetch<{ code: number; data?: (typeof modalComments.value)[number] }>(
+      `/api/moments/${modalMoment.value.id}/comments`,
+      {
+        method: 'POST',
+        headers: token.value ? { Authorization: `Bearer ${token.value}` } : undefined,
+        body: {
+          content: commentContent.value.trim(),
+          replyToId: replyTarget.value?.id,
+        },
+      },
+    )
+    if (resp.code === 1 && resp.data) {
+      modalComments.value = modalComments.value.concat(resp.data)
+      commentContent.value = ''
+      replyTarget.value = null
+      const target = moments.value.find((item) => item.id === modalMoment.value?.id)
+      if (target && target._count) {
+        target._count.comments += 1
+      }
+      if (modalMoment.value && modalMoment.value._count) {
+        modalMoment.value._count.comments += 1
+      }
+    }
+  } finally {
+    commentPosting.value = false
+  }
+}
+
 const openMomentModal = async (id: number) => {
   try {
     const resp = await $fetch<{ code: number; data?: typeof modalMoment.value }>('/api/moments/' + id)
     if (resp.code === 1 && resp.data) {
       modalMoment.value = resp.data
+      commentContent.value = ''
+      replyTarget.value = null
+      await loadComments(id)
       modalOpen.value = true
     }
   } catch {
@@ -228,6 +307,14 @@ watch(
               >
                 <v-icon size="16" :icon="hasLikedMoment(moment.id) ? 'mdi-heart' : 'mdi-heart-outline'" />
                 <span class="moment-like-count">{{ moment.favCount || 0 }}</span>
+              </v-btn>
+              <v-btn
+                size="x-small"
+                variant="text"
+                @click.stop="openMomentModal(moment.id)"
+              >
+                <v-icon size="16" icon="mdi-comment-outline" />
+                <span class="moment-like-count">{{ moment._count?.comments || 0 }}</span>
               </v-btn>
             </div>
           </div>
@@ -348,6 +435,79 @@ watch(
               <v-icon size="16" :icon="hasLikedMoment(modalMoment.id) ? 'mdi-heart' : 'mdi-heart-outline'" />
               <span class="moment-like-count">{{ modalMoment.favCount || 0 }}</span>
             </v-btn>
+            <v-btn size="x-small" variant="text">
+              <v-icon size="16" icon="mdi-comment-outline" />
+              <span class="moment-like-count">{{ modalMoment._count?.comments || 0 }}</span>
+            </v-btn>
+          </div>
+          <div class="comments-wrap">
+            <div class="text-subtitle-2 mb-2">评论</div>
+            <div v-if="modalComments.length === 0" class="text-caption text-muted">暂无评论。</div>
+            <div v-else class="comments-list">
+              <div v-for="comment in modalComments" :key="comment.id" class="comment-item">
+                <div class="comment-header">
+                  <div class="comment-meta text-caption text-muted">
+                    <span>{{ comment.author.displayName || comment.author.email }}</span>
+                    <span>{{ new Date(comment.createdAt).toLocaleString() }}</span>
+                  </div>
+                  <v-btn
+                    v-if="isLoggedIn"
+                    size="x-small"
+                    variant="outlined"
+                    @click="replyTarget = {
+                      id: comment.id,
+                      name: comment.author.displayName || comment.author.email,
+                      content: comment.content,
+                      time: new Date(comment.createdAt).toLocaleString(),
+                    }"
+                  >
+                    回复
+                  </v-btn>
+                </div>
+                <div class="comment-body">
+                  <div v-if="comment.replyTo" class="comment-quote">
+                    <div class="comment-quote-name">
+                      {{ comment.replyTo.author.displayName || comment.replyTo.author.email || '匿名' }}
+                    </div>
+                    <div class="comment-quote-content">
+                      {{ comment.replyTo.content }}
+                    </div>
+                  </div>
+                  <div class="text-body-2 whitespace-pre-wrap">
+                    {{ comment.content }}
+                  </div>
+                </div>
+              </div>
+            </div>
+            <v-divider class="comment-divider" />
+            <div v-if="isLoggedIn" class="comment-editor">
+              <div v-if="replyTarget" class="reply-card">
+                <div class="reply-card-header">
+                  <div class="reply-meta text-caption text-muted">
+                    <span>回复：{{ replyTarget.name }}</span>
+                    <span>{{ replyTarget.time }}</span>
+                  </div>
+                  <v-btn size="x-small" variant="outlined" @click="replyTarget = null">取消</v-btn>
+                </div>
+                <div class="reply-content text-body-2 whitespace-pre-wrap">
+                  {{ replyTarget.content }}
+                </div>
+              </div>
+              <v-textarea
+                v-model="commentContent"
+                label="写下你的评论..."
+                variant="outlined"
+                density="compact"
+                rows="2"
+                auto-grow
+              />
+              <v-btn color="accent" class="mt-2" :disabled="commentPosting || !commentContent.trim()" @click="postComment">
+                发布评论
+              </v-btn>
+            </div>
+            <v-alert v-else type="info" variant="tonal" class="mt-3">
+              登录后即可发表评论。
+            </v-alert>
           </div>
         </div>
       </v-card>
@@ -418,6 +578,7 @@ watch(
   display: flex;
   justify-content: flex-end;
   margin-top: 6px;
+  gap: 6px;
 }
 
 .moment-like-count {
@@ -428,6 +589,112 @@ watch(
 .moment-actions-left {
   margin-top: 6px;
   padding-left: 0;
+  display: flex;
+  align-items: center;
+  gap: 1px;
+}
+
+
+.comments-wrap {
+  margin-top: 16px;
+  border-top: 1px solid rgba(var(--v-theme-on-surface), 0.08);
+  padding-top: 12px;
+}
+
+.comments-list {
+  display: grid;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.comment-item {
+  position: relative;
+  border: 1px solid rgba(var(--v-theme-on-surface), 0.08);
+  border-radius: 6px;
+  padding: 16px 12px 10px;
+}
+
+.comment-item:last-child {
+  border-bottom: 1px solid rgba(var(--v-theme-on-surface), 0.08);
+}
+
+.comment-editor {
+  margin-top: 8px;
+}
+
+.reply-card {
+  position: relative;
+  border: 1px solid rgba(var(--v-theme-on-surface), 0.12);
+  border-radius: 6px;
+  padding: 16px 12px 10px;
+  margin: 16px 0 18px;
+}
+
+.reply-card-header {
+  position: absolute;
+  top: -12px;
+  left: 12px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgb(var(--v-theme-surface));
+  padding: 2px 6px;
+}
+
+.reply-meta {
+  display: inline-flex;
+  gap: 8px;
+}
+
+.reply-content {
+  padding: 2px 0 4px;
+}
+
+.comment-header {
+  position: absolute;
+  top: -12px;
+  left: 12px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgb(var(--v-theme-surface));
+  padding: 2px 6px;
+}
+
+.comment-meta {
+  display: inline-flex;
+  gap: 8px;
+}
+
+.comment-body {
+  padding: 2px 0 4px;
+}
+
+.comment-quote {
+  padding: 6px 10px;
+  margin-bottom: 6px;
+  border-left: 2px solid rgba(var(--v-theme-on-surface), 0.2);
+  background: rgba(var(--v-theme-surface), 0.7);
+  border-radius: 4px;
+}
+
+.comment-quote-name {
+  font-size: 0.75rem;
+  color: rgba(var(--v-theme-on-surface), 0.6);
+  margin-bottom: 2px;
+}
+
+.comment-quote-content {
+  font-size: 0.8rem;
+  color: rgba(var(--v-theme-on-surface), 0.8);
+}
+
+.comment-actions {
+  margin-top: 4px;
+}
+
+.comment-divider {
+  margin: 16px 0 14px;
 }
 
 .timeline-meta {

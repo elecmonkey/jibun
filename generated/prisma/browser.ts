@@ -28,6 +28,11 @@ export type User = Prisma.UserModel
  */
 export type Moment = Prisma.MomentModel
 /**
+ * Model Comment
+ * 
+ */
+export type Comment = Prisma.CommentModel
+/**
  * Model Connect
  * 
  */

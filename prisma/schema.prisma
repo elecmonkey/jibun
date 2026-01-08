@@ -25,6 +25,7 @@ model User {
   updatedAt     DateTime @updatedAt
 
   moments       Moment[]
+  comments      Comment[]
 }
 
 model Moment {
@@ -34,6 +35,20 @@ model Moment {
   authorId  Int
   tags      String[] @default([])
   favCount  Int      @default(0)
+  createdAt DateTime @default(now())
+  comments  Comment[]
+}
+
+model Comment {
+  id        Int      @id @default(autoincrement())
+  content   String
+  moment    Moment   @relation(fields: [momentId], references: [id])
+  momentId  Int
+  author    User     @relation(fields: [authorId], references: [id])
+  authorId  Int
+  replyTo   Comment? @relation("CommentReplies", fields: [replyToId], references: [id])
+  replyToId Int?
+  replies   Comment[] @relation("CommentReplies")
   createdAt DateTime @default(now())
 }
 
