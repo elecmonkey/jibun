@@ -17,7 +17,7 @@ export default defineEventHandler(async (event) => {
   try {
     const target = await prisma.user.findUnique({
       where: { id },
-      select: { role: true },
+      select: { role: true, invitedByConnectId: true },
     })
     if (!target) {
       return fail('user not found', null)
@@ -32,7 +32,17 @@ export default defineEventHandler(async (event) => {
       }
     }
 
-    await prisma.user.delete({ where: { id } })
+    if (target.invitedByConnectId) {
+      await prisma.$transaction([
+        prisma.user.delete({ where: { id } }),
+        prisma.connect.updateMany({
+          where: { id: target.invitedByConnectId },
+          data: { inviteToken: null, inviteExpiresAt: null },
+        }),
+      ])
+    } else {
+      await prisma.user.delete({ where: { id } })
+    }
     return ok(null, 'user deleted')
   } catch {
     return fail('user not found', null)

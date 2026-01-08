@@ -38,6 +38,11 @@ const pageSize = 10
 const currentPage = ref(1)
 const showCreateModal = ref(false)
 const showEditModal = ref(false)
+const showInviteModal = ref(false)
+const inviteLink = ref('')
+const inviteExpiresAt = ref('')
+const inviteMessage = ref('')
+const inviteMessageType = ref<'success' | 'error' | 'info'>('info')
 const editUserId = ref<number | null>(null)
 const editForm = reactive({
   email: '',
@@ -304,6 +309,7 @@ const deleteUser = async (id: number) => {
 
     showUserMessage('success', '用户已删除')
     await fetchUsers()
+    await refreshConnects()
   } catch {
     showUserMessage('error', '删除失败，请检查账号权限')
   }
@@ -337,24 +343,28 @@ const generateInvite = async (connId: number) => {
       showMessage('error', resp.msg || '生成失败')
       return
     }
-    showMessage('success', '邀请链接已更新')
+    inviteLink.value = resp.data?.inviteToken ? getInviteLink(resp.data.inviteToken) : ''
+    inviteExpiresAt.value = resp.data?.inviteExpiresAt || ''
+    showInviteModal.value = true
     await refreshConnects()
   } catch {
     showMessage('error', '生成失败，请检查账号权限')
   }
 }
 
-const copyInviteLink = async (conn: { inviteToken?: string | null }) => {
-  const link = getInviteLink(conn.inviteToken)
-  if (!link) {
-    showMessage('error', '站点地址未配置')
+const copyInviteLink = async () => {
+  if (!inviteLink.value) {
+    inviteMessageType.value = 'error'
+    inviteMessage.value = '邀请链接无效'
     return
   }
   try {
-    await navigator.clipboard.writeText(link)
-    showMessage('success', '邀请链接已复制')
+    await navigator.clipboard.writeText(inviteLink.value)
+    inviteMessageType.value = 'success'
+    inviteMessage.value = '邀请链接已复制'
   } catch {
-    showMessage('error', '复制失败')
+    inviteMessageType.value = 'error'
+    inviteMessage.value = '复制失败'
   }
 }
 
@@ -514,20 +524,12 @@ onMounted(() => {
               <template #append>
                 <div class="d-flex align-center gap-1">
                   <v-btn
-                    v-if="conn.instanceType === 'ECH0'"
+                    v-if="conn.instanceType === 'ECH0' && (conn._count?.invitedUsers || 0) === 0"
                     size="small"
-                    variant="text"
+                    variant="outlined"
                     @click="generateInvite(conn.id)"
                   >
-                    生成链接
-                  </v-btn>
-                  <v-btn
-                    v-if="conn.instanceType === 'ECH0' && isInviteActive(conn)"
-                    size="small"
-                    variant="text"
-                    @click="copyInviteLink(conn)"
-                  >
-                    复制
+                    生成邀请链接
                   </v-btn>
                   <v-btn icon="mdi-delete-outline" variant="text" @click="deleteConnect(conn.id)" />
                 </div>
@@ -626,6 +628,29 @@ onMounted(() => {
         <div class="d-flex justify-end gap-2 mt-4">
           <v-btn variant="text" @click="showEditModal = false">取消</v-btn>
           <v-btn color="accent" variant="flat" @click="updateUser">保存</v-btn>
+        </div>
+      </v-card>
+    </v-dialog>
+
+    <v-dialog v-model="showInviteModal" max-width="520">
+      <v-card class="panel-card" rounded="md">
+        <div class="text-subtitle-1 mb-4">邀请链接已生成</div>
+        <v-text-field
+          v-model="inviteLink"
+          label="邀请链接"
+          variant="outlined"
+          density="compact"
+          readonly
+        />
+        <div v-if="inviteExpiresAt" class="text-caption text-muted">
+          生成新链接会使旧链接失效，本链接自然有效期至 {{ new Date(inviteExpiresAt).toLocaleString() }}
+        </div>
+        <v-alert v-if="inviteMessage" :type="inviteMessageType" variant="tonal" class="mt-3">
+          {{ inviteMessage }}
+        </v-alert>
+        <div class="d-flex justify-end gap-2 mt-2">
+          <v-btn variant="outlined" @click="copyInviteLink">复制</v-btn>
+          <v-btn variant="tonal" @click="showInviteModal = false">关闭</v-btn>
         </div>
       </v-card>
     </v-dialog>
