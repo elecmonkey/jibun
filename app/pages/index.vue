@@ -691,8 +691,12 @@ watch(
   margin-bottom: 2px;
 }
 
-.comment-avatar {
-  border: 1px solid rgba(var(--v-theme-on-surface), 0.08);
+.v-theme--light .comment-avatar {
+  border: 1px solid rgba(var(--v-theme-surface-variant), 0.7);
+}
+
+.v-theme--dark .comment-avatar {
+  border: 1px solid rgba(var(--v-theme-on-surface), 0.35);
 }
 
 .comment-quote-content {

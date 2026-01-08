@@ -1,6 +1,6 @@
 <script setup lang="ts">
 const { toggle, isDark } = useThemeMode()
-const { role, name, email } = useAuthToken()
+const { role, name, email, token } = useAuthToken()
 const { data: profile } = useFetch('/api/connect')
 
 useHead(() => ({
@@ -23,6 +23,7 @@ useHead(() => ({
           </div>
           <div class="d-flex align-center gap-2">
             <v-btn variant="text" to="/">Moments</v-btn>
+            <v-btn v-if="token" variant="text" to="/mine">Mine</v-btn>
             <v-btn v-if="role === 'ADMIN'" variant="text" to="/admin">Admin</v-btn>
             <v-divider v-if="role" vertical class="mx-2" />
             <v-menu v-if="role" open-on-hover location="bottom end">
@@ -67,6 +68,7 @@ useHead(() => ({
               <v-card class="mobile-menu-card" rounded="md" elevation="2">
                 <v-list density="compact">
                   <v-list-item to="/" title="Moments" />
+                  <v-list-item v-if="token" to="/mine" title="Mine" />
                   <v-list-item v-if="role === 'ADMIN'" to="/admin" title="Admin" />
                   <v-divider class="my-2" />
                   <v-list-item v-if="role" class="mobile-user-item">

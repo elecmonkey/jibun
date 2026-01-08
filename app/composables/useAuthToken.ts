@@ -3,6 +3,7 @@ export const useAuthToken = () => {
   const role = useState<string>('Jibun-auth-role', () => '')
   const name = useState<string>('Jibun-auth-name', () => '')
   const email = useState<string>('Jibun-auth-email', () => '')
+  const avatar = useState<string>('Jibun-auth-avatar', () => '')
 
   if (import.meta.client && token.value === '') {
     const stored = window.localStorage.getItem('Jibun_auth_token')
@@ -21,6 +22,10 @@ export const useAuthToken = () => {
     if (storedEmail) {
       email.value = storedEmail
     }
+    const storedAvatar = window.localStorage.getItem('Jibun_auth_avatar')
+    if (storedAvatar) {
+      avatar.value = storedAvatar
+    }
   }
 
   const setToken = (value: string) => {
@@ -37,12 +42,14 @@ export const useAuthToken = () => {
     }
   }
 
-  const setProfile = (displayName: string, address: string) => {
+  const setProfile = (displayName: string, address: string, avatarUrl = '') => {
     name.value = displayName
     email.value = address
+    avatar.value = avatarUrl
     if (import.meta.client) {
       window.localStorage.setItem('Jibun_auth_name', displayName)
       window.localStorage.setItem('Jibun_auth_email', address)
+      window.localStorage.setItem('Jibun_auth_avatar', avatarUrl)
     }
   }
 
@@ -51,11 +58,13 @@ export const useAuthToken = () => {
     role.value = ''
     name.value = ''
     email.value = ''
+    avatar.value = ''
     if (import.meta.client) {
       window.localStorage.removeItem('Jibun_auth_token')
       window.localStorage.removeItem('Jibun_auth_role')
       window.localStorage.removeItem('Jibun_auth_name')
       window.localStorage.removeItem('Jibun_auth_email')
+      window.localStorage.removeItem('Jibun_auth_avatar')
     }
   }
 
@@ -64,6 +73,7 @@ export const useAuthToken = () => {
     role,
     name,
     email,
+    avatar,
     setToken,
     setRole,
     setProfile,

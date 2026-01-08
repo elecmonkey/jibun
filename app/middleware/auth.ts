@@ -1,6 +1,6 @@
-export default defineNuxtRouteMiddleware((to) => {
+export default defineNuxtRouteMiddleware(() => {
   const { token } = useAuthToken()
-  if (!token.value && to.path.startsWith('/admin')) {
+  if (!token.value) {
     return navigateTo('/login')
   }
 })
