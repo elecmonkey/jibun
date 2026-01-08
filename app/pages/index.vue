@@ -1,13 +1,13 @@
 <script lang="ts" setup>
 const { data: localInfo, pending: localPending } = useFetch('/api/connect')
-const { data: connectInfo, pending: connectPending } = useFetch('/api/connects/info')
+const { data: connectInfo, pending: connectPending } = useFetch('/api/connects/info', { server: false })
 const { token, role } = useAuthToken()
 
 const isLoggedIn = computed(() => Boolean(token.value))
 const canPost = computed(() => role.value === 'ADMIN' || role.value === 'POSTER')
 const momentContent = ref('')
 const momentTags = ref<string[]>([])
-const likedMoments = ref<number[]>([])
+const likedMoments = ref<string[]>([])
 const moments = ref<Array<{
   id: number
   content: string
@@ -26,9 +26,23 @@ const moments = ref<Array<{
     avatarUrl?: string | null
   }
 }>>([])
+const remoteMoments = ref<Array<{
+  id: number
+  content: string
+  created_at: string
+  username: string
+  fav_count: number
+  server_url: string
+  server_name: string
+  logo?: string | null
+  sourcePage: number
+}>>([])
 const page = ref(1)
 const hasMore = ref(true)
+const remotePage = ref(1)
+const remoteHasMore = ref(true)
 const loading = ref(false)
+const remoteLoading = ref(false)
 const posting = ref(false)
 const modalOpen = ref(false)
 const modalMoment = ref<null | {
@@ -77,6 +91,7 @@ const commentContent = ref('')
 const commentPosting = ref(false)
 const replyTarget = ref<null | { id: number; name: string; content: string; time: string }>(null)
 const route = useRoute()
+const showFriends = ref(false)
 type ConnectCardInfo = {
   server_name: string
   server_url: string
@@ -89,6 +104,73 @@ type ConnectCardInfo = {
 const connectItems = computed<ConnectCardInfo[]>(() => {
   return connectInfo.value?.data ?? []
 })
+
+type TimelineItem =
+  | (typeof moments.value)[number] & { kind: 'local' }
+  | (typeof remoteMoments.value)[number] & { kind: 'remote' }
+
+const timelineItems = computed<TimelineItem[]>(() => {
+  const local = moments.value.map((item) => ({ ...item, kind: 'local' as const }))
+  if (!showFriends.value) {
+    return local
+  }
+  const remote = remoteMoments.value.map((item) => ({ ...item, kind: 'remote' as const }))
+  return [...local, ...remote].sort((a, b) => {
+    const aTs = a.kind === 'local' ? new Date(a.createdAt).getTime() : new Date(a.created_at).getTime()
+    const bTs = b.kind === 'local' ? new Date(b.createdAt).getTime() : new Date(b.created_at).getTime()
+    return bTs - aTs
+  })
+})
+
+const loadRemoteMoments = async () => {
+  if (remoteLoading.value || !remoteHasMore.value) {
+    return
+  }
+  if (connectItems.value.length === 0) {
+    return
+  }
+  remoteLoading.value = true
+  try {
+    const tasks = connectItems.value.map(async (info) => {
+      const baseUrl = info.server_url.replace(/\/+$/, '')
+      const resp = await $fetch<{ code: number; data: { items: typeof remoteMoments.value } }>(
+        `${baseUrl}/api/echo/page`,
+        {
+          method: 'POST',
+          body: { page: remotePage.value, pageSize: 10 },
+          timeout: 5000,
+        },
+      )
+      if (resp.code !== 1 || !resp.data?.items?.length) {
+        return []
+      }
+      return resp.data.items.map((item) => ({
+        ...item,
+        server_url: baseUrl,
+        server_name: info.server_name,
+        logo: info.logo,
+        sourcePage: remotePage.value,
+      }))
+    })
+
+    const results = await Promise.allSettled(tasks)
+    const batch: typeof remoteMoments.value = []
+    results.forEach((result) => {
+      if (result.status === 'fulfilled') {
+        batch.push(...result.value)
+      }
+    })
+    if (batch.length) {
+      remoteMoments.value = remoteMoments.value.concat(batch)
+    }
+    remoteHasMore.value = batch.length > 0
+    remotePage.value += 1
+  } catch {
+    remoteHasMore.value = false
+  } finally {
+    remoteLoading.value = false
+  }
+}
 
 const loadMoments = async () => {
   if (loading.value || !hasMore.value) {
@@ -144,7 +226,12 @@ const loadLikedMoments = () => {
   }
   try {
     const stored = localStorage.getItem(LIKE_STORE_KEY)
-    likedMoments.value = stored ? JSON.parse(stored) : []
+    const parsed = stored ? JSON.parse(stored) : []
+    if (Array.isArray(parsed)) {
+      likedMoments.value = parsed.map((item) => (typeof item === 'number' ? `local::${item}` : String(item)))
+    } else {
+      likedMoments.value = []
+    }
   } catch {
     likedMoments.value = []
   }
@@ -157,25 +244,39 @@ const saveLikedMoments = () => {
   localStorage.setItem(LIKE_STORE_KEY, JSON.stringify(likedMoments.value))
 }
 
-const hasLikedMoment = (id: number) => likedMoments.value.includes(id)
+const likeKey = (id: number, sourceUrl?: string) => {
+  return sourceUrl ? `${sourceUrl}::${id}` : `local::${id}`
+}
 
-const likeMoment = async (id: number) => {
-  if (hasLikedMoment(id)) {
+const hasLikedMoment = (id: number, sourceUrl?: string) => likedMoments.value.includes(likeKey(id, sourceUrl))
+
+const likeMoment = async (id: number, sourceUrl?: string) => {
+  if (hasLikedMoment(id, sourceUrl)) {
     return
   }
   try {
+    if (sourceUrl) {
+      const resp = await $fetch<{ code: number; data?: { id: number; fav_count?: number; favCount?: number } }>(
+        `${sourceUrl}/api/echo/like/${id}`,
+        { method: 'PUT' },
+      )
+      if (resp.code === 1) {
+        const target = remoteMoments.value.find((item) => item.id === id && item.server_url === sourceUrl)
+        if (target) {
+          await refreshRemoteMoment(sourceUrl, id, target.sourcePage)
+        }
+        likedMoments.value.push(likeKey(id, sourceUrl))
+        saveLikedMoments()
+      }
+      return
+    }
+
     const resp = await $fetch<{ code: number; data?: { id: number; favCount: number } }>(`/api/moments/like/${id}`, {
       method: 'PUT',
     })
     if (resp.code === 1 && resp.data) {
-      const target = moments.value.find((item) => item.id === id)
-      if (target) {
-        target.favCount = resp.data.favCount
-      }
-      if (modalMoment.value && modalMoment.value.id === id) {
-        modalMoment.value.favCount = resp.data.favCount
-      }
-      likedMoments.value.push(id)
+      await refreshLocalMoment(id)
+      likedMoments.value.push(likeKey(id))
       saveLikedMoments()
     }
   } catch {
@@ -228,6 +329,51 @@ const postComment = async () => {
   }
 }
 
+const refreshLocalMoment = async (id: number) => {
+  try {
+    const resp = await $fetch<{ code: number; data?: typeof modalMoment.value }>(`/api/moments/${id}`)
+    if (resp.code !== 1 || !resp.data) {
+      return
+    }
+    const target = moments.value.find((item) => item.id === id)
+    if (target) {
+      Object.assign(target, resp.data)
+    }
+    if (modalMoment.value && modalMoment.value.id === id) {
+      modalMoment.value = resp.data
+    }
+  } catch {
+    // ignore
+  }
+}
+
+const refreshRemoteMoment = async (sourceUrl: string, id: number, sourcePage: number) => {
+  try {
+    const resp = await $fetch<{ code: number; data: { items: typeof remoteMoments.value } }>(
+      `${sourceUrl}/api/echo/page`,
+      {
+        method: 'POST',
+        body: { page: sourcePage, pageSize: 10 },
+        timeout: 5000,
+      },
+    )
+    if (resp.code !== 1) {
+      return
+    }
+    const items = resp.data?.items || []
+    const found = items.find((item) => item.id === id)
+    if (!found) {
+      return
+    }
+    const target = remoteMoments.value.find((item) => item.id === id && item.server_url === sourceUrl)
+    if (target) {
+      target.fav_count = found.fav_count
+    }
+  } catch {
+    // ignore
+  }
+}
+
 const openMomentModal = async (id: number) => {
   try {
     const resp = await $fetch<{ code: number; data?: typeof modalMoment.value }>('/api/moments/' + id)
@@ -243,14 +389,51 @@ const openMomentModal = async (id: number) => {
   }
 }
 
+const openExternalMoment = (sourceUrl: string, id: number) => {
+  if (!import.meta.client) {
+    return
+  }
+  window.open(`${sourceUrl}/echo/${id}`, '_blank')
+}
+
+const getMomentAvatar = (moment: TimelineItem) => {
+  return moment.kind === 'local' ? moment.author.avatarUrl || undefined : moment.logo || undefined
+}
+
 onMounted(() => {
   loadLikedMoments()
   loadMoments()
+  if (import.meta.client) {
+    const stored = localStorage.getItem('jibun-show-friends')
+    showFriends.value = stored === 'true'
+  }
+  if (showFriends.value) {
+    loadRemoteMoments()
+  }
   const queryId = Number(route.query.moment)
   if (Number.isInteger(queryId) && queryId > 0) {
     openMomentModal(queryId)
   }
 })
+
+watch(showFriends, (value) => {
+  if (!import.meta.client) {
+    return
+  }
+  localStorage.setItem('jibun-show-friends', value ? 'true' : 'false')
+  if (value && remoteMoments.value.length === 0) {
+    loadRemoteMoments()
+  }
+})
+
+watch(
+  () => connectItems.value.length,
+  (value) => {
+    if (value > 0 && showFriends.value && remoteMoments.value.length === 0) {
+      loadRemoteMoments()
+    }
+  },
+)
 
 watch(
   () => route.query.moment,
@@ -268,39 +451,53 @@ watch(
     <v-row class="timeline-grid">
       <v-col cols="12" lg="7">
         <div class="timeline-list">
-          <div v-if="moments.length === 0 && !loading" class="timeline-empty">
+          <div v-if="timelineItems.length === 0 && !(loading || remoteLoading)" class="timeline-empty">
             <div class="timeline-dot" />
             <div class="timeline-card">
               <div class="text-caption text-muted">暂无动态</div>
               <div class="text-body-2">你的 Moment 动态会显示在这里。</div>
             </div>
           </div>
-          <div v-for="moment in moments" :key="moment.id" class="timeline-item">
+          <div
+            v-for="moment in timelineItems"
+            :key="`${moment.kind}-${moment.id}-${moment.kind === 'remote' ? moment.server_url : 'local'}`"
+            class="timeline-item"
+          >
             <div class="timeline-dot timeline-dot-offset" />
-            <div class="timeline-card moment-card" @click="openMomentModal(moment.id)">
+            <div
+              class="timeline-card moment-card"
+              :class="{ 'timeline-card-remote': moment.kind === 'remote' }"
+              @click="moment.kind === 'local' ? openMomentModal(moment.id) : undefined"
+            >
               <div class="moment-header">
                 <div class="moment-header-left">
                   <v-avatar size="24" class="moment-avatar" color="surface-variant">
-                    <v-img v-if="moment.author.avatarUrl" :src="moment.author.avatarUrl" />
+                    <v-img v-if="getMomentAvatar(moment)" :src="getMomentAvatar(moment)" />
                     <v-icon v-else icon="mdi-account" size="14" />
                   </v-avatar>
                   <v-chip size="x-small" class="moment-chip">
-                    <span class="moment-chip-text">{{ moment.author.displayName || moment.author.email }}</span>
+                    <span class="moment-chip-text">
+                      {{
+                        moment.kind === 'local'
+                          ? (moment.author.displayName || moment.author.email)
+                          : `${moment.server_name}@${moment.username}`
+                      }}
+                    </span>
                   </v-chip>
-                  <v-chip v-if="moment.author.isOwner" size="x-small" class="owner-chip">
+                  <v-chip v-if="moment.kind === 'local' && moment.author.isOwner" size="x-small" class="owner-chip">
                     ★
                   </v-chip>
                 </div>
                 <v-chip size="x-small" class="moment-chip">
                   <span class="moment-chip-text">
-                    {{ new Date(moment.createdAt).toLocaleString() }}
+                    {{ new Date(moment.kind === 'local' ? moment.createdAt : moment.created_at).toLocaleString() }}
                   </span>
                 </v-chip>
               </div>
               <div class="text-body-2 whitespace-pre-wrap">
                 {{ moment.content }}
               </div>
-              <div v-if="moment.tags?.length" class="moment-tags">
+              <div v-if="moment.kind === 'local' && moment.tags?.length" class="moment-tags">
                 <v-chip
                   v-for="tag in moment.tags"
                   :key="tag"
@@ -317,29 +514,43 @@ watch(
               <v-btn
                 size="x-small"
                 variant="text"
-                :color="hasLikedMoment(moment.id) ? 'secondary' : undefined"
-                @click.stop="likeMoment(moment.id)"
+                :color="hasLikedMoment(moment.id, moment.kind === 'remote' ? moment.server_url : undefined) ? 'secondary' : undefined"
+                @click.stop="likeMoment(moment.id, moment.kind === 'remote' ? moment.server_url : undefined)"
               >
-                <v-icon size="16" :icon="hasLikedMoment(moment.id) ? 'mdi-heart' : 'mdi-heart-outline'" />
-                <span class="moment-like-count">{{ moment.favCount || 0 }}</span>
+                <v-icon
+                  size="16"
+                  :icon="hasLikedMoment(moment.id, moment.kind === 'remote' ? moment.server_url : undefined) ? 'mdi-heart' : 'mdi-heart-outline'"
+                />
+                <span class="moment-like-count">
+                  {{ moment.kind === 'local' ? (moment.favCount || 0) : (moment.fav_count || 0) }}
+                </span>
               </v-btn>
               <v-btn
                 size="x-small"
                 variant="text"
-                @click.stop="openMomentModal(moment.id)"
+                @click.stop="
+                  moment.kind === 'local'
+                    ? openMomentModal(moment.id)
+                    : openExternalMoment(moment.server_url, moment.id)
+                "
               >
-                <v-icon size="16" icon="mdi-comment-outline" />
-                <span class="moment-like-count">{{ moment._count?.comments || 0 }}</span>
+                <v-icon size="16" :icon="moment.kind === 'local' ? 'mdi-comment-outline' : 'mdi-open-in-new'" />
+                <span v-if="moment.kind === 'local'" class="moment-like-count">{{ moment._count?.comments || 0 }}</span>
               </v-btn>
             </div>
           </div>
-          <div v-if="loading" class="timeline-loading text-caption text-muted">
+          <div v-if="loading || remoteLoading" class="timeline-loading text-caption text-muted">
             加载中...
           </div>
-          <div v-if="hasMore && !loading" class="timeline-load-more">
-            <v-btn variant="text" @click="loadMoments">加载更多</v-btn>
+          <div v-if="(hasMore || (showFriends && remoteHasMore)) && !(loading || remoteLoading)" class="timeline-load-more">
+            <v-btn
+              variant="text"
+              @click="() => { loadMoments(); if (showFriends) loadRemoteMoments() }"
+            >
+              加载更多
+            </v-btn>
           </div>
-          <div v-if="!hasMore && moments.length > 0" class="timeline-end text-caption text-muted">
+          <div v-if="!hasMore && (!showFriends || !remoteHasMore) && timelineItems.length > 0" class="timeline-end text-caption text-muted">
             没有啦
           </div>
         </div>
@@ -369,9 +580,20 @@ watch(
           <v-card class="panel-card" rounded="sm" elevation="1">
             <div class="d-flex align-center justify-space-between mb-2">
               <div class="text-subtitle-2">朋友们</div>
-              <v-chip color="secondary" variant="tonal" size="small">
-                {{ connectInfo?.data?.length || 0 }}
-              </v-chip>
+              <div class="d-flex align-center gap-2">
+                <div class="d-flex align-center gap-2" style="padding-right: 15px;">
+                  <span class="text-caption text-muted" style="padding-right: 5px;">加载ta们的瞬间</span>
+                  <v-switch
+                    v-model="showFriends"
+                    hide-details
+                    density="compact"
+                    color="secondary"
+                  />
+                </div>
+                <v-chip color="secondary" variant="tonal" size="small">
+                  {{ connectInfo?.data?.length || 0 }}
+                </v-chip>
+              </div>
             </div>
             <v-skeleton-loader v-if="connectPending" type="list-item-two-line" />
             <div v-else-if="connectItems.length">
