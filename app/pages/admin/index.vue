@@ -19,6 +19,15 @@ const connectList = ref<Array<{
   inviteExpiresAt?: string | null
   _count?: { invitedUsers: number }
 }>>([])
+const inboundList = ref<Array<{
+  id: number
+  serverName: string
+  serverUrl: string
+  serverLogo: string
+  sysUsername: string
+  tokenHint: string | null
+  verifiedAt: string | null
+}>>([])
 const userLoading = ref(false)
 
 type UserItem = {
@@ -170,6 +179,62 @@ const deleteConnect = async (id: number) => {
   }
 }
 
+const loadInbound = async () => {
+  try {
+    const resp = await $fetch<{ code: number; data: typeof inboundList.value }>('/api/connect/inbound', {
+      headers: token.value ? { Authorization: `Bearer ${token.value}` } : undefined,
+    })
+    if (resp.code === 1) {
+      inboundList.value = resp.data
+    }
+  } catch {
+    inboundList.value = []
+  }
+}
+
+const rejectInbound = async (id: number) => {
+  try {
+    const resp = await $fetch<{ code: number; msg: string }>(`/api/connect/inbound/${id}`, {
+      method: 'DELETE',
+      headers: token.value ? { Authorization: `Bearer ${token.value}` } : undefined,
+    })
+    if (resp.code !== 1) {
+      showMessage('error', resp.msg || '删除失败')
+      return
+    }
+    showMessage('success', '已拒绝')
+    await loadInbound()
+  } catch {
+    showMessage('error', '删除失败，请检查账号权限')
+  }
+}
+
+const requestJibunInvite = async (item: { serverUrl: string; tokenHint: string | null }) => {
+  if (!serverUrl.value.trim()) {
+    showMessage('error', '请先配置站点地址')
+    return
+  }
+  if (!item.tokenHint) {
+    showMessage('error', '邀请凭证缺失')
+    return
+  }
+  try {
+    const resp = await $fetch<{ code: number; msg: string; data?: { inviteUrl?: string } }>(`${item.serverUrl}/api/connect/invite`, {
+      method: 'POST',
+      body: {
+        server_url: serverUrl.value,
+        token: item.tokenHint,
+      },
+    })
+    if (resp.code !== 1 || !resp.data?.inviteUrl) {
+      showMessage('error', resp.msg || '获取链接失败')
+      return
+    }
+    window.open(resp.data.inviteUrl, '_blank')
+  } catch {
+    showMessage('error', '获取链接失败')
+  }
+}
 const fetchUsers = async () => {
   userLoading.value = true
   try {
@@ -425,6 +490,7 @@ onMounted(() => {
   refreshConnects()
   loadProfile()
   fetchUsers()
+  loadInbound()
 })
 </script>
 
@@ -519,6 +585,14 @@ onMounted(() => {
                   >
                     {{ (conn._count?.invitedUsers || 0) > 0 ? '已注册' : '邀请链接' }}
                   </v-chip>
+                  <v-chip
+                    v-if="conn.instanceType === 'JIBUN'"
+                    size="x-small"
+                    variant="tonal"
+                    color="secondary"
+                  >
+                    {{ (conn._count?.invitedUsers || 0) > 0 ? '已注册' : '未注册' }}
+                  </v-chip>
                 </div>
               </v-list-item-title>
               <template #append>
@@ -537,6 +611,45 @@ onMounted(() => {
             </v-list-item>
             <v-list-item v-if="connectList.length === 0">
               <v-list-item-title class="text-muted">暂无连接，先添加一个试试。</v-list-item-title>
+            </v-list-item>
+          </v-list>
+        </v-card>
+      </v-col>
+    </v-row>
+
+    <v-row class="mt-4">
+      <v-col cols="12">
+        <v-card class="panel-card" rounded="md">
+          <div class="d-flex align-center justify-space-between mb-4">
+            <div>
+              <div class="text-subtitle-1">以下人添加了我</div>
+              <div class="text-caption text-muted">Jibun 实例通知你已被连接</div>
+            </div>
+            <v-chip variant="tonal" color="secondary">{{ inboundList.length }}</v-chip>
+          </div>
+          <v-list class="connect-list" density="compact">
+            <v-list-item v-for="item in inboundList" :key="item.id" class="connect-item">
+              <v-list-item-title class="connect-title">
+                <div class="connect-row">
+                  <span class="connect-url">{{ item.serverName }}</span>
+                  <v-chip size="x-small" variant="tonal" color="secondary">Jibun</v-chip>
+                </div>
+                <div class="text-caption text-muted">
+                  {{ item.serverUrl }}
+                </div>
+                <div class="text-caption text-muted">
+                  {{ item.sysUsername }}
+                </div>
+              </v-list-item-title>
+              <template #append>
+                <div class="d-flex align-center gap-1">
+                  <v-btn size="small" variant="outlined" @click="requestJibunInvite(item)">去注册</v-btn>
+                  <v-btn size="small" variant="tonal" @click="rejectInbound(item.id)">拒绝</v-btn>
+                </div>
+              </template>
+            </v-list-item>
+            <v-list-item v-if="inboundList.length === 0">
+              <v-list-item-title class="text-muted">暂无记录。</v-list-item-title>
             </v-list-item>
           </v-list>
         </v-card>

@@ -1,4 +1,5 @@
 import { readBody } from 'h3'
+import { randomBytes } from 'crypto'
 import { prisma } from '../utils/prisma'
 import { fail, ok } from '../utils/response'
 import { trimUrl } from '../utils/normalize'
@@ -57,9 +58,32 @@ export default defineEventHandler(async (event) => {
   }
 
   const instanceType = await detectInstanceType(connectUrl)
+  const inviteToken = instanceType === 'JIBUN' ? randomBytes(16).toString('hex') : null
+  const inviteExpiresAt = null
   const created = await prisma.connect.create({
-    data: { connectUrl, instanceType },
+    data: { connectUrl, instanceType, inviteToken, inviteExpiresAt },
   })
+
+  if (instanceType === 'JIBUN') {
+    const setting = await prisma.systemSetting.findFirst()
+    if (setting?.serverName && setting?.serverUrl && setting?.sysUsername) {
+      const payload = {
+        server_name: setting.serverName,
+        server_url: setting.serverUrl,
+        logo: setting.serverLogo,
+        sys_username: setting.sysUsername,
+        token: inviteToken,
+      }
+      try {
+        await $fetch(`${connectUrl}/api/connect/inbound`, {
+          method: 'POST',
+          body: payload,
+        })
+      } catch {
+        // ignore notify errors
+      }
+    }
+  }
 
   return ok(created, 'add connect ok')
 })
