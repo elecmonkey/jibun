@@ -687,7 +687,14 @@ onMounted(() => {
                   <v-chip v-else size="small" variant="tonal" color="secondary">
                     已注册
                   </v-chip>
-                  <v-btn size="small" variant="tonal" @click="rejectInbound(item.id)">拒绝</v-btn>
+                  <v-btn
+                    v-if="!item.registeredAt"
+                    size="small"
+                    variant="tonal"
+                    @click="rejectInbound(item.id)"
+                  >
+                    拒绝
+                  </v-btn>
                 </div>
               </template>
             </v-list-item>
