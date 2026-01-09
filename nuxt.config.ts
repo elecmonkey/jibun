@@ -25,7 +25,7 @@ export default defineNuxtConfig({
   },
 
   css: [],
-  modules: ['@nuxt/eslint', 'vuetify-nuxt-module', '@vite-pwa/nuxt'],
+  modules: ['@nuxt/eslint', 'vuetify-nuxt-module', '@vite-pwa/nuxt', '@nuxtjs/tailwindcss'],
 
   app: {
     head: {
