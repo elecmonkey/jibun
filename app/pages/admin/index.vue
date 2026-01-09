@@ -142,6 +142,10 @@ const addConnect = async () => {
     return
   }
 
+  if (loading.value) {
+    return
+  }
+  loading.value = true
   try {
     const resp = await $fetch<{ code: number; msg: string }>('/api/addConnect', {
       method: 'POST',
@@ -159,6 +163,8 @@ const addConnect = async () => {
     await refreshConnects()
   } catch {
     showMessage('error', '添加失败，请检查账号权限')
+  } finally {
+    loading.value = false
   }
 }
 
@@ -524,8 +530,9 @@ onMounted(() => {
               label="例如：https://memo.example.com"
               variant="outlined"
               density="comfortable"
+              :disabled="loading"
             />
-            <v-btn color="accent" size="large" @click="addConnect">
+            <v-btn color="accent" size="large" :loading="loading" :disabled="loading" @click="addConnect">
               添加连接
             </v-btn>
           </div>
