@@ -2,13 +2,10 @@
 import { MarkdownExit } from 'markdown-exit'
 import DOMPurify from 'isomorphic-dompurify'
 const { data: localInfo, pending: localPending } = useFetch('/api/connect')
-const { data: connectInfo, pending: connectPending } = useFetch('/api/connects/info', { server: false })
 const { token, role } = useAuthToken()
 
 const isLoggedIn = computed(() => Boolean(token.value))
 const canPost = computed(() => role.value === 'ADMIN' || role.value === 'POSTER')
-const momentContent = ref('')
-const momentTags = ref<string[]>([])
 const likedMoments = ref<string[]>([])
 const moments = ref<Array<{
   id: number
@@ -47,7 +44,6 @@ const remotePage = ref(1)
 const remoteHasMore = ref(true)
 const loading = ref(false)
 const remoteLoading = ref(false)
-const posting = ref(false)
 const modalOpen = ref(false)
 const modalMoment = ref<null | {
   id: number
@@ -101,16 +97,6 @@ const commentPosting = ref(false)
 const replyTarget = ref<null | { id: number; name: string; content: string; time: string }>(null)
 const route = useRoute()
 const showFriends = ref(false)
-const momentUploads = ref<Array<{
-  id: string
-  file: File
-  previewUrl: string
-  key?: string
-  url?: string
-  uploading: boolean
-  error?: string
-}>>([])
-const uploadMessage = ref('')
 const markdown = new MarkdownExit({ linkify: true, breaks: true })
 markdown.renderer.rules.link_open = (tokens, idx, options, env, self) => {
   const token = tokens[idx]
@@ -157,12 +143,7 @@ type ConnectCardInfo = {
   sys_username: string
 }
 
-const connectItems = computed<ConnectCardInfo[]>(() => {
-  return connectInfo.value?.data ?? []
-})
-
-const MAX_IMAGE_COUNT = 9
-const MAX_IMAGE_SIZE = 15 * 1024 * 1024
+const connectItems = ref<ConnectCardInfo[]>([])
 
 type TimelineItem =
   | (typeof moments.value)[number] & { kind: 'local' }
@@ -251,143 +232,6 @@ const loadMoments = async () => {
   }
 }
 
-const uploadImageToS3 = async (item: (typeof momentUploads.value)[number]) => {
-  item.uploading = true
-  item.error = undefined
-  try {
-    if (!token.value) {
-      throw new Error('unauthorized')
-    }
-    const presign = await $fetch<{ code: number; data?: { url: string; fields: Record<string, string>; key: string } }>(
-      '/api/images/presign',
-      {
-        method: 'POST',
-        headers: { Authorization: `Bearer ${token.value}` },
-        body: {
-          filename: item.file.name,
-          contentType: item.file.type,
-          size: item.file.size,
-        },
-      },
-    )
-    if (presign.code !== 1 || !presign.data) {
-      throw new Error('presign failed')
-    }
-    item.key = presign.data.key
-    const formData = new FormData()
-    Object.entries(presign.data.fields).forEach(([key, value]) => {
-      formData.append(key, value)
-    })
-    formData.append('file', item.file)
-    const controller = new AbortController()
-    const timer = setTimeout(() => controller.abort(), 15000)
-    const resp = await fetch(presign.data.url, { method: 'POST', body: formData, signal: controller.signal })
-    clearTimeout(timer)
-    if (!resp.ok) {
-      throw new Error('upload failed')
-    }
-    const confirm = await $fetch<{ code: number; data?: { url: string } }>(
-      '/api/images/confirm',
-      {
-        method: 'POST',
-        headers: { Authorization: `Bearer ${token.value}` },
-        body: {
-          key: item.key,
-        },
-      },
-    )
-    if (confirm.code !== 1 || !confirm.data?.url) {
-      throw new Error('confirm failed')
-    }
-    item.url = confirm.data.url
-  } catch (error) {
-    item.error = (error as Error).message || 'upload error'
-    uploadMessage.value = item.error
-  } finally {
-    item.uploading = false
-    momentUploads.value = [...momentUploads.value]
-  }
-}
-
-const addImages = async (files: File[] | File | null) => {
-  if (!files) {
-    return
-  }
-  const list = Array.isArray(files) ? files : [files]
-  uploadMessage.value = ''
-  for (const file of list) {
-    if (momentUploads.value.length >= MAX_IMAGE_COUNT) {
-      uploadMessage.value = '最多只能上传 9 张图片'
-      break
-    }
-    if (!file.type.startsWith('image/')) {
-      uploadMessage.value = '仅支持图片文件'
-      continue
-    }
-    if (file.size > MAX_IMAGE_SIZE) {
-      uploadMessage.value = '单张图片最大 15MB'
-      continue
-    }
-    const id = `${Date.now()}-${Math.random().toString(16).slice(2)}`
-    const previewUrl = URL.createObjectURL(file)
-    const item = {
-      id,
-      file,
-      previewUrl,
-      uploading: true,
-    }
-    momentUploads.value.push(item)
-    uploadImageToS3(item)
-  }
-}
-
-const removeUploadImage = (id: string) => {
-  const index = momentUploads.value.findIndex((item) => item.id === id)
-  if (index >= 0) {
-    const [item] = momentUploads.value.splice(index, 1)
-    if (item) {
-      URL.revokeObjectURL(item.previewUrl)
-    }
-  }
-}
-
-const hasUploadingImages = computed(() => momentUploads.value.some((item) => item.uploading))
-const uploadedImageUrls = computed(() =>
-  momentUploads.value.map((item) => item.url).filter((item): item is string => Boolean(item)),
-)
-
-const postMoment = async () => {
-  if (!momentContent.value.trim()) {
-    return
-  }
-  if (hasUploadingImages.value) {
-    uploadMessage.value = '图片上传中，请稍候'
-    return
-  }
-  posting.value = true
-  try {
-    const resp = await $fetch<{ code: number }>(
-      '/api/moments',
-      {
-        method: 'POST',
-        headers: token.value ? { Authorization: `Bearer ${token.value}` } : undefined,
-        body: { content: momentContent.value.trim(), tags: momentTags.value, images: uploadedImageUrls.value },
-      },
-    )
-    if (resp.code === 1) {
-      momentContent.value = ''
-      momentTags.value = []
-      momentUploads.value.forEach((item) => URL.revokeObjectURL(item.previewUrl))
-      momentUploads.value = []
-      moments.value = []
-      page.value = 1
-      hasMore.value = true
-      await loadMoments()
-    }
-  } finally {
-    posting.value = false
-  }
-}
 
 const LIKE_STORE_KEY = 'jibun-liked-moments'
 const loadLikedMoments = () => {
@@ -624,6 +468,13 @@ const openImageLightboxForModal = (image: string) => {
   openImageLightbox(list, Math.max(index, 0))
 }
 
+const handlePosted = async () => {
+  moments.value = []
+  page.value = 1
+  hasMore.value = true
+  await loadMoments()
+}
+
 
 onMounted(() => {
   loadLikedMoments()
@@ -787,7 +638,7 @@ watch(
           </div>
           <div v-if="(hasMore || (showFriends && remoteHasMore)) && !(loading || remoteLoading)" class="timeline-load-more">
             <v-btn
-              variant="text"
+              variant="tonal"
               @click="() => { loadMoments(); if (showFriends) loadRemoteMoments() }"
             >
               加载更多
@@ -820,93 +671,16 @@ watch(
             </v-alert>
           </v-card>
 
-          <v-card class="panel-card" rounded="sm" elevation="1">
-            <div class="d-flex align-center justify-space-between mb-2">
-              <div class="text-subtitle-2">朋友们</div>
-              <div class="d-flex align-center gap-2">
-                <div class="d-flex align-center gap-2" style="padding-right: 15px;">
-                  <span class="text-caption text-muted" style="padding-right: 5px;">加载ta们的瞬间</span>
-                  <v-switch
-                    v-model="showFriends"
-                    hide-details
-                    density="compact"
-                    color="secondary"
-                  />
-                </div>
-                <v-chip color="secondary" variant="tonal" size="small">
-                  {{ connectInfo?.data?.length || 0 }}
-                </v-chip>
-              </div>
-            </div>
-            <v-skeleton-loader v-if="connectPending" type="list-item-two-line" />
-            <div v-else-if="connectItems.length">
-              <div v-for="info in connectItems" :key="info.server_url" class="mb-3">
-                <InstanceCard :info="info" />
-              </div>
-            </div>
-            <v-alert v-else type="info" variant="tonal">
-              还没有连接实例。
-            </v-alert>
-          </v-card>
+          <FriendsPanel
+            @update:show-friends="showFriends = $event"
+            @connects-loaded="connectItems = $event"
+          />
 
-          <v-card v-if="canPost" class="panel-card" rounded="sm" elevation="1">
-            <div class="text-subtitle-2 mb-2">写一条</div>
-            <v-textarea
-              v-model="momentContent"
-              label="此刻想到..."
-              variant="outlined"
-              density="compact"
-              rows="3"
-              auto-grow
-              :disabled="!isLoggedIn"
-            />
-            <v-file-input
-              class="mt-2"
-              label="添加图片（最多 9 张）"
-              variant="outlined"
-              density="compact"
-              prepend-icon="mdi-image-outline"
-              accept="image/*"
-              multiple
-              :disabled="!isLoggedIn"
-              @update:model-value="addImages"
-            />
-            <div v-if="momentUploads.length" class="moment-upload-list">
-              <div
-                v-for="item in momentUploads"
-                :key="item.id"
-                class="moment-upload-item"
-              >
-                <v-img
-                  :src="item.previewUrl"
-                  aspect-ratio="1"
-                  cover
-                  class="moment-upload-thumb"
-                />
-                <v-btn icon size="x-small" variant="tonal" class="moment-upload-remove" @click="removeUploadImage(item.id)">
-                  <v-icon size="12" icon="mdi-close" />
-                </v-btn>
-                <div v-if="item.uploading" class="moment-upload-mask">
-                  <v-progress-circular indeterminate size="20" />
-                </div>
-              </div>
-            </div>
-            <div v-if="uploadMessage" class="text-caption text-muted mt-1">{{ uploadMessage }}</div>
-            <v-combobox
-              v-model="momentTags"
-              class="mt-2"
-              label="添加标签"
-              variant="outlined"
-              density="compact"
-              chips
-              multiple
-              clearable
-              :disabled="!isLoggedIn"
-            />
-            <v-btn color="accent" block class="mt-3" :disabled="!isLoggedIn || posting || hasUploadingImages" @click="postMoment">
-              发布
-            </v-btn>
-          </v-card>
+          <ComposeMoment
+            v-if="canPost"
+            :disabled="!isLoggedIn"
+            @posted="handlePosted"
+          />
         </div>
       </v-col>
     </v-row>
@@ -1250,46 +1024,6 @@ watch(
 
 .modal-image-thumb.is-active {
   border-color: rgb(var(--v-theme-primary));
-}
-
-.moment-upload-list {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin-top: 8px;
-}
-
-.moment-upload-item {
-  position: relative;
-  width: 64px;
-  height: 64px;
-}
-
-.moment-upload-thumb {
-  border-radius: 6px;
-  overflow: hidden;
-  border: 1px solid rgba(var(--v-theme-on-surface), 0.08);
-}
-
-.moment-upload-remove {
-  position: absolute;
-  top: 0;
-  right: 0;
-  width: 20px;
-  height: 20px;
-  min-width: 20px;
-  min-height: 20px;
-  background: rgb(var(--v-theme-surface));
-}
-
-.moment-upload-mask {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: rgba(0, 0, 0, 0.35);
-  border-radius: 6px;
 }
 
 .comments-list {
