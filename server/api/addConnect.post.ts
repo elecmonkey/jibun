@@ -75,12 +75,17 @@ export default defineEventHandler(async (event) => {
         token: inviteToken,
       }
       try {
-        await $fetch(`${connectUrl}/api/connect/inbound`, {
+        const resp = await $fetch<{ code: number; msg?: string }>(`${connectUrl}/api/connect/inbound`, {
           method: 'POST',
           body: payload,
         })
+        if (resp.code !== 1) {
+          await prisma.connect.delete({ where: { id: created.id } })
+          return fail(resp.msg || 'notify failed', null)
+        }
       } catch {
-        // ignore notify errors
+        await prisma.connect.delete({ where: { id: created.id } })
+        return fail('notify failed', null)
       }
     }
   }
