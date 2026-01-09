@@ -55,6 +55,7 @@ export const ModelName = {
   Moment: 'Moment',
   Comment: 'Comment',
   Connect: 'Connect',
+  ConnectLoginToken: 'ConnectLoginToken',
   InboundConnect: 'InboundConnect',
   SystemSetting: 'SystemSetting'
 } as const
@@ -130,6 +131,19 @@ export const ConnectScalarFieldEnum = {
 } as const
 
 export type ConnectScalarFieldEnum = (typeof ConnectScalarFieldEnum)[keyof typeof ConnectScalarFieldEnum]
+
+
+export const ConnectLoginTokenScalarFieldEnum = {
+  id: 'id',
+  token: 'token',
+  userId: 'userId',
+  connectId: 'connectId',
+  expiresAt: 'expiresAt',
+  usedAt: 'usedAt',
+  createdAt: 'createdAt'
+} as const
+
+export type ConnectLoginTokenScalarFieldEnum = (typeof ConnectLoginTokenScalarFieldEnum)[keyof typeof ConnectLoginTokenScalarFieldEnum]
 
 
 export const InboundConnectScalarFieldEnum = {

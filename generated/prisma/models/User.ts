@@ -284,6 +284,7 @@ export type UserWhereInput = {
   invitedByConnect?: Prisma.XOR<Prisma.ConnectNullableScalarRelationFilter, Prisma.ConnectWhereInput> | null
   moments?: Prisma.MomentListRelationFilter
   comments?: Prisma.CommentListRelationFilter
+  connectLoginTokens?: Prisma.ConnectLoginTokenListRelationFilter
 }
 
 export type UserOrderByWithRelationInput = {
@@ -303,6 +304,7 @@ export type UserOrderByWithRelationInput = {
   invitedByConnect?: Prisma.ConnectOrderByWithRelationInput
   moments?: Prisma.MomentOrderByRelationAggregateInput
   comments?: Prisma.CommentOrderByRelationAggregateInput
+  connectLoginTokens?: Prisma.ConnectLoginTokenOrderByRelationAggregateInput
 }
 
 export type UserWhereUniqueInput = Prisma.AtLeast<{
@@ -325,6 +327,7 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   invitedByConnect?: Prisma.XOR<Prisma.ConnectNullableScalarRelationFilter, Prisma.ConnectWhereInput> | null
   moments?: Prisma.MomentListRelationFilter
   comments?: Prisma.CommentListRelationFilter
+  connectLoginTokens?: Prisma.ConnectLoginTokenListRelationFilter
 }, "id" | "email">
 
 export type UserOrderByWithAggregationInput = {
@@ -379,6 +382,7 @@ export type UserCreateInput = {
   invitedByConnect?: Prisma.ConnectCreateNestedOneWithoutInvitedUsersInput
   moments?: Prisma.MomentCreateNestedManyWithoutAuthorInput
   comments?: Prisma.CommentCreateNestedManyWithoutAuthorInput
+  connectLoginTokens?: Prisma.ConnectLoginTokenCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateInput = {
@@ -396,6 +400,7 @@ export type UserUncheckedCreateInput = {
   updatedAt?: Date | string
   moments?: Prisma.MomentUncheckedCreateNestedManyWithoutAuthorInput
   comments?: Prisma.CommentUncheckedCreateNestedManyWithoutAuthorInput
+  connectLoginTokens?: Prisma.ConnectLoginTokenUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserUpdateInput = {
@@ -412,6 +417,7 @@ export type UserUpdateInput = {
   invitedByConnect?: Prisma.ConnectUpdateOneWithoutInvitedUsersNestedInput
   moments?: Prisma.MomentUpdateManyWithoutAuthorNestedInput
   comments?: Prisma.CommentUpdateManyWithoutAuthorNestedInput
+  connectLoginTokens?: Prisma.ConnectLoginTokenUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateInput = {
@@ -429,6 +435,7 @@ export type UserUncheckedUpdateInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   moments?: Prisma.MomentUncheckedUpdateManyWithoutAuthorNestedInput
   comments?: Prisma.CommentUncheckedUpdateManyWithoutAuthorNestedInput
+  connectLoginTokens?: Prisma.ConnectLoginTokenUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateManyInput = {
@@ -693,6 +700,20 @@ export type UserUncheckedUpdateManyWithoutConnectNestedInput = {
   deleteMany?: Prisma.UserScalarWhereInput | Prisma.UserScalarWhereInput[]
 }
 
+export type UserCreateNestedOneWithoutConnectLoginTokensInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutConnectLoginTokensInput, Prisma.UserUncheckedCreateWithoutConnectLoginTokensInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutConnectLoginTokensInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneRequiredWithoutConnectLoginTokensNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutConnectLoginTokensInput, Prisma.UserUncheckedCreateWithoutConnectLoginTokensInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutConnectLoginTokensInput
+  upsert?: Prisma.UserUpsertWithoutConnectLoginTokensInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutConnectLoginTokensInput, Prisma.UserUpdateWithoutConnectLoginTokensInput>, Prisma.UserUncheckedUpdateWithoutConnectLoginTokensInput>
+}
+
 export type UserCreateWithoutMomentsInput = {
   email: string
   displayName?: string | null
@@ -706,6 +727,7 @@ export type UserCreateWithoutMomentsInput = {
   connect?: Prisma.ConnectCreateNestedOneWithoutUsersInput
   invitedByConnect?: Prisma.ConnectCreateNestedOneWithoutInvitedUsersInput
   comments?: Prisma.CommentCreateNestedManyWithoutAuthorInput
+  connectLoginTokens?: Prisma.ConnectLoginTokenCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutMomentsInput = {
@@ -722,6 +744,7 @@ export type UserUncheckedCreateWithoutMomentsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   comments?: Prisma.CommentUncheckedCreateNestedManyWithoutAuthorInput
+  connectLoginTokens?: Prisma.ConnectLoginTokenUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutMomentsInput = {
@@ -753,6 +776,7 @@ export type UserUpdateWithoutMomentsInput = {
   connect?: Prisma.ConnectUpdateOneWithoutUsersNestedInput
   invitedByConnect?: Prisma.ConnectUpdateOneWithoutInvitedUsersNestedInput
   comments?: Prisma.CommentUpdateManyWithoutAuthorNestedInput
+  connectLoginTokens?: Prisma.ConnectLoginTokenUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutMomentsInput = {
@@ -769,6 +793,7 @@ export type UserUncheckedUpdateWithoutMomentsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   comments?: Prisma.CommentUncheckedUpdateManyWithoutAuthorNestedInput
+  connectLoginTokens?: Prisma.ConnectLoginTokenUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutCommentsInput = {
@@ -784,6 +809,7 @@ export type UserCreateWithoutCommentsInput = {
   connect?: Prisma.ConnectCreateNestedOneWithoutUsersInput
   invitedByConnect?: Prisma.ConnectCreateNestedOneWithoutInvitedUsersInput
   moments?: Prisma.MomentCreateNestedManyWithoutAuthorInput
+  connectLoginTokens?: Prisma.ConnectLoginTokenCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutCommentsInput = {
@@ -800,6 +826,7 @@ export type UserUncheckedCreateWithoutCommentsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   moments?: Prisma.MomentUncheckedCreateNestedManyWithoutAuthorInput
+  connectLoginTokens?: Prisma.ConnectLoginTokenUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutCommentsInput = {
@@ -831,6 +858,7 @@ export type UserUpdateWithoutCommentsInput = {
   connect?: Prisma.ConnectUpdateOneWithoutUsersNestedInput
   invitedByConnect?: Prisma.ConnectUpdateOneWithoutInvitedUsersNestedInput
   moments?: Prisma.MomentUpdateManyWithoutAuthorNestedInput
+  connectLoginTokens?: Prisma.ConnectLoginTokenUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutCommentsInput = {
@@ -847,6 +875,7 @@ export type UserUncheckedUpdateWithoutCommentsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   moments?: Prisma.MomentUncheckedUpdateManyWithoutAuthorNestedInput
+  connectLoginTokens?: Prisma.ConnectLoginTokenUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutInvitedByConnectInput = {
@@ -862,6 +891,7 @@ export type UserCreateWithoutInvitedByConnectInput = {
   connect?: Prisma.ConnectCreateNestedOneWithoutUsersInput
   moments?: Prisma.MomentCreateNestedManyWithoutAuthorInput
   comments?: Prisma.CommentCreateNestedManyWithoutAuthorInput
+  connectLoginTokens?: Prisma.ConnectLoginTokenCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutInvitedByConnectInput = {
@@ -878,6 +908,7 @@ export type UserUncheckedCreateWithoutInvitedByConnectInput = {
   updatedAt?: Date | string
   moments?: Prisma.MomentUncheckedCreateNestedManyWithoutAuthorInput
   comments?: Prisma.CommentUncheckedCreateNestedManyWithoutAuthorInput
+  connectLoginTokens?: Prisma.ConnectLoginTokenUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutInvitedByConnectInput = {
@@ -903,6 +934,7 @@ export type UserCreateWithoutConnectInput = {
   invitedByConnect?: Prisma.ConnectCreateNestedOneWithoutInvitedUsersInput
   moments?: Prisma.MomentCreateNestedManyWithoutAuthorInput
   comments?: Prisma.CommentCreateNestedManyWithoutAuthorInput
+  connectLoginTokens?: Prisma.ConnectLoginTokenCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutConnectInput = {
@@ -919,6 +951,7 @@ export type UserUncheckedCreateWithoutConnectInput = {
   updatedAt?: Date | string
   moments?: Prisma.MomentUncheckedCreateNestedManyWithoutAuthorInput
   comments?: Prisma.CommentUncheckedCreateNestedManyWithoutAuthorInput
+  connectLoginTokens?: Prisma.ConnectLoginTokenUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutConnectInput = {
@@ -981,6 +1014,88 @@ export type UserUpdateManyWithWhereWithoutConnectInput = {
   data: Prisma.XOR<Prisma.UserUpdateManyMutationInput, Prisma.UserUncheckedUpdateManyWithoutConnectInput>
 }
 
+export type UserCreateWithoutConnectLoginTokensInput = {
+  email: string
+  displayName?: string | null
+  avatarUrl?: string | null
+  passwordHash: string
+  role?: $Enums.UserRole
+  isOwner?: boolean
+  isActive?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  connect?: Prisma.ConnectCreateNestedOneWithoutUsersInput
+  invitedByConnect?: Prisma.ConnectCreateNestedOneWithoutInvitedUsersInput
+  moments?: Prisma.MomentCreateNestedManyWithoutAuthorInput
+  comments?: Prisma.CommentCreateNestedManyWithoutAuthorInput
+}
+
+export type UserUncheckedCreateWithoutConnectLoginTokensInput = {
+  id?: number
+  email: string
+  displayName?: string | null
+  avatarUrl?: string | null
+  passwordHash: string
+  role?: $Enums.UserRole
+  isOwner?: boolean
+  isActive?: boolean
+  connectId?: number | null
+  invitedByConnectId?: number | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  moments?: Prisma.MomentUncheckedCreateNestedManyWithoutAuthorInput
+  comments?: Prisma.CommentUncheckedCreateNestedManyWithoutAuthorInput
+}
+
+export type UserCreateOrConnectWithoutConnectLoginTokensInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutConnectLoginTokensInput, Prisma.UserUncheckedCreateWithoutConnectLoginTokensInput>
+}
+
+export type UserUpsertWithoutConnectLoginTokensInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutConnectLoginTokensInput, Prisma.UserUncheckedUpdateWithoutConnectLoginTokensInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutConnectLoginTokensInput, Prisma.UserUncheckedCreateWithoutConnectLoginTokensInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutConnectLoginTokensInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutConnectLoginTokensInput, Prisma.UserUncheckedUpdateWithoutConnectLoginTokensInput>
+}
+
+export type UserUpdateWithoutConnectLoginTokensInput = {
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  displayName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  isOwner?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  connect?: Prisma.ConnectUpdateOneWithoutUsersNestedInput
+  invitedByConnect?: Prisma.ConnectUpdateOneWithoutInvitedUsersNestedInput
+  moments?: Prisma.MomentUpdateManyWithoutAuthorNestedInput
+  comments?: Prisma.CommentUpdateManyWithoutAuthorNestedInput
+}
+
+export type UserUncheckedUpdateWithoutConnectLoginTokensInput = {
+  id?: Prisma.IntFieldUpdateOperationsInput | number
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  displayName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  isOwner?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  connectId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  invitedByConnectId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  moments?: Prisma.MomentUncheckedUpdateManyWithoutAuthorNestedInput
+  comments?: Prisma.CommentUncheckedUpdateManyWithoutAuthorNestedInput
+}
+
 export type UserCreateManyInvitedByConnectInput = {
   id?: number
   email: string
@@ -1022,6 +1137,7 @@ export type UserUpdateWithoutInvitedByConnectInput = {
   connect?: Prisma.ConnectUpdateOneWithoutUsersNestedInput
   moments?: Prisma.MomentUpdateManyWithoutAuthorNestedInput
   comments?: Prisma.CommentUpdateManyWithoutAuthorNestedInput
+  connectLoginTokens?: Prisma.ConnectLoginTokenUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutInvitedByConnectInput = {
@@ -1038,6 +1154,7 @@ export type UserUncheckedUpdateWithoutInvitedByConnectInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   moments?: Prisma.MomentUncheckedUpdateManyWithoutAuthorNestedInput
   comments?: Prisma.CommentUncheckedUpdateManyWithoutAuthorNestedInput
+  connectLoginTokens?: Prisma.ConnectLoginTokenUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateManyWithoutInvitedByConnectInput = {
@@ -1067,6 +1184,7 @@ export type UserUpdateWithoutConnectInput = {
   invitedByConnect?: Prisma.ConnectUpdateOneWithoutInvitedUsersNestedInput
   moments?: Prisma.MomentUpdateManyWithoutAuthorNestedInput
   comments?: Prisma.CommentUpdateManyWithoutAuthorNestedInput
+  connectLoginTokens?: Prisma.ConnectLoginTokenUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutConnectInput = {
@@ -1083,6 +1201,7 @@ export type UserUncheckedUpdateWithoutConnectInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   moments?: Prisma.MomentUncheckedUpdateManyWithoutAuthorNestedInput
   comments?: Prisma.CommentUncheckedUpdateManyWithoutAuthorNestedInput
+  connectLoginTokens?: Prisma.ConnectLoginTokenUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateManyWithoutConnectInput = {
@@ -1107,11 +1226,13 @@ export type UserUncheckedUpdateManyWithoutConnectInput = {
 export type UserCountOutputType = {
   moments: number
   comments: number
+  connectLoginTokens: number
 }
 
 export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   moments?: boolean | UserCountOutputTypeCountMomentsArgs
   comments?: boolean | UserCountOutputTypeCountCommentsArgs
+  connectLoginTokens?: boolean | UserCountOutputTypeCountConnectLoginTokensArgs
 }
 
 /**
@@ -1138,6 +1259,13 @@ export type UserCountOutputTypeCountCommentsArgs<ExtArgs extends runtime.Types.E
   where?: Prisma.CommentWhereInput
 }
 
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountConnectLoginTokensArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.ConnectLoginTokenWhereInput
+}
+
 
 export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -1156,6 +1284,7 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   invitedByConnect?: boolean | Prisma.User$invitedByConnectArgs<ExtArgs>
   moments?: boolean | Prisma.User$momentsArgs<ExtArgs>
   comments?: boolean | Prisma.User$commentsArgs<ExtArgs>
+  connectLoginTokens?: boolean | Prisma.User$connectLoginTokensArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["user"]>
 
@@ -1214,6 +1343,7 @@ export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   invitedByConnect?: boolean | Prisma.User$invitedByConnectArgs<ExtArgs>
   moments?: boolean | Prisma.User$momentsArgs<ExtArgs>
   comments?: boolean | Prisma.User$commentsArgs<ExtArgs>
+  connectLoginTokens?: boolean | Prisma.User$connectLoginTokensArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type UserIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1232,6 +1362,7 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     invitedByConnect: Prisma.$ConnectPayload<ExtArgs> | null
     moments: Prisma.$MomentPayload<ExtArgs>[]
     comments: Prisma.$CommentPayload<ExtArgs>[]
+    connectLoginTokens: Prisma.$ConnectLoginTokenPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: number
@@ -1644,6 +1775,7 @@ export interface Prisma__UserClient<T, Null = never, ExtArgs extends runtime.Typ
   invitedByConnect<T extends Prisma.User$invitedByConnectArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$invitedByConnectArgs<ExtArgs>>): Prisma.Prisma__ConnectClient<runtime.Types.Result.GetResult<Prisma.$ConnectPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   moments<T extends Prisma.User$momentsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$momentsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$MomentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   comments<T extends Prisma.User$commentsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$commentsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$CommentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  connectLoginTokens<T extends Prisma.User$connectLoginTokensArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$connectLoginTokensArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ConnectLoginTokenPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -2164,6 +2296,30 @@ export type User$commentsArgs<ExtArgs extends runtime.Types.Extensions.InternalA
   take?: number
   skip?: number
   distinct?: Prisma.CommentScalarFieldEnum | Prisma.CommentScalarFieldEnum[]
+}
+
+/**
+ * User.connectLoginTokens
+ */
+export type User$connectLoginTokensArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the ConnectLoginToken
+   */
+  select?: Prisma.ConnectLoginTokenSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the ConnectLoginToken
+   */
+  omit?: Prisma.ConnectLoginTokenOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ConnectLoginTokenInclude<ExtArgs> | null
+  where?: Prisma.ConnectLoginTokenWhereInput
+  orderBy?: Prisma.ConnectLoginTokenOrderByWithRelationInput | Prisma.ConnectLoginTokenOrderByWithRelationInput[]
+  cursor?: Prisma.ConnectLoginTokenWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.ConnectLoginTokenScalarFieldEnum | Prisma.ConnectLoginTokenScalarFieldEnum[]
 }
 
 /**

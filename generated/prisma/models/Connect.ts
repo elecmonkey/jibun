@@ -226,6 +226,7 @@ export type ConnectWhereInput = {
   createdAt?: Prisma.DateTimeFilter<"Connect"> | Date | string
   invitedUsers?: Prisma.UserListRelationFilter
   users?: Prisma.UserListRelationFilter
+  connectLoginTokens?: Prisma.ConnectLoginTokenListRelationFilter
 }
 
 export type ConnectOrderByWithRelationInput = {
@@ -237,6 +238,7 @@ export type ConnectOrderByWithRelationInput = {
   createdAt?: Prisma.SortOrder
   invitedUsers?: Prisma.UserOrderByRelationAggregateInput
   users?: Prisma.UserOrderByRelationAggregateInput
+  connectLoginTokens?: Prisma.ConnectLoginTokenOrderByRelationAggregateInput
 }
 
 export type ConnectWhereUniqueInput = Prisma.AtLeast<{
@@ -251,6 +253,7 @@ export type ConnectWhereUniqueInput = Prisma.AtLeast<{
   createdAt?: Prisma.DateTimeFilter<"Connect"> | Date | string
   invitedUsers?: Prisma.UserListRelationFilter
   users?: Prisma.UserListRelationFilter
+  connectLoginTokens?: Prisma.ConnectLoginTokenListRelationFilter
 }, "id" | "connectUrl">
 
 export type ConnectOrderByWithAggregationInput = {
@@ -287,6 +290,7 @@ export type ConnectCreateInput = {
   createdAt?: Date | string
   invitedUsers?: Prisma.UserCreateNestedManyWithoutInvitedByConnectInput
   users?: Prisma.UserCreateNestedManyWithoutConnectInput
+  connectLoginTokens?: Prisma.ConnectLoginTokenCreateNestedManyWithoutConnectInput
 }
 
 export type ConnectUncheckedCreateInput = {
@@ -298,6 +302,7 @@ export type ConnectUncheckedCreateInput = {
   createdAt?: Date | string
   invitedUsers?: Prisma.UserUncheckedCreateNestedManyWithoutInvitedByConnectInput
   users?: Prisma.UserUncheckedCreateNestedManyWithoutConnectInput
+  connectLoginTokens?: Prisma.ConnectLoginTokenUncheckedCreateNestedManyWithoutConnectInput
 }
 
 export type ConnectUpdateInput = {
@@ -308,6 +313,7 @@ export type ConnectUpdateInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   invitedUsers?: Prisma.UserUpdateManyWithoutInvitedByConnectNestedInput
   users?: Prisma.UserUpdateManyWithoutConnectNestedInput
+  connectLoginTokens?: Prisma.ConnectLoginTokenUpdateManyWithoutConnectNestedInput
 }
 
 export type ConnectUncheckedUpdateInput = {
@@ -319,6 +325,7 @@ export type ConnectUncheckedUpdateInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   invitedUsers?: Prisma.UserUncheckedUpdateManyWithoutInvitedByConnectNestedInput
   users?: Prisma.UserUncheckedUpdateManyWithoutConnectNestedInput
+  connectLoginTokens?: Prisma.ConnectLoginTokenUncheckedUpdateManyWithoutConnectNestedInput
 }
 
 export type ConnectCreateManyInput = {
@@ -387,6 +394,11 @@ export type ConnectSumOrderByAggregateInput = {
   id?: Prisma.SortOrder
 }
 
+export type ConnectScalarRelationFilter = {
+  is?: Prisma.ConnectWhereInput
+  isNot?: Prisma.ConnectWhereInput
+}
+
 export type ConnectCreateNestedOneWithoutUsersInput = {
   create?: Prisma.XOR<Prisma.ConnectCreateWithoutUsersInput, Prisma.ConnectUncheckedCreateWithoutUsersInput>
   connectOrCreate?: Prisma.ConnectCreateOrConnectWithoutUsersInput
@@ -423,6 +435,20 @@ export type NullableDateTimeFieldUpdateOperationsInput = {
   set?: Date | string | null
 }
 
+export type ConnectCreateNestedOneWithoutConnectLoginTokensInput = {
+  create?: Prisma.XOR<Prisma.ConnectCreateWithoutConnectLoginTokensInput, Prisma.ConnectUncheckedCreateWithoutConnectLoginTokensInput>
+  connectOrCreate?: Prisma.ConnectCreateOrConnectWithoutConnectLoginTokensInput
+  connect?: Prisma.ConnectWhereUniqueInput
+}
+
+export type ConnectUpdateOneRequiredWithoutConnectLoginTokensNestedInput = {
+  create?: Prisma.XOR<Prisma.ConnectCreateWithoutConnectLoginTokensInput, Prisma.ConnectUncheckedCreateWithoutConnectLoginTokensInput>
+  connectOrCreate?: Prisma.ConnectCreateOrConnectWithoutConnectLoginTokensInput
+  upsert?: Prisma.ConnectUpsertWithoutConnectLoginTokensInput
+  connect?: Prisma.ConnectWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.ConnectUpdateToOneWithWhereWithoutConnectLoginTokensInput, Prisma.ConnectUpdateWithoutConnectLoginTokensInput>, Prisma.ConnectUncheckedUpdateWithoutConnectLoginTokensInput>
+}
+
 export type ConnectCreateWithoutUsersInput = {
   connectUrl: string
   instanceType?: string
@@ -430,6 +456,7 @@ export type ConnectCreateWithoutUsersInput = {
   inviteExpiresAt?: Date | string | null
   createdAt?: Date | string
   invitedUsers?: Prisma.UserCreateNestedManyWithoutInvitedByConnectInput
+  connectLoginTokens?: Prisma.ConnectLoginTokenCreateNestedManyWithoutConnectInput
 }
 
 export type ConnectUncheckedCreateWithoutUsersInput = {
@@ -440,6 +467,7 @@ export type ConnectUncheckedCreateWithoutUsersInput = {
   inviteExpiresAt?: Date | string | null
   createdAt?: Date | string
   invitedUsers?: Prisma.UserUncheckedCreateNestedManyWithoutInvitedByConnectInput
+  connectLoginTokens?: Prisma.ConnectLoginTokenUncheckedCreateNestedManyWithoutConnectInput
 }
 
 export type ConnectCreateOrConnectWithoutUsersInput = {
@@ -454,6 +482,7 @@ export type ConnectCreateWithoutInvitedUsersInput = {
   inviteExpiresAt?: Date | string | null
   createdAt?: Date | string
   users?: Prisma.UserCreateNestedManyWithoutConnectInput
+  connectLoginTokens?: Prisma.ConnectLoginTokenCreateNestedManyWithoutConnectInput
 }
 
 export type ConnectUncheckedCreateWithoutInvitedUsersInput = {
@@ -464,6 +493,7 @@ export type ConnectUncheckedCreateWithoutInvitedUsersInput = {
   inviteExpiresAt?: Date | string | null
   createdAt?: Date | string
   users?: Prisma.UserUncheckedCreateNestedManyWithoutConnectInput
+  connectLoginTokens?: Prisma.ConnectLoginTokenUncheckedCreateNestedManyWithoutConnectInput
 }
 
 export type ConnectCreateOrConnectWithoutInvitedUsersInput = {
@@ -489,6 +519,7 @@ export type ConnectUpdateWithoutUsersInput = {
   inviteExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   invitedUsers?: Prisma.UserUpdateManyWithoutInvitedByConnectNestedInput
+  connectLoginTokens?: Prisma.ConnectLoginTokenUpdateManyWithoutConnectNestedInput
 }
 
 export type ConnectUncheckedUpdateWithoutUsersInput = {
@@ -499,6 +530,7 @@ export type ConnectUncheckedUpdateWithoutUsersInput = {
   inviteExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   invitedUsers?: Prisma.UserUncheckedUpdateManyWithoutInvitedByConnectNestedInput
+  connectLoginTokens?: Prisma.ConnectLoginTokenUncheckedUpdateManyWithoutConnectNestedInput
 }
 
 export type ConnectUpsertWithoutInvitedUsersInput = {
@@ -519,6 +551,7 @@ export type ConnectUpdateWithoutInvitedUsersInput = {
   inviteExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   users?: Prisma.UserUpdateManyWithoutConnectNestedInput
+  connectLoginTokens?: Prisma.ConnectLoginTokenUpdateManyWithoutConnectNestedInput
 }
 
 export type ConnectUncheckedUpdateWithoutInvitedUsersInput = {
@@ -528,6 +561,65 @@ export type ConnectUncheckedUpdateWithoutInvitedUsersInput = {
   inviteToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   inviteExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  users?: Prisma.UserUncheckedUpdateManyWithoutConnectNestedInput
+  connectLoginTokens?: Prisma.ConnectLoginTokenUncheckedUpdateManyWithoutConnectNestedInput
+}
+
+export type ConnectCreateWithoutConnectLoginTokensInput = {
+  connectUrl: string
+  instanceType?: string
+  inviteToken?: string | null
+  inviteExpiresAt?: Date | string | null
+  createdAt?: Date | string
+  invitedUsers?: Prisma.UserCreateNestedManyWithoutInvitedByConnectInput
+  users?: Prisma.UserCreateNestedManyWithoutConnectInput
+}
+
+export type ConnectUncheckedCreateWithoutConnectLoginTokensInput = {
+  id?: number
+  connectUrl: string
+  instanceType?: string
+  inviteToken?: string | null
+  inviteExpiresAt?: Date | string | null
+  createdAt?: Date | string
+  invitedUsers?: Prisma.UserUncheckedCreateNestedManyWithoutInvitedByConnectInput
+  users?: Prisma.UserUncheckedCreateNestedManyWithoutConnectInput
+}
+
+export type ConnectCreateOrConnectWithoutConnectLoginTokensInput = {
+  where: Prisma.ConnectWhereUniqueInput
+  create: Prisma.XOR<Prisma.ConnectCreateWithoutConnectLoginTokensInput, Prisma.ConnectUncheckedCreateWithoutConnectLoginTokensInput>
+}
+
+export type ConnectUpsertWithoutConnectLoginTokensInput = {
+  update: Prisma.XOR<Prisma.ConnectUpdateWithoutConnectLoginTokensInput, Prisma.ConnectUncheckedUpdateWithoutConnectLoginTokensInput>
+  create: Prisma.XOR<Prisma.ConnectCreateWithoutConnectLoginTokensInput, Prisma.ConnectUncheckedCreateWithoutConnectLoginTokensInput>
+  where?: Prisma.ConnectWhereInput
+}
+
+export type ConnectUpdateToOneWithWhereWithoutConnectLoginTokensInput = {
+  where?: Prisma.ConnectWhereInput
+  data: Prisma.XOR<Prisma.ConnectUpdateWithoutConnectLoginTokensInput, Prisma.ConnectUncheckedUpdateWithoutConnectLoginTokensInput>
+}
+
+export type ConnectUpdateWithoutConnectLoginTokensInput = {
+  connectUrl?: Prisma.StringFieldUpdateOperationsInput | string
+  instanceType?: Prisma.StringFieldUpdateOperationsInput | string
+  inviteToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  inviteExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  invitedUsers?: Prisma.UserUpdateManyWithoutInvitedByConnectNestedInput
+  users?: Prisma.UserUpdateManyWithoutConnectNestedInput
+}
+
+export type ConnectUncheckedUpdateWithoutConnectLoginTokensInput = {
+  id?: Prisma.IntFieldUpdateOperationsInput | number
+  connectUrl?: Prisma.StringFieldUpdateOperationsInput | string
+  instanceType?: Prisma.StringFieldUpdateOperationsInput | string
+  inviteToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  inviteExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  invitedUsers?: Prisma.UserUncheckedUpdateManyWithoutInvitedByConnectNestedInput
   users?: Prisma.UserUncheckedUpdateManyWithoutConnectNestedInput
 }
 
@@ -539,11 +631,13 @@ export type ConnectUncheckedUpdateWithoutInvitedUsersInput = {
 export type ConnectCountOutputType = {
   invitedUsers: number
   users: number
+  connectLoginTokens: number
 }
 
 export type ConnectCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   invitedUsers?: boolean | ConnectCountOutputTypeCountInvitedUsersArgs
   users?: boolean | ConnectCountOutputTypeCountUsersArgs
+  connectLoginTokens?: boolean | ConnectCountOutputTypeCountConnectLoginTokensArgs
 }
 
 /**
@@ -570,6 +664,13 @@ export type ConnectCountOutputTypeCountUsersArgs<ExtArgs extends runtime.Types.E
   where?: Prisma.UserWhereInput
 }
 
+/**
+ * ConnectCountOutputType without action
+ */
+export type ConnectCountOutputTypeCountConnectLoginTokensArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.ConnectLoginTokenWhereInput
+}
+
 
 export type ConnectSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -580,6 +681,7 @@ export type ConnectSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   createdAt?: boolean
   invitedUsers?: boolean | Prisma.Connect$invitedUsersArgs<ExtArgs>
   users?: boolean | Prisma.Connect$usersArgs<ExtArgs>
+  connectLoginTokens?: boolean | Prisma.Connect$connectLoginTokensArgs<ExtArgs>
   _count?: boolean | Prisma.ConnectCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["connect"]>
 
@@ -614,6 +716,7 @@ export type ConnectOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
 export type ConnectInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   invitedUsers?: boolean | Prisma.Connect$invitedUsersArgs<ExtArgs>
   users?: boolean | Prisma.Connect$usersArgs<ExtArgs>
+  connectLoginTokens?: boolean | Prisma.Connect$connectLoginTokensArgs<ExtArgs>
   _count?: boolean | Prisma.ConnectCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type ConnectIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
@@ -624,6 +727,7 @@ export type $ConnectPayload<ExtArgs extends runtime.Types.Extensions.InternalArg
   objects: {
     invitedUsers: Prisma.$UserPayload<ExtArgs>[]
     users: Prisma.$UserPayload<ExtArgs>[]
+    connectLoginTokens: Prisma.$ConnectLoginTokenPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: number
@@ -1028,6 +1132,7 @@ export interface Prisma__ConnectClient<T, Null = never, ExtArgs extends runtime.
   readonly [Symbol.toStringTag]: "PrismaPromise"
   invitedUsers<T extends Prisma.Connect$invitedUsersArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Connect$invitedUsersArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   users<T extends Prisma.Connect$usersArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Connect$usersArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  connectLoginTokens<T extends Prisma.Connect$connectLoginTokensArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Connect$connectLoginTokensArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ConnectLoginTokenPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1496,6 +1601,30 @@ export type Connect$usersArgs<ExtArgs extends runtime.Types.Extensions.InternalA
   take?: number
   skip?: number
   distinct?: Prisma.UserScalarFieldEnum | Prisma.UserScalarFieldEnum[]
+}
+
+/**
+ * Connect.connectLoginTokens
+ */
+export type Connect$connectLoginTokensArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the ConnectLoginToken
+   */
+  select?: Prisma.ConnectLoginTokenSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the ConnectLoginToken
+   */
+  omit?: Prisma.ConnectLoginTokenOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ConnectLoginTokenInclude<ExtArgs> | null
+  where?: Prisma.ConnectLoginTokenWhereInput
+  orderBy?: Prisma.ConnectLoginTokenOrderByWithRelationInput | Prisma.ConnectLoginTokenOrderByWithRelationInput[]
+  cursor?: Prisma.ConnectLoginTokenWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.ConnectLoginTokenScalarFieldEnum | Prisma.ConnectLoginTokenScalarFieldEnum[]
 }
 
 /**

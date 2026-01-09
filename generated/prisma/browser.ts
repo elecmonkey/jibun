@@ -38,6 +38,11 @@ export type Comment = Prisma.CommentModel
  */
 export type Connect = Prisma.ConnectModel
 /**
+ * Model ConnectLoginToken
+ * 
+ */
+export type ConnectLoginToken = Prisma.ConnectLoginTokenModel
+/**
  * Model InboundConnect
  * 
  */

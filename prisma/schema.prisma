@@ -31,6 +31,7 @@ model User {
 
   moments       Moment[]
   comments      Comment[]
+  connectLoginTokens ConnectLoginToken[]
 }
 
 model Moment {
@@ -69,6 +70,19 @@ model Connect {
   invitedUsers User[]   @relation("ConnectInvitedUsers")
   users        User[]   @relation("ConnectUsers")
   createdAt    DateTime @default(now())
+  connectLoginTokens ConnectLoginToken[]
+}
+
+model ConnectLoginToken {
+  id        Int      @id @default(autoincrement())
+  token     String   @unique
+  user      User     @relation(fields: [userId], references: [id])
+  userId    Int
+  connect   Connect  @relation(fields: [connectId], references: [id])
+  connectId Int
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime @default(now())
 }
 
 model InboundConnect {

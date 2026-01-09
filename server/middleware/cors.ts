@@ -1,5 +1,6 @@
 const allowedPaths = new Set([
   '/api/connect',
+  '/api/connect/issue-account',
   '/api/echo/page',
 ])
 
@@ -23,7 +24,10 @@ export default defineEventHandler((event) => {
 
   event.node.res.setHeader('Access-Control-Allow-Origin', '*')
   event.node.res.setHeader('Access-Control-Allow-Methods', 'GET,POST,PUT,OPTIONS')
-  event.node.res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization')
+  event.node.res.setHeader(
+    'Access-Control-Allow-Headers',
+    'Content-Type, Authorization, X-Timestamp, X-Signature',
+  )
 
   if (event.node.req.method === 'OPTIONS') {
     event.node.res.statusCode = 204

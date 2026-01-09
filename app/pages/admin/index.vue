@@ -29,6 +29,8 @@ const inboundList = ref<Array<{
   verifiedAt: string | null
 }>>([])
 const userLoading = ref(false)
+const showConnectModal = ref(false)
+const connectTarget = ref<null | { serverName: string; serverUrl: string; sysUsername: string; tokenHint: string | null }>(null)
 
 type UserItem = {
   id: number
@@ -209,31 +211,10 @@ const rejectInbound = async (id: number) => {
   }
 }
 
-const requestJibunInvite = async (item: { serverUrl: string; tokenHint: string | null }) => {
-  if (!serverUrl.value.trim()) {
-    showMessage('error', '请先配置站点地址')
-    return
-  }
-  if (!item.tokenHint) {
-    showMessage('error', '邀请凭证缺失')
-    return
-  }
-  try {
-    const resp = await $fetch<{ code: number; msg: string; data?: { inviteUrl?: string } }>(`${item.serverUrl}/api/connect/invite`, {
-      method: 'POST',
-      body: {
-        server_url: serverUrl.value,
-        token: item.tokenHint,
-      },
-    })
-    if (resp.code !== 1 || !resp.data?.inviteUrl) {
-      showMessage('error', resp.msg || '获取链接失败')
-      return
-    }
-    window.open(resp.data.inviteUrl, '_blank')
-  } catch {
-    showMessage('error', '获取链接失败')
-  }
+
+const openConnectModal = (item: { serverName: string; serverUrl: string; sysUsername: string; tokenHint: string | null }) => {
+  connectTarget.value = item
+  showConnectModal.value = true
 }
 const fetchUsers = async () => {
   userLoading.value = true
@@ -637,7 +618,7 @@ onMounted(() => {
               </v-list-item-title>
               <template #append>
                 <div class="d-flex align-center gap-1">
-                  <v-btn size="small" variant="outlined" @click="requestJibunInvite(item)">去注册</v-btn>
+                  <v-btn size="small" variant="outlined" @click="openConnectModal(item)">去注册</v-btn>
                   <v-btn size="small" variant="tonal" @click="rejectInbound(item.id)">拒绝</v-btn>
                 </div>
               </template>
@@ -649,6 +630,13 @@ onMounted(() => {
         </v-card>
       </v-col>
     </v-row>
+
+    <ConnectAccountModal
+      v-model="showConnectModal"
+      :inbound="connectTarget"
+      :local-server-url="serverUrl"
+      @completed="loadInbound"
+    />
 
     <v-row class="mt-4">
       <v-col cols="12">
