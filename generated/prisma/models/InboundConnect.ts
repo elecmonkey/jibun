@@ -42,6 +42,7 @@ export type InboundConnectMinAggregateOutputType = {
   sysUsername: string | null
   tokenHint: string | null
   verifiedAt: Date | null
+  registeredAt: Date | null
   createdAt: Date | null
 }
 
@@ -53,6 +54,7 @@ export type InboundConnectMaxAggregateOutputType = {
   sysUsername: string | null
   tokenHint: string | null
   verifiedAt: Date | null
+  registeredAt: Date | null
   createdAt: Date | null
 }
 
@@ -64,6 +66,7 @@ export type InboundConnectCountAggregateOutputType = {
   sysUsername: number
   tokenHint: number
   verifiedAt: number
+  registeredAt: number
   createdAt: number
   _all: number
 }
@@ -85,6 +88,7 @@ export type InboundConnectMinAggregateInputType = {
   sysUsername?: true
   tokenHint?: true
   verifiedAt?: true
+  registeredAt?: true
   createdAt?: true
 }
 
@@ -96,6 +100,7 @@ export type InboundConnectMaxAggregateInputType = {
   sysUsername?: true
   tokenHint?: true
   verifiedAt?: true
+  registeredAt?: true
   createdAt?: true
 }
 
@@ -107,6 +112,7 @@ export type InboundConnectCountAggregateInputType = {
   sysUsername?: true
   tokenHint?: true
   verifiedAt?: true
+  registeredAt?: true
   createdAt?: true
   _all?: true
 }
@@ -205,6 +211,7 @@ export type InboundConnectGroupByOutputType = {
   sysUsername: string
   tokenHint: string | null
   verifiedAt: Date | null
+  registeredAt: Date | null
   createdAt: Date
   _count: InboundConnectCountAggregateOutputType | null
   _avg: InboundConnectAvgAggregateOutputType | null
@@ -239,6 +246,7 @@ export type InboundConnectWhereInput = {
   sysUsername?: Prisma.StringFilter<"InboundConnect"> | string
   tokenHint?: Prisma.StringNullableFilter<"InboundConnect"> | string | null
   verifiedAt?: Prisma.DateTimeNullableFilter<"InboundConnect"> | Date | string | null
+  registeredAt?: Prisma.DateTimeNullableFilter<"InboundConnect"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"InboundConnect"> | Date | string
 }
 
@@ -250,6 +258,7 @@ export type InboundConnectOrderByWithRelationInput = {
   sysUsername?: Prisma.SortOrder
   tokenHint?: Prisma.SortOrderInput | Prisma.SortOrder
   verifiedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  registeredAt?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
 
@@ -264,6 +273,7 @@ export type InboundConnectWhereUniqueInput = Prisma.AtLeast<{
   sysUsername?: Prisma.StringFilter<"InboundConnect"> | string
   tokenHint?: Prisma.StringNullableFilter<"InboundConnect"> | string | null
   verifiedAt?: Prisma.DateTimeNullableFilter<"InboundConnect"> | Date | string | null
+  registeredAt?: Prisma.DateTimeNullableFilter<"InboundConnect"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"InboundConnect"> | Date | string
 }, "id" | "serverUrl">
 
@@ -275,6 +285,7 @@ export type InboundConnectOrderByWithAggregationInput = {
   sysUsername?: Prisma.SortOrder
   tokenHint?: Prisma.SortOrderInput | Prisma.SortOrder
   verifiedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  registeredAt?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   _count?: Prisma.InboundConnectCountOrderByAggregateInput
   _avg?: Prisma.InboundConnectAvgOrderByAggregateInput
@@ -294,6 +305,7 @@ export type InboundConnectScalarWhereWithAggregatesInput = {
   sysUsername?: Prisma.StringWithAggregatesFilter<"InboundConnect"> | string
   tokenHint?: Prisma.StringNullableWithAggregatesFilter<"InboundConnect"> | string | null
   verifiedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"InboundConnect"> | Date | string | null
+  registeredAt?: Prisma.DateTimeNullableWithAggregatesFilter<"InboundConnect"> | Date | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"InboundConnect"> | Date | string
 }
 
@@ -304,6 +316,7 @@ export type InboundConnectCreateInput = {
   sysUsername: string
   tokenHint?: string | null
   verifiedAt?: Date | string | null
+  registeredAt?: Date | string | null
   createdAt?: Date | string
 }
 
@@ -315,6 +328,7 @@ export type InboundConnectUncheckedCreateInput = {
   sysUsername: string
   tokenHint?: string | null
   verifiedAt?: Date | string | null
+  registeredAt?: Date | string | null
   createdAt?: Date | string
 }
 
@@ -325,6 +339,7 @@ export type InboundConnectUpdateInput = {
   sysUsername?: Prisma.StringFieldUpdateOperationsInput | string
   tokenHint?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   verifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  registeredAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -336,6 +351,7 @@ export type InboundConnectUncheckedUpdateInput = {
   sysUsername?: Prisma.StringFieldUpdateOperationsInput | string
   tokenHint?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   verifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  registeredAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -347,6 +363,7 @@ export type InboundConnectCreateManyInput = {
   sysUsername: string
   tokenHint?: string | null
   verifiedAt?: Date | string | null
+  registeredAt?: Date | string | null
   createdAt?: Date | string
 }
 
@@ -357,6 +374,7 @@ export type InboundConnectUpdateManyMutationInput = {
   sysUsername?: Prisma.StringFieldUpdateOperationsInput | string
   tokenHint?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   verifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  registeredAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -368,6 +386,7 @@ export type InboundConnectUncheckedUpdateManyInput = {
   sysUsername?: Prisma.StringFieldUpdateOperationsInput | string
   tokenHint?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   verifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  registeredAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -379,6 +398,7 @@ export type InboundConnectCountOrderByAggregateInput = {
   sysUsername?: Prisma.SortOrder
   tokenHint?: Prisma.SortOrder
   verifiedAt?: Prisma.SortOrder
+  registeredAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
 
@@ -394,6 +414,7 @@ export type InboundConnectMaxOrderByAggregateInput = {
   sysUsername?: Prisma.SortOrder
   tokenHint?: Prisma.SortOrder
   verifiedAt?: Prisma.SortOrder
+  registeredAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
 
@@ -405,6 +426,7 @@ export type InboundConnectMinOrderByAggregateInput = {
   sysUsername?: Prisma.SortOrder
   tokenHint?: Prisma.SortOrder
   verifiedAt?: Prisma.SortOrder
+  registeredAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
 
@@ -422,6 +444,7 @@ export type InboundConnectSelect<ExtArgs extends runtime.Types.Extensions.Intern
   sysUsername?: boolean
   tokenHint?: boolean
   verifiedAt?: boolean
+  registeredAt?: boolean
   createdAt?: boolean
 }, ExtArgs["result"]["inboundConnect"]>
 
@@ -433,6 +456,7 @@ export type InboundConnectSelectCreateManyAndReturn<ExtArgs extends runtime.Type
   sysUsername?: boolean
   tokenHint?: boolean
   verifiedAt?: boolean
+  registeredAt?: boolean
   createdAt?: boolean
 }, ExtArgs["result"]["inboundConnect"]>
 
@@ -444,6 +468,7 @@ export type InboundConnectSelectUpdateManyAndReturn<ExtArgs extends runtime.Type
   sysUsername?: boolean
   tokenHint?: boolean
   verifiedAt?: boolean
+  registeredAt?: boolean
   createdAt?: boolean
 }, ExtArgs["result"]["inboundConnect"]>
 
@@ -455,10 +480,11 @@ export type InboundConnectSelectScalar = {
   sysUsername?: boolean
   tokenHint?: boolean
   verifiedAt?: boolean
+  registeredAt?: boolean
   createdAt?: boolean
 }
 
-export type InboundConnectOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "serverName" | "serverUrl" | "serverLogo" | "sysUsername" | "tokenHint" | "verifiedAt" | "createdAt", ExtArgs["result"]["inboundConnect"]>
+export type InboundConnectOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "serverName" | "serverUrl" | "serverLogo" | "sysUsername" | "tokenHint" | "verifiedAt" | "registeredAt" | "createdAt", ExtArgs["result"]["inboundConnect"]>
 
 export type $InboundConnectPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "InboundConnect"
@@ -471,6 +497,7 @@ export type $InboundConnectPayload<ExtArgs extends runtime.Types.Extensions.Inte
     sysUsername: string
     tokenHint: string | null
     verifiedAt: Date | null
+    registeredAt: Date | null
     createdAt: Date
   }, ExtArgs["result"]["inboundConnect"]>
   composites: {}
@@ -902,6 +929,7 @@ export interface InboundConnectFieldRefs {
   readonly sysUsername: Prisma.FieldRef<"InboundConnect", 'String'>
   readonly tokenHint: Prisma.FieldRef<"InboundConnect", 'String'>
   readonly verifiedAt: Prisma.FieldRef<"InboundConnect", 'DateTime'>
+  readonly registeredAt: Prisma.FieldRef<"InboundConnect", 'DateTime'>
   readonly createdAt: Prisma.FieldRef<"InboundConnect", 'DateTime'>
 }
     

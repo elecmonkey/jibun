@@ -1,5 +1,6 @@
 <script setup lang="ts">
 type InboundItem = {
+  id: number
   serverName: string
   serverUrl: string
   sysUsername: string
@@ -23,7 +24,7 @@ const displayName = ref('')
 const avatarUrl = ref('')
 const loading = ref(false)
 const error = ref('')
-const { name, email: profileEmail, avatar } = useAuthToken()
+const { name, email: profileEmail, avatar, token } = useAuthToken()
 
 const close = () => emit('update:modelValue', false)
 
@@ -119,6 +120,18 @@ const submit = async () => {
     if (resp.code !== 1 || !resp.data?.redirect) {
       error.value = resp.msg || '申请失败'
       return
+    }
+
+    try {
+      if (props.inbound?.id && token.value) {
+        const fetchAny = $fetch as unknown as (input: string, init?: Record<string, unknown>) => Promise<unknown>
+        await fetchAny(`/api/connect/inbound/${props.inbound.id}/registered`, {
+          method: 'POST',
+          headers: { Authorization: `Bearer ${token.value}` },
+        })
+      }
+    } catch {
+      // ignore local mark failures
     }
 
     window.open(resp.data.redirect, '_blank', 'noopener,noreferrer')

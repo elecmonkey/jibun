@@ -154,6 +154,7 @@ export const InboundConnectScalarFieldEnum = {
   sysUsername: 'sysUsername',
   tokenHint: 'tokenHint',
   verifiedAt: 'verifiedAt',
+  registeredAt: 'registeredAt',
   createdAt: 'createdAt'
 } as const
 

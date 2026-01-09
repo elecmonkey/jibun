@@ -27,10 +27,11 @@ const inboundList = ref<Array<{
   sysUsername: string
   tokenHint: string | null
   verifiedAt: string | null
+  registeredAt?: string | null
 }>>([])
 const userLoading = ref(false)
 const showConnectModal = ref(false)
-const connectTarget = ref<null | { serverName: string; serverUrl: string; sysUsername: string; tokenHint: string | null }>(null)
+const connectTarget = ref<null | { id: number; serverName: string; serverUrl: string; sysUsername: string; tokenHint: string | null }>(null)
 
 type UserItem = {
   id: number
@@ -218,7 +219,7 @@ const rejectInbound = async (id: number) => {
 }
 
 
-const openConnectModal = (item: { serverName: string; serverUrl: string; sysUsername: string; tokenHint: string | null }) => {
+const openConnectModal = (item: { id: number; serverName: string; serverUrl: string; sysUsername: string; tokenHint: string | null }) => {
   connectTarget.value = item
   showConnectModal.value = true
 }
@@ -625,7 +626,17 @@ onMounted(() => {
               </v-list-item-title>
               <template #append>
                 <div class="d-flex align-center gap-1">
-                  <v-btn size="small" variant="outlined" @click="openConnectModal(item)">去注册</v-btn>
+                  <v-btn
+                    v-if="!item.registeredAt"
+                    size="small"
+                    variant="outlined"
+                    @click="openConnectModal(item)"
+                  >
+                    去注册
+                  </v-btn>
+                  <v-chip v-else size="small" variant="tonal" color="secondary">
+                    已注册
+                  </v-chip>
                   <v-btn size="small" variant="tonal" @click="rejectInbound(item.id)">拒绝</v-btn>
                 </div>
               </template>

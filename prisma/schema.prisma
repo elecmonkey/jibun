@@ -93,6 +93,7 @@ model InboundConnect {
   sysUsername  String
   tokenHint    String?
   verifiedAt   DateTime?
+  registeredAt DateTime?
   createdAt    DateTime @default(now())
 }
 
