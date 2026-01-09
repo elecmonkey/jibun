@@ -41,6 +41,12 @@ const signPayload = async (secret: string, payload: string) => {
     .join('')
 }
 
+type IssueAccountResponse = {
+  code: number
+  msg: string
+  data?: { redirect?: string }
+}
+
 const submit = async () => {
   error.value = ''
   if (!props.inbound) {
@@ -78,8 +84,9 @@ const submit = async () => {
     const signaturePayload = `${timestamp}.${body}`
     const signature = await signPayload(props.inbound.tokenHint, signaturePayload)
 
-    const resp = await $fetch<{ code: number; msg: string; data?: { redirect?: string } }>(
-      `${props.inbound.serverUrl.replace(/\\/+$/, '')}/api/connect/issue-account`,
+    const baseUrl = props.inbound.serverUrl.replace(/\/+$/, '')
+    const resp = (await $fetch(
+      `${baseUrl}/api/connect/issue-account`,
       {
         method: 'POST',
         headers: {
@@ -89,7 +96,7 @@ const submit = async () => {
         },
         body,
       },
-    )
+    )) as IssueAccountResponse
 
     if (resp.code !== 1 || !resp.data?.redirect) {
       error.value = resp.msg || '申请失败'
