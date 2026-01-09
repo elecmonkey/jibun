@@ -14,6 +14,8 @@ const moments = ref<Array<{
   tags: string[]
   images: string[]
   favCount: number
+  extension?: string | null
+  extensionType?: string | null
   _count: {
     comments: number
   }
@@ -33,6 +35,8 @@ const remoteMoments = ref<Array<{
   username: string
   fav_count: number
   images?: Array<{ image_url: string; image_source: string }>
+  extension?: string | null
+  extension_type?: string | null
   server_url: string
   server_name: string
   logo?: string | null
@@ -52,6 +56,8 @@ const modalMoment = ref<null | {
   tags: string[]
   images: string[]
   favCount: number
+  extension?: string | null
+  extensionType?: string | null
   _count: {
     comments: number
   }
@@ -133,6 +139,45 @@ const ensureDomPurifyHooks = () => {
 const renderMarkdown = (content: string) => {
   ensureDomPurifyHooks()
   return DOMPurify.sanitize(markdown.render(content || ''))
+}
+
+const getExtensionType = (moment: TimelineItem) =>
+  moment.kind === 'local' ? moment.extensionType : moment.extension_type
+const getExtensionValue = (moment: TimelineItem) =>
+  moment.kind === 'local' ? moment.extension : moment.extension
+const parseWebsiteExtension = (value?: string | null) => {
+  if (!value) {
+    return null
+  }
+  try {
+    const parsed = JSON.parse(value) as { title?: string; site?: string }
+    if (!parsed || !parsed.site) {
+      return null
+    }
+    return { title: parsed.title || '外部链接', site: parsed.site }
+  } catch {
+    return null
+  }
+}
+const normalizeVideoId = (value: string) => {
+  const trimmed = value.trim()
+  const bvMatch = trimmed.match(/(BV[0-9A-Za-z]{10})/)
+  if (bvMatch) {
+    return { id: bvMatch[1] ?? bvMatch[0], provider: 'bilibili' }
+  }
+  const ytMatch =
+    trimmed.match(/(?:https?:\/\/(?:www\.)?)?(?:youtu\.be\/|youtube\.com\/(?:(?:watch)?\?(?:.*&)?v(?:i)?=|(?:embed)\/))([\w-]+)/)
+  if (ytMatch) {
+    return { id: ytMatch[1] ?? '', provider: 'youtube' }
+  }
+  return { id: trimmed, provider: trimmed.startsWith('BV') ? 'bilibili' : 'youtube' }
+}
+
+const openExternalLink = (url: string) => {
+  if (!url) {
+    return
+  }
+  window.open(url, '_blank', 'noopener,noreferrer')
 }
 type ConnectCardInfo = {
   server_name: string
@@ -603,6 +648,87 @@ watch(
                   <v-img :src="getRemoteImageUrl(moment.server_url, image)" aspect-ratio="1" cover />
                 </div>
               </div>
+              <div
+                v-if="getExtensionType(moment) && getExtensionValue(moment)"
+                class="moment-extension"
+                @click.stop
+              >
+                <v-card
+                  v-if="getExtensionType(moment) === 'MUSIC'"
+                  variant="tonal"
+                  class="extension-card"
+                  v-ripple
+                  @click="openExternalLink(String(getExtensionValue(moment)))"
+                >
+                  <v-card-text class="d-flex align-center gap-2">
+                    <v-icon size="18" icon="mdi-music" />
+                    <span class="extension-title">音乐分享</span>
+                  </v-card-text>
+                </v-card>
+                <v-responsive
+                  v-else-if="getExtensionType(moment) === 'VIDEO'"
+                  aspect-ratio="16/9"
+                  class="extension-video"
+                >
+                  <iframe
+                    v-if="normalizeVideoId(String(getExtensionValue(moment))).provider === 'bilibili'"
+                    :src="`https://www.bilibili.com/blackboard/html5mobileplayer.html?bvid=${normalizeVideoId(String(getExtensionValue(moment))).id}&as_wide=1&high_quality=1&danmaku=0`"
+                    frameborder="no"
+                    allowfullscreen
+                    loading="lazy"
+                    class="extension-iframe"
+                  />
+                  <iframe
+                    v-else
+                    :src="`https://www.youtube.com/embed/${normalizeVideoId(String(getExtensionValue(moment))).id}`"
+                    frameborder="0"
+                    allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                    allowfullscreen
+                    loading="lazy"
+                    class="extension-iframe"
+                  />
+                </v-responsive>
+                <v-card
+                  v-else-if="getExtensionType(moment) === 'GITHUBPROJ'"
+                  variant="tonal"
+                  class="extension-card"
+                  v-ripple
+                  @click="openExternalLink(String(getExtensionValue(moment)))"
+                >
+                  <v-card-text class="d-flex align-center gap-2">
+                    <v-icon size="18" icon="mdi-github" />
+                    <span class="extension-title">
+                      {{ String(getExtensionValue(moment)) }}
+                    </span>
+                  </v-card-text>
+                </v-card>
+                <v-card
+                  v-else-if="getExtensionType(moment) === 'WEBSITE'"
+                  variant="tonal"
+                  class="extension-card"
+                  v-ripple
+                  @click="
+                    openExternalLink(
+                      parseWebsiteExtension(String(getExtensionValue(moment)))?.site ||
+                        String(getExtensionValue(moment)),
+                    )
+                  "
+                >
+                  <v-card-text class="d-flex align-center gap-2">
+                    <v-icon size="18" icon="mdi-link-variant" />
+                    <template v-if="parseWebsiteExtension(String(getExtensionValue(moment)))">
+                      <span class="extension-title">
+                        {{ parseWebsiteExtension(String(getExtensionValue(moment)))?.title }}
+                      </span>
+                    </template>
+                    <template v-else>
+                      <span class="extension-title">
+                        {{ String(getExtensionValue(moment)) }}
+                      </span>
+                    </template>
+                  </v-card-text>
+                </v-card>
+              </div>
             </div>
             <div class="moment-actions-left">
               <v-btn
@@ -724,6 +850,86 @@ watch(
             >
               {{ tag }}
             </v-chip>
+          </div>
+          <div
+            v-if="modalMoment.extensionType && modalMoment.extension"
+            class="moment-extension mt-2"
+            @click.stop
+          >
+            <v-card
+              v-if="modalMoment.extensionType === 'MUSIC'"
+              variant="tonal"
+              class="extension-card"
+              v-ripple
+              @click="openExternalLink(modalMoment.extension)"
+            >
+              <v-card-text class="d-flex align-center gap-2">
+                <v-icon size="18" icon="mdi-music" />
+                <span class="extension-title">音乐分享</span>
+              </v-card-text>
+            </v-card>
+            <v-responsive
+              v-else-if="modalMoment.extensionType === 'VIDEO'"
+              aspect-ratio="16/9"
+              class="extension-video"
+            >
+              <iframe
+                v-if="normalizeVideoId(modalMoment.extension).provider === 'bilibili'"
+                :src="`https://www.bilibili.com/blackboard/html5mobileplayer.html?bvid=${normalizeVideoId(modalMoment.extension).id}&as_wide=1&high_quality=1&danmaku=0`"
+                frameborder="no"
+                allowfullscreen
+                loading="lazy"
+                class="extension-iframe"
+              />
+              <iframe
+                v-else
+                :src="`https://www.youtube.com/embed/${normalizeVideoId(modalMoment.extension).id}`"
+                frameborder="0"
+                allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                allowfullscreen
+                loading="lazy"
+                class="extension-iframe"
+              />
+            </v-responsive>
+            <v-card
+              v-else-if="modalMoment.extensionType === 'GITHUBPROJ'"
+              variant="tonal"
+              class="extension-card"
+              v-ripple
+              @click="openExternalLink(modalMoment.extension)"
+            >
+              <v-card-text class="d-flex align-center gap-2">
+                <v-icon size="18" icon="mdi-github" />
+                <span class="extension-title">
+                  {{ modalMoment.extension }}
+                </span>
+              </v-card-text>
+            </v-card>
+            <v-card
+              v-else-if="modalMoment.extensionType === 'WEBSITE'"
+              variant="tonal"
+              class="extension-card"
+              v-ripple
+              @click="
+                openExternalLink(
+                  parseWebsiteExtension(modalMoment.extension)?.site || modalMoment.extension,
+                )
+              "
+            >
+              <v-card-text class="d-flex align-center gap-2">
+                <v-icon size="18" icon="mdi-link-variant" />
+                <template v-if="parseWebsiteExtension(modalMoment.extension)">
+                  <span class="extension-title">
+                    {{ parseWebsiteExtension(modalMoment.extension)?.title }}
+                  </span>
+                </template>
+                <template v-else>
+                  <span class="extension-title">
+                    {{ modalMoment.extension }}
+                  </span>
+                </template>
+              </v-card-text>
+            </v-card>
           </div>
           <div class="moment-actions mt-2">
             <v-btn
@@ -958,6 +1164,37 @@ watch(
   flex-wrap: wrap;
   gap: 6px;
   margin-top: 10px;
+}
+
+.moment-extension {
+  margin-top: 10px;
+}
+
+.extension-card {
+  border: 1px solid rgba(var(--v-theme-on-surface), 0.08);
+}
+
+.extension-link {
+  color: inherit;
+  text-decoration: none;
+  word-break: break-all;
+}
+
+.extension-title {
+  font-size: 0.85rem;
+  word-break: break-all;
+}
+
+.extension-video {
+  border-radius: 6px;
+  overflow: hidden;
+  border: 1px solid rgba(var(--v-theme-on-surface), 0.08);
+}
+
+.extension-iframe {
+  width: 100%;
+  height: 100%;
+  border: 0;
 }
 
 .moment-image-thumb {

@@ -23,6 +23,11 @@ const momentTags = ref<string[]>([])
 const momentUploads = ref<UploadItem[]>([])
 const uploadMessage = ref('')
 const posting = ref(false)
+const extensionType = ref('')
+const extensionRaw = ref('')
+const websiteTitle = ref('')
+const websiteSite = ref('')
+const extensionError = ref('')
 
 const MAX_IMAGE_COUNT = 9
 const MAX_IMAGE_SIZE = 15 * 1024 * 1024
@@ -132,8 +137,58 @@ const uploadedImageUrls = computed(() =>
   momentUploads.value.map((item) => item.url).filter((item): item is string => Boolean(item)),
 )
 
+const getNormalizedExtension = () => {
+  let error = ''
+  const type = extensionType.value.trim()
+  if (!type) {
+    return { extension: '', extension_type: '', error }
+  }
+  if (type === 'WEBSITE') {
+    const site = websiteSite.value.trim()
+    if (!site) {
+      if (websiteTitle.value.trim()) {
+        error = '网站链接不能为空'
+      }
+      return { extension: '', extension_type: type, error }
+    }
+    const title = websiteTitle.value.trim() || '外部链接'
+    return { extension: JSON.stringify({ title, site }), extension_type: type, error }
+  }
+
+  let value = extensionRaw.value.trim()
+  if (!value) {
+    return { extension: '', extension_type: type, error }
+  }
+
+  if (type === 'VIDEO') {
+    const bvRegex = /(BV[0-9A-Za-z]{10})/
+    const ytRegex =
+      /(?:https?:\/\/(?:www\.)?)?(?:youtu\.be\/|youtube\.com\/(?:(?:watch)?\?(?:.*&)?v(?:i)?=|(?:embed)\/))([\w-]+)/
+    const bv = value.match(bvRegex)
+    if (bv) {
+      value = bv[1] ?? bv[0]
+    } else {
+      const yt = value.match(ytRegex)
+      if (yt) {
+        value = yt[1] ?? ''
+      } else {
+        error = '请输入正确的B站/YT链接或ID'
+        return { extension: '', extension_type: type, error }
+      }
+    }
+  }
+
+  return { extension: value, extension_type: type, error }
+}
+
 const postMoment = async () => {
-  if (!momentContent.value.trim()) {
+  const content = momentContent.value.trim()
+  const { extension, extension_type, error } = getNormalizedExtension()
+  extensionError.value = error
+  if (extensionError.value) {
+    return
+  }
+  if (!content && uploadedImageUrls.value.length === 0 && !extension) {
     return
   }
   if (hasUploadingImages.value) {
@@ -147,12 +202,23 @@ const postMoment = async () => {
       {
         method: 'POST',
         headers: token.value ? { Authorization: `Bearer ${token.value}` } : undefined,
-        body: { content: momentContent.value.trim(), tags: momentTags.value, images: uploadedImageUrls.value },
+        body: {
+          content,
+          tags: momentTags.value,
+          images: uploadedImageUrls.value,
+          extension: extension || null,
+          extension_type: extension_type || null,
+        },
       },
     )
     if (resp.code === 1) {
       momentContent.value = ''
       momentTags.value = []
+      extensionType.value = ''
+      extensionRaw.value = ''
+      websiteTitle.value = ''
+      websiteSite.value = ''
+      extensionError.value = ''
       momentUploads.value.forEach((item) => URL.revokeObjectURL(item.previewUrl))
       momentUploads.value = []
       emit('posted')
@@ -222,6 +288,50 @@ const postMoment = async () => {
       clearable
       :disabled="disabled"
     />
+    <v-select
+      v-model="extensionType"
+      class="mt-2"
+      label="扩展内容"
+      variant="outlined"
+      density="compact"
+      clearable
+      :items="[
+        { title: '音乐', value: 'MUSIC' },
+        { title: '视频', value: 'VIDEO' },
+        { title: 'GitHub 项目', value: 'GITHUBPROJ' },
+        { title: '网站链接', value: 'WEBSITE' },
+      ]"
+      :disabled="disabled"
+    />
+    <div v-if="extensionType && extensionType !== 'WEBSITE'" class="mt-2">
+      <v-text-field
+        v-model="extensionRaw"
+        :label="extensionType === 'MUSIC' ? '音乐链接' : extensionType === 'VIDEO' ? 'B站或YouTube链接/ID' : 'GitHub 仓库链接'"
+        variant="outlined"
+        density="compact"
+        :disabled="disabled"
+      />
+    </div>
+    <div v-if="extensionType === 'WEBSITE'" class="mt-2">
+      <v-text-field
+        v-model="websiteTitle"
+        label="网站标题"
+        variant="outlined"
+        density="compact"
+        :disabled="disabled"
+      />
+      <v-text-field
+        v-model="websiteSite"
+        class="mt-2"
+        label="网站链接"
+        variant="outlined"
+        density="compact"
+        :disabled="disabled"
+      />
+    </div>
+    <div v-if="extensionError" class="mt-1 text-xs text-[rgba(var(--v-theme-on-surface),0.6)]">
+      {{ extensionError }}
+    </div>
     <v-btn
       color="accent"
       block

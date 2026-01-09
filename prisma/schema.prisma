@@ -40,6 +40,8 @@ model Moment {
   authorId  Int
   tags      String[] @default([])
   images    String[] @default([])
+  extension String?
+  extensionType String?
   favCount  Int      @default(0)
   createdAt DateTime @default(now())
   comments  Comment[]

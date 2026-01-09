@@ -66,8 +66,8 @@ export default defineEventHandler(async (event) => {
       images,
       tags: firstTag ? [{ id: firstTag, name: firstTag }] : null,
       layout: null,
-      extension: null,
-      extension_type: null,
+      extension: moment.extension ?? null,
+      extension_type: moment.extensionType ?? null,
       private: false,
       fav_count: moment.favCount ?? 0,
       // redundant moment fields for Jibun detection

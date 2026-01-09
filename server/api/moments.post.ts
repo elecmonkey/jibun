@@ -2,11 +2,15 @@ import { readBody } from 'h3'
 import { prisma } from '../utils/prisma'
 import { fail, ok } from '../utils/response'
 import { requireRole } from '../utils/auth'
+import { ExtensionType } from '../utils/ech0'
+import { trimUrl } from '../utils/normalize'
 
 type MomentBody = {
   content?: string
   tags?: string[]
   images?: string[]
+  extension?: string | null
+  extension_type?: string | null
 }
 
 export default defineEventHandler(async (event) => {
@@ -17,9 +21,6 @@ export default defineEventHandler(async (event) => {
 
   const body = await readBody<MomentBody>(event)
   const content = (body?.content || '').trim()
-  if (!content) {
-    return fail('content is required', null)
-  }
 
   const tagNames = Array.isArray(body?.tags)
     ? body?.tags.map((tag) => tag.trim()).filter((tag) => tag.length > 0)
@@ -33,12 +34,34 @@ export default defineEventHandler(async (event) => {
   }
   const images = rawImages
 
+  let extension = typeof body?.extension === 'string' ? body.extension.trim() : ''
+  let extensionType = typeof body?.extension_type === 'string' ? body.extension_type.trim() : ''
+
+  if (extension && extensionType) {
+    switch (extensionType) {
+      case ExtensionType.GITHUBPROJ:
+        extension = trimUrl(extension)
+        break
+      default:
+        break
+    }
+  } else {
+    extension = ''
+    extensionType = ''
+  }
+
+  if (!content && images.length === 0 && !extension) {
+    return fail('moment is required', null)
+  }
+
   const created = await prisma.moment.create({
     data: {
       content,
       authorId: auth.user.id,
       tags: tagNames,
       images,
+      extension: extension || null,
+      extensionType: extensionType || null,
     },
     include: {
       author: {
