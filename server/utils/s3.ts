@@ -57,7 +57,7 @@ export const buildPublicUrl = (key: string) => {
   return `${endpoint}/${bucket}/${key}`
 }
 
-const sanitizeFilename = (name: string) => name.replace(/[^\w.\-]+/g, '_')
+const sanitizeFilename = (name: string) => name.replace(/[^\w.-]+/g, '_')
 
 export const createImagePresign = async (
   userId: number,

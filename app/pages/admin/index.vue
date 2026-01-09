@@ -380,12 +380,6 @@ const deleteUser = async (id: number) => {
   }
 }
 
-const isInviteActive = (conn: { inviteToken?: string | null; inviteExpiresAt?: string | null }) => {
-  if (!conn.inviteToken || !conn.inviteExpiresAt) {
-    return false
-  }
-  return new Date(conn.inviteExpiresAt).getTime() > Date.now()
-}
 
 const getInviteLink = (tokenValue?: string | null) => {
   if (!tokenValue || !serverUrl.value.trim()) {

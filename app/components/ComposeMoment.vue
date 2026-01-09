@@ -9,7 +9,7 @@ type UploadItem = {
   error?: string
 }
 
-const props = defineProps<{
+defineProps<{
   disabled: boolean
 }>()
 

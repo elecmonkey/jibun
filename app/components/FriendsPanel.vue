@@ -35,7 +35,7 @@ const handleShowFriendsUpdate = (value: unknown) => {
 
 watch(
   () => connectItems.value.length,
-  (value) => {
+  () => {
     emit('connects-loaded', connectItems.value)
   },
   { immediate: true },
