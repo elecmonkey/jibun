@@ -102,7 +102,6 @@ model SystemSetting {
   serverName String
   serverUrl  String
   serverLogo String
-  sysUsername String
 }
 
 enum UserRole {

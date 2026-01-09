@@ -35,26 +35,35 @@ export default defineEventHandler(async (event) => {
   }
 
   const passwordHash = await hashPassword(password)
-  const created = await prisma.user.create({
-    data: {
-      email,
-      passwordHash,
-      role,
-      displayName: body?.displayName?.trim() || null,
-      avatarUrl: body?.avatarUrl?.trim() || null,
-      isOwner: Boolean(body?.isOwner),
-      isActive: body?.isActive ?? true,
-    },
-    select: {
-      id: true,
-      email: true,
-      displayName: true,
-      avatarUrl: true,
-      role: true,
-      isOwner: true,
-      isActive: true,
-      createdAt: true,
-    },
+  const setOwner = Boolean(body?.isOwner)
+  const created = await prisma.$transaction(async (tx) => {
+    if (setOwner) {
+      await tx.user.updateMany({
+        where: { isOwner: true },
+        data: { isOwner: false },
+      })
+    }
+    return tx.user.create({
+      data: {
+        email,
+        passwordHash,
+        role,
+        displayName: body?.displayName?.trim() || null,
+        avatarUrl: body?.avatarUrl?.trim() || null,
+        isOwner: setOwner,
+        isActive: body?.isActive ?? true,
+      },
+      select: {
+        id: true,
+        email: true,
+        displayName: true,
+        avatarUrl: true,
+        role: true,
+        isOwner: true,
+        isActive: true,
+        createdAt: true,
+      },
+    })
   })
 
   return ok(created, 'user created')

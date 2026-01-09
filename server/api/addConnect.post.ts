@@ -66,12 +66,21 @@ export default defineEventHandler(async (event) => {
 
   if (instanceType === 'JIBUN') {
     const setting = await prisma.systemSetting.findFirst()
-    if (setting?.serverName && setting?.serverUrl && setting?.sysUsername) {
+    if (setting?.serverName && setting?.serverUrl) {
+      const owner = await prisma.user.findFirst({
+        where: { isOwner: true },
+        orderBy: { id: 'asc' },
+        select: {
+          displayName: true,
+          email: true,
+        },
+      })
+      const sysUsername = owner?.displayName || owner?.email || setting.serverName
       const payload = {
         server_name: setting.serverName,
         server_url: setting.serverUrl,
         logo: setting.serverLogo,
-        sys_username: setting.sysUsername,
+        sys_username: sysUsername,
         token: inviteToken,
       }
       try {

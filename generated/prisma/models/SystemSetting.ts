@@ -39,7 +39,6 @@ export type SystemSettingMinAggregateOutputType = {
   serverName: string | null
   serverUrl: string | null
   serverLogo: string | null
-  sysUsername: string | null
 }
 
 export type SystemSettingMaxAggregateOutputType = {
@@ -47,7 +46,6 @@ export type SystemSettingMaxAggregateOutputType = {
   serverName: string | null
   serverUrl: string | null
   serverLogo: string | null
-  sysUsername: string | null
 }
 
 export type SystemSettingCountAggregateOutputType = {
@@ -55,7 +53,6 @@ export type SystemSettingCountAggregateOutputType = {
   serverName: number
   serverUrl: number
   serverLogo: number
-  sysUsername: number
   _all: number
 }
 
@@ -73,7 +70,6 @@ export type SystemSettingMinAggregateInputType = {
   serverName?: true
   serverUrl?: true
   serverLogo?: true
-  sysUsername?: true
 }
 
 export type SystemSettingMaxAggregateInputType = {
@@ -81,7 +77,6 @@ export type SystemSettingMaxAggregateInputType = {
   serverName?: true
   serverUrl?: true
   serverLogo?: true
-  sysUsername?: true
 }
 
 export type SystemSettingCountAggregateInputType = {
@@ -89,7 +84,6 @@ export type SystemSettingCountAggregateInputType = {
   serverName?: true
   serverUrl?: true
   serverLogo?: true
-  sysUsername?: true
   _all?: true
 }
 
@@ -184,7 +178,6 @@ export type SystemSettingGroupByOutputType = {
   serverName: string
   serverUrl: string
   serverLogo: string
-  sysUsername: string
   _count: SystemSettingCountAggregateOutputType | null
   _avg: SystemSettingAvgAggregateOutputType | null
   _sum: SystemSettingSumAggregateOutputType | null
@@ -215,7 +208,6 @@ export type SystemSettingWhereInput = {
   serverName?: Prisma.StringFilter<"SystemSetting"> | string
   serverUrl?: Prisma.StringFilter<"SystemSetting"> | string
   serverLogo?: Prisma.StringFilter<"SystemSetting"> | string
-  sysUsername?: Prisma.StringFilter<"SystemSetting"> | string
 }
 
 export type SystemSettingOrderByWithRelationInput = {
@@ -223,7 +215,6 @@ export type SystemSettingOrderByWithRelationInput = {
   serverName?: Prisma.SortOrder
   serverUrl?: Prisma.SortOrder
   serverLogo?: Prisma.SortOrder
-  sysUsername?: Prisma.SortOrder
 }
 
 export type SystemSettingWhereUniqueInput = Prisma.AtLeast<{
@@ -234,7 +225,6 @@ export type SystemSettingWhereUniqueInput = Prisma.AtLeast<{
   serverName?: Prisma.StringFilter<"SystemSetting"> | string
   serverUrl?: Prisma.StringFilter<"SystemSetting"> | string
   serverLogo?: Prisma.StringFilter<"SystemSetting"> | string
-  sysUsername?: Prisma.StringFilter<"SystemSetting"> | string
 }, "id">
 
 export type SystemSettingOrderByWithAggregationInput = {
@@ -242,7 +232,6 @@ export type SystemSettingOrderByWithAggregationInput = {
   serverName?: Prisma.SortOrder
   serverUrl?: Prisma.SortOrder
   serverLogo?: Prisma.SortOrder
-  sysUsername?: Prisma.SortOrder
   _count?: Prisma.SystemSettingCountOrderByAggregateInput
   _avg?: Prisma.SystemSettingAvgOrderByAggregateInput
   _max?: Prisma.SystemSettingMaxOrderByAggregateInput
@@ -258,7 +247,6 @@ export type SystemSettingScalarWhereWithAggregatesInput = {
   serverName?: Prisma.StringWithAggregatesFilter<"SystemSetting"> | string
   serverUrl?: Prisma.StringWithAggregatesFilter<"SystemSetting"> | string
   serverLogo?: Prisma.StringWithAggregatesFilter<"SystemSetting"> | string
-  sysUsername?: Prisma.StringWithAggregatesFilter<"SystemSetting"> | string
 }
 
 export type SystemSettingCreateInput = {
@@ -266,7 +254,6 @@ export type SystemSettingCreateInput = {
   serverName: string
   serverUrl: string
   serverLogo: string
-  sysUsername: string
 }
 
 export type SystemSettingUncheckedCreateInput = {
@@ -274,7 +261,6 @@ export type SystemSettingUncheckedCreateInput = {
   serverName: string
   serverUrl: string
   serverLogo: string
-  sysUsername: string
 }
 
 export type SystemSettingUpdateInput = {
@@ -282,7 +268,6 @@ export type SystemSettingUpdateInput = {
   serverName?: Prisma.StringFieldUpdateOperationsInput | string
   serverUrl?: Prisma.StringFieldUpdateOperationsInput | string
   serverLogo?: Prisma.StringFieldUpdateOperationsInput | string
-  sysUsername?: Prisma.StringFieldUpdateOperationsInput | string
 }
 
 export type SystemSettingUncheckedUpdateInput = {
@@ -290,7 +275,6 @@ export type SystemSettingUncheckedUpdateInput = {
   serverName?: Prisma.StringFieldUpdateOperationsInput | string
   serverUrl?: Prisma.StringFieldUpdateOperationsInput | string
   serverLogo?: Prisma.StringFieldUpdateOperationsInput | string
-  sysUsername?: Prisma.StringFieldUpdateOperationsInput | string
 }
 
 export type SystemSettingCreateManyInput = {
@@ -298,7 +282,6 @@ export type SystemSettingCreateManyInput = {
   serverName: string
   serverUrl: string
   serverLogo: string
-  sysUsername: string
 }
 
 export type SystemSettingUpdateManyMutationInput = {
@@ -306,7 +289,6 @@ export type SystemSettingUpdateManyMutationInput = {
   serverName?: Prisma.StringFieldUpdateOperationsInput | string
   serverUrl?: Prisma.StringFieldUpdateOperationsInput | string
   serverLogo?: Prisma.StringFieldUpdateOperationsInput | string
-  sysUsername?: Prisma.StringFieldUpdateOperationsInput | string
 }
 
 export type SystemSettingUncheckedUpdateManyInput = {
@@ -314,7 +296,6 @@ export type SystemSettingUncheckedUpdateManyInput = {
   serverName?: Prisma.StringFieldUpdateOperationsInput | string
   serverUrl?: Prisma.StringFieldUpdateOperationsInput | string
   serverLogo?: Prisma.StringFieldUpdateOperationsInput | string
-  sysUsername?: Prisma.StringFieldUpdateOperationsInput | string
 }
 
 export type SystemSettingCountOrderByAggregateInput = {
@@ -322,7 +303,6 @@ export type SystemSettingCountOrderByAggregateInput = {
   serverName?: Prisma.SortOrder
   serverUrl?: Prisma.SortOrder
   serverLogo?: Prisma.SortOrder
-  sysUsername?: Prisma.SortOrder
 }
 
 export type SystemSettingAvgOrderByAggregateInput = {
@@ -334,7 +314,6 @@ export type SystemSettingMaxOrderByAggregateInput = {
   serverName?: Prisma.SortOrder
   serverUrl?: Prisma.SortOrder
   serverLogo?: Prisma.SortOrder
-  sysUsername?: Prisma.SortOrder
 }
 
 export type SystemSettingMinOrderByAggregateInput = {
@@ -342,7 +321,6 @@ export type SystemSettingMinOrderByAggregateInput = {
   serverName?: Prisma.SortOrder
   serverUrl?: Prisma.SortOrder
   serverLogo?: Prisma.SortOrder
-  sysUsername?: Prisma.SortOrder
 }
 
 export type SystemSettingSumOrderByAggregateInput = {
@@ -356,7 +334,6 @@ export type SystemSettingSelect<ExtArgs extends runtime.Types.Extensions.Interna
   serverName?: boolean
   serverUrl?: boolean
   serverLogo?: boolean
-  sysUsername?: boolean
 }, ExtArgs["result"]["systemSetting"]>
 
 export type SystemSettingSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -364,7 +341,6 @@ export type SystemSettingSelectCreateManyAndReturn<ExtArgs extends runtime.Types
   serverName?: boolean
   serverUrl?: boolean
   serverLogo?: boolean
-  sysUsername?: boolean
 }, ExtArgs["result"]["systemSetting"]>
 
 export type SystemSettingSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -372,7 +348,6 @@ export type SystemSettingSelectUpdateManyAndReturn<ExtArgs extends runtime.Types
   serverName?: boolean
   serverUrl?: boolean
   serverLogo?: boolean
-  sysUsername?: boolean
 }, ExtArgs["result"]["systemSetting"]>
 
 export type SystemSettingSelectScalar = {
@@ -380,10 +355,9 @@ export type SystemSettingSelectScalar = {
   serverName?: boolean
   serverUrl?: boolean
   serverLogo?: boolean
-  sysUsername?: boolean
 }
 
-export type SystemSettingOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "serverName" | "serverUrl" | "serverLogo" | "sysUsername", ExtArgs["result"]["systemSetting"]>
+export type SystemSettingOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "serverName" | "serverUrl" | "serverLogo", ExtArgs["result"]["systemSetting"]>
 
 export type $SystemSettingPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "SystemSetting"
@@ -393,7 +367,6 @@ export type $SystemSettingPayload<ExtArgs extends runtime.Types.Extensions.Inter
     serverName: string
     serverUrl: string
     serverLogo: string
-    sysUsername: string
   }, ExtArgs["result"]["systemSetting"]>
   composites: {}
 }
@@ -821,7 +794,6 @@ export interface SystemSettingFieldRefs {
   readonly serverName: Prisma.FieldRef<"SystemSetting", 'String'>
   readonly serverUrl: Prisma.FieldRef<"SystemSetting", 'String'>
   readonly serverLogo: Prisma.FieldRef<"SystemSetting", 'String'>
-  readonly sysUsername: Prisma.FieldRef<"SystemSetting", 'String'>
 }
     
 

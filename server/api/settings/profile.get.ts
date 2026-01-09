@@ -14,6 +14,5 @@ export default defineEventHandler(async (event) => {
     serverName: setting?.serverName || '',
     serverUrl: setting?.serverUrl || '',
     serverLogo: setting?.serverLogo || '',
-    sysUsername: setting?.sysUsername || '',
   }, 'profile ok')
 })

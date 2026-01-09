@@ -43,6 +43,7 @@ export default defineEventHandler(async (event) => {
   if (body?.role) {
     data.role = body.role
   }
+  const setOwner = body?.isOwner === true
   if (body?.isOwner !== undefined) {
     data.isOwner = Boolean(body.isOwner)
   }
@@ -58,19 +59,27 @@ export default defineEventHandler(async (event) => {
   }
 
   try {
-    const updated = await prisma.user.update({
-      where: { id },
-      data,
-      select: {
-        id: true,
-        email: true,
-      displayName: true,
-      avatarUrl: true,
-      role: true,
-      isOwner: true,
-      isActive: true,
-      createdAt: true,
-      },
+    const updated = await prisma.$transaction(async (tx) => {
+      if (setOwner) {
+        await tx.user.updateMany({
+          where: { isOwner: true, NOT: { id } },
+          data: { isOwner: false },
+        })
+      }
+      return tx.user.update({
+        where: { id },
+        data,
+        select: {
+          id: true,
+          email: true,
+          displayName: true,
+          avatarUrl: true,
+          role: true,
+          isOwner: true,
+          isActive: true,
+          createdAt: true,
+        },
+      })
     })
 
     return ok(updated, 'user updated')

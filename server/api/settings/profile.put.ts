@@ -5,7 +5,6 @@ import { requireRole } from '../../utils/auth'
 import { trimUrl } from '../../utils/normalize'
 
 type ProfileBody = {
-  sysUsername?: string
   serverName?: string
   serverUrl?: string
   serverLogo?: string
@@ -18,14 +17,10 @@ export default defineEventHandler(async (event) => {
   }
 
   const body = await readBody<ProfileBody>(event)
-  const sysUsername = (body?.sysUsername || '').trim()
   const serverName = (body?.serverName || '').trim()
   const serverUrl = trimUrl((body?.serverUrl || '').trim())
   const serverLogo = (body?.serverLogo || '').trim()
 
-  if (!sysUsername) {
-    return fail('sysUsername is required', null)
-  }
   if (!serverName) {
     return fail('serverName is required', null)
   }
@@ -36,7 +31,6 @@ export default defineEventHandler(async (event) => {
   const setting = await prisma.systemSetting.upsert({
     where: { id: 1 },
     update: {
-      sysUsername,
       serverName,
       serverUrl,
       serverLogo,
@@ -46,7 +40,6 @@ export default defineEventHandler(async (event) => {
       serverName,
       serverUrl,
       serverLogo,
-      sysUsername,
     },
   })
 

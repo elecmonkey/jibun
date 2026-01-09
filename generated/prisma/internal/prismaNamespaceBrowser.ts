@@ -165,8 +165,7 @@ export const SystemSettingScalarFieldEnum = {
   id: 'id',
   serverName: 'serverName',
   serverUrl: 'serverUrl',
-  serverLogo: 'serverLogo',
-  sysUsername: 'sysUsername'
+  serverLogo: 'serverLogo'
 } as const
 
 export type SystemSettingScalarFieldEnum = (typeof SystemSettingScalarFieldEnum)[keyof typeof SystemSettingScalarFieldEnum]

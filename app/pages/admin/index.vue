@@ -107,7 +107,6 @@ const displayInstanceType = (value: string) => {
   return 'Unknown'
 }
 
-const sysUsername = ref('')
 const serverName = ref('')
 const serverUrl = ref('')
 const serverLogo = ref('')
@@ -390,6 +389,7 @@ const updateOwner = async (user: UserItem) => {
       return
     }
     showUserMessage('success', '站主设置已更新')
+    await fetchUsers()
   } catch {
     showUserMessage('error', '更新失败，请检查账号权限')
   }
@@ -467,11 +467,10 @@ const copyInviteLink = async () => {
 
 const loadProfile = async () => {
   try {
-    const resp = await $fetch<{ code: number; data?: { sysUsername?: string; serverName?: string; serverUrl?: string; serverLogo?: string } }>('/api/settings/profile', {
+    const resp = await $fetch<{ code: number; data?: { serverName?: string; serverUrl?: string; serverLogo?: string } }>('/api/settings/profile', {
       headers: token.value ? { Authorization: `Bearer ${token.value}` } : undefined,
     })
     if (resp.code === 1 && resp.data) {
-      sysUsername.value = resp.data.sysUsername || ''
       serverName.value = resp.data.serverName || ''
       serverUrl.value = resp.data.serverUrl || ''
       serverLogo.value = resp.data.serverLogo || ''
@@ -482,10 +481,6 @@ const loadProfile = async () => {
 }
 
 const saveProfile = async () => {
-  if (!sysUsername.value.trim()) {
-    showMessage('error', '请输入本人名称')
-    return
-  }
   if (!serverName.value.trim()) {
     showMessage('error', '请输入站点名称')
     return
@@ -500,7 +495,6 @@ const saveProfile = async () => {
       method: 'PUT',
       headers: token.value ? { Authorization: `Bearer ${token.value}` } : undefined,
       body: {
-        sysUsername: sysUsername.value.trim(),
         serverName: serverName.value.trim(),
         serverUrl: serverUrl.value.trim(),
         serverLogo: serverLogo.value.trim(),
@@ -547,12 +541,6 @@ onMounted(() => {
           <v-text-field
             v-model="serverLogo"
             label="站点头像 URL（可选）"
-            variant="outlined"
-            density="comfortable"
-          />
-          <v-text-field
-            v-model="sysUsername"
-            label="本人显示名称"
             variant="outlined"
             density="comfortable"
           />

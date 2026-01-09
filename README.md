@@ -33,7 +33,7 @@ DATABASE_URL="postgresql://user:pass@host:5432/jibun"
 JWT_TOKEN="your-secret"
 ```
 
-站点名称、站点地址、头像、本人显示名称请在管理面板里配置（存入数据库）。
+站点名称、站点地址、头像请在管理面板里配置（存入数据库）。
 
 ## 创建用户
 

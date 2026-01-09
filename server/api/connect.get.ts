@@ -81,14 +81,22 @@ const buildLogoUrl = (serverUrl: string, serverLogo: string) => {
 
 export default defineEventHandler(async () => {
   const setting = await prisma.systemSetting.findFirst()
-  if (!setting || !setting.serverName || !setting.serverUrl || !setting.sysUsername) {
+  if (!setting || !setting.serverName || !setting.serverUrl) {
     return fail('system setting not configured', null)
   }
 
   const serverUrl = setting.serverUrl
   const serverName = setting.serverName
   const serverLogo = setting.serverLogo
-  const sysUsername = setting.sysUsername
+  const owner = await prisma.user.findFirst({
+    where: { isOwner: true },
+    orderBy: { id: 'asc' },
+    select: {
+      displayName: true,
+      email: true,
+    },
+  })
+  const sysUsername = owner?.displayName || owner?.email || serverName
 
   const totalMoments = await prisma.moment.count()
 
