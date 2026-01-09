@@ -17,10 +17,14 @@ export default defineEventHandler(async (event) => {
   try {
     const target = await prisma.user.findUnique({
       where: { id },
-      select: { role: true, invitedByConnectId: true },
+      select: { role: true, invitedByConnectId: true, connectId: true },
     })
     if (!target) {
       return fail('user not found', null)
+    }
+
+    if (target.connectId || target.invitedByConnectId) {
+      return fail('user bound to connect', null)
     }
 
     if (target.role === 'ADMIN') {
@@ -32,19 +36,42 @@ export default defineEventHandler(async (event) => {
       }
     }
 
+    const momentIds = await prisma.moment.findMany({
+      where: { authorId: id },
+      select: { id: true },
+    })
+    const idsToDelete = momentIds.map((item) => item.id)
+
+    const deleteSteps = [
+      prisma.connectLoginToken.deleteMany({
+        where: { userId: id },
+      }),
+      prisma.comment.deleteMany({
+        where: { authorId: id },
+      }),
+      idsToDelete.length
+        ? prisma.comment.deleteMany({
+            where: { momentId: { in: idsToDelete } },
+          })
+        : prisma.comment.deleteMany({
+            where: { momentId: { in: [-1] } },
+          }),
+      prisma.moment.deleteMany({ where: { authorId: id } }),
+      prisma.user.delete({ where: { id } }),
+    ]
+
     if (target.invitedByConnectId) {
-      await prisma.$transaction([
-        prisma.user.delete({ where: { id } }),
+      deleteSteps.push(
         prisma.connect.updateMany({
           where: { id: target.invitedByConnectId },
           data: { inviteToken: null, inviteExpiresAt: null },
         }),
-      ])
-    } else {
-      await prisma.user.delete({ where: { id } })
+      )
     }
+
+    await prisma.$transaction(deleteSteps)
     return ok(null, 'user deleted')
   } catch {
-    return fail('user not found', null)
+    return fail('delete failed', null)
   }
 })

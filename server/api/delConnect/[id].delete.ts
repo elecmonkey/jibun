@@ -1,4 +1,5 @@
 import { createHmac } from 'crypto'
+import { getQuery } from 'h3'
 import { prisma } from '../../utils/prisma'
 import { fail, ok } from '../../utils/response'
 import { requireRole } from '../../utils/auth'
@@ -24,7 +25,10 @@ export default defineEventHandler(async (event) => {
     return fail('connect not found', null)
   }
 
-  if (existing.instanceType === 'JIBUN') {
+  const query = getQuery(event)
+  const forceDelete = String(query.force || '').toLowerCase() === '1'
+
+  if (existing.instanceType === 'JIBUN' && !forceDelete) {
     const setting = await prisma.systemSetting.findFirst()
     const serverUrl = setting?.serverUrl?.trim()
     if (!serverUrl || !existing.inviteToken) {
@@ -60,9 +64,18 @@ export default defineEventHandler(async (event) => {
     }
   }
 
-  await prisma.connect.delete({
-    where: { id },
-  })
+  await prisma.$transaction([
+    prisma.connectLoginToken.deleteMany({ where: { connectId: id } }),
+    prisma.user.updateMany({
+      where: { connectId: id },
+      data: { connectId: null },
+    }),
+    prisma.user.updateMany({
+      where: { invitedByConnectId: id },
+      data: { invitedByConnectId: null },
+    }),
+    prisma.connect.delete({ where: { id } }),
+  ])
 
   return ok(null, 'delete connect ok')
 })

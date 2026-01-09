@@ -42,6 +42,13 @@ type UserItem = {
   isOwner: boolean
   isActive: boolean
   createdAt: string
+  connectId?: number | null
+  invitedByConnectId?: number | null
+  connect?: {
+    id: number
+    connectUrl: string
+    instanceType: string
+  } | null
 }
 
 const users = ref<UserItem[]>([])
@@ -177,12 +184,28 @@ const deleteConnect = async (id: number) => {
     })
 
     if (resp.code !== 1) {
-      showMessage('error', resp.msg || '删除失败')
-      return
+      if (resp.msg === 'revoke failed') {
+        if (import.meta.client && window.confirm('对方服务器不可用或拒绝删除，是否强制删除本地连接？')) {
+          const forceResp = await $fetch<{ code: number; msg: string }>(`/api/delConnect/${id}?force=1`, {
+            method: 'DELETE',
+            headers: token.value ? { Authorization: `Bearer ${token.value}` } : undefined,
+          })
+          if (forceResp.code !== 1) {
+            showMessage('error', forceResp.msg || '强制删除失败')
+            return
+          }
+        } else {
+          return
+        }
+      } else {
+        showMessage('error', resp.msg || '删除失败')
+        return
+      }
     }
 
     showMessage('success', '已删除连接')
     await refreshConnects()
+    await fetchUsers()
   } catch {
     showMessage('error', '删除失败，请检查账号权限')
   }
@@ -681,6 +704,7 @@ onMounted(() => {
                   <th>邮箱</th>
                   <th>显示名</th>
                   <th>角色</th>
+                  <th>实例</th>
                   <th>站主</th>
                   <th class="text-right action-header">操作</th>
                 </tr>
@@ -691,6 +715,12 @@ onMounted(() => {
                   <td>{{ user.displayName || '-' }}</td>
                   <td>{{ user.role }}</td>
                   <td>
+                    <span v-if="user.connect" class="text-caption text-muted">
+                      {{ user.connect.instanceType }} · {{ user.connect.connectUrl }}
+                    </span>
+                    <span v-else class="text-caption text-muted">-</span>
+                  </td>
+                  <td>
                     <v-switch
                       v-model="user.isOwner"
                       density="compact"
@@ -700,7 +730,15 @@ onMounted(() => {
                   </td>
                   <td class="text-right">
                     <v-btn size="small" variant="text" @click="openEditModal(user)">编辑</v-btn>
-                    <v-btn size="small" variant="text" color="error" @click="deleteUser(user.id)">删除</v-btn>
+                    <v-btn
+                      v-if="!user.connectId && !user.invitedByConnectId"
+                      size="small"
+                      variant="text"
+                      color="error"
+                      @click="deleteUser(user.id)"
+                    >
+                      删除
+                    </v-btn>
                   </td>
                 </tr>
               </tbody>

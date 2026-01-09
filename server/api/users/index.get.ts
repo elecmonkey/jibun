@@ -19,6 +19,15 @@ export default defineEventHandler(async (event) => {
       isOwner: true,
       isActive: true,
       createdAt: true,
+      connectId: true,
+      invitedByConnectId: true,
+      connect: {
+        select: {
+          id: true,
+          connectUrl: true,
+          instanceType: true,
+        },
+      },
     },
   })
 
