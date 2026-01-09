@@ -90,6 +90,12 @@ const submit = async () => {
   }
 
   loading.value = true
+  const popup = window.open('about:blank', '_blank')
+  if (!popup) {
+    loading.value = false
+    error.value = '请允许弹窗后重试'
+    return
+  }
   try {
     const timestamp = Date.now()
     const payload = {
@@ -134,11 +140,12 @@ const submit = async () => {
       // ignore local mark failures
     }
 
-    window.open(resp.data.redirect, '_blank', 'noopener,noreferrer')
+    popup.location.href = resp.data.redirect
     emit('completed')
     close()
   } catch {
     error.value = '申请失败'
+    popup.close()
   } finally {
     loading.value = false
   }
