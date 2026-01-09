@@ -35,6 +35,7 @@ const remoteMoments = ref<Array<{
   created_at: string
   username: string
   fav_count: number
+  images?: Array<{ image_url: string; image_source: string }>
   server_url: string
   server_name: string
   logo?: string | null
@@ -92,6 +93,9 @@ const modalComments = ref<Array<{
     }
   } | null
 }>>([])
+const imageLightboxOpen = ref(false)
+const imageLightboxImages = ref<string[]>([])
+const imageLightboxIndex = ref(0)
 const commentContent = ref('')
 const commentPosting = ref(false)
 const replyTarget = ref<null | { id: number; name: string; content: string; time: string }>(null)
@@ -580,6 +584,47 @@ const formatMomentTime = (input: string) => {
   return `${datePart} ${hour}:${minute}`
 }
 
+const getRemoteImageUrl = (baseUrl: string, image: { image_url: string; image_source: string }) => {
+  if (!image?.image_url) {
+    return ''
+  }
+  if (image.image_source === 'local') {
+    const base = baseUrl.replace(/\/+$/, '')
+    const path = image.image_url.startsWith('/') ? image.image_url : `/${image.image_url}`
+    return `${base}/api${path}`
+  }
+  return image.image_url
+}
+
+const openImageLightbox = (images: string[], startIndex = 0) => {
+  if (!images.length) {
+    return
+  }
+  imageLightboxImages.value = images
+  imageLightboxIndex.value = Math.min(Math.max(startIndex, 0), images.length - 1)
+  imageLightboxOpen.value = true
+}
+
+const openImageLightboxForMoment = (moment: TimelineItem, image: string | { image_url: string; image_source: string }) => {
+  if (moment.kind === 'local') {
+    const list = moment.images || []
+    const index = typeof image === 'string' ? list.indexOf(image) : -1
+    openImageLightbox(list, Math.max(index, 0))
+    return
+  }
+  const list = (moment.images || []).map((img) => getRemoteImageUrl(moment.server_url, img)).filter(Boolean)
+  const targetUrl = typeof image === 'string' ? image : getRemoteImageUrl(moment.server_url, image)
+  const index = list.indexOf(targetUrl)
+  openImageLightbox(list, Math.max(index, 0))
+}
+
+const openImageLightboxForModal = (image: string) => {
+  const list = modalMoment.value?.images || []
+  const index = list.indexOf(image)
+  openImageLightbox(list, Math.max(index, 0))
+}
+
+
 onMounted(() => {
   loadLikedMoments()
   loadMoments()
@@ -692,9 +737,19 @@ watch(
                   v-for="image in moment.images"
                   :key="image"
                   class="moment-image-thumb"
-                  @click.stop="openMomentModal(moment.id, image)"
+                  @click.stop="openImageLightboxForMoment(moment, image)"
                 >
                   <v-img :src="image" aspect-ratio="1" cover />
+                </div>
+              </div>
+              <div v-if="moment.kind === 'remote' && moment.images?.length" class="moment-images">
+                <div
+                  v-for="image in moment.images"
+                  :key="image.image_url"
+                  class="moment-image-thumb"
+                  @click.stop="openImageLightboxForMoment(moment, image)"
+                >
+                  <v-img :src="getRemoteImageUrl(moment.server_url, image)" aspect-ratio="1" cover />
                 </div>
               </div>
             </div>
@@ -868,22 +923,22 @@ watch(
             </span>
           </div>
           <div class="text-body-2 markdown-body" v-html="renderMarkdown(modalMoment.content)" />
-          <div v-if="modalMoment.images?.length" class="modal-images">
-            <div v-if="modalImage" class="modal-image-main">
-              <v-img :src="modalImage" aspect-ratio="16/9" cover />
-            </div>
-            <div class="modal-image-list">
-              <div
-                v-for="image in modalMoment.images"
-                :key="image"
-                class="modal-image-thumb"
-                :class="{ 'is-active': image === modalImage }"
+            <div v-if="modalMoment.images?.length" class="modal-images">
+              <div v-if="modalImage" class="modal-image-main">
+                <v-img :src="modalImage" aspect-ratio="16/9" cover @click="openImageLightboxForModal(modalImage)" />
+              </div>
+              <div class="modal-image-list">
+                <div
+                  v-for="image in modalMoment.images"
+                  :key="image"
+                  class="modal-image-thumb"
+                  :class="{ 'is-active': image === modalImage }"
                 @click="modalImage = image"
-              >
-                <v-img :src="image" aspect-ratio="1" cover />
+                >
+                  <v-img :src="image" aspect-ratio="1" cover />
+                </div>
               </div>
             </div>
-          </div>
           <div v-if="modalMoment.tags?.length" class="moment-tags mt-2">
             <v-chip
               v-for="tag in modalMoment.tags"
@@ -981,6 +1036,12 @@ watch(
         </div>
       </v-card>
     </v-dialog>
+    <ImageLightbox
+      v-model="imageLightboxOpen"
+      :images="imageLightboxImages"
+      :start-index="imageLightboxIndex"
+      @update:start-index="imageLightboxIndex = $event"
+    />
   </v-container>
 </template>
 

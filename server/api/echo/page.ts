@@ -53,13 +53,17 @@ export default defineEventHandler(async (event) => {
     const username = moment.author.displayName || moment.author.email
     const tagList = moment.tags || []
     const firstTag = tagList.length > 0 ? tagList[0] : null
+    const images = (moment.images || []).map((url) => ({
+      image_url: url,
+      image_source: 'url',
+    }))
     return {
       id: moment.id,
       content: moment.content,
       created_at: moment.createdAt.toISOString(),
       username,
       user_id: moment.author.id,
-      images: [],
+      images,
       tags: firstTag ? [{ id: firstTag, name: firstTag }] : null,
       layout: null,
       extension: null,
