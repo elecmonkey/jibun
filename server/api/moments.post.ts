@@ -6,6 +6,7 @@ import { requireRole } from '../utils/auth'
 type MomentBody = {
   content?: string
   tags?: string[]
+  images?: string[]
 }
 
 export default defineEventHandler(async (event) => {
@@ -24,11 +25,20 @@ export default defineEventHandler(async (event) => {
     ? body?.tags.map((tag) => tag.trim()).filter((tag) => tag.length > 0)
     : []
 
+  const rawImages = Array.isArray(body?.images)
+    ? body?.images.map((item) => item.trim()).filter((item) => item.length > 0)
+    : []
+  if (rawImages.length > 9) {
+    return fail('images limit exceeded', null)
+  }
+  const images = rawImages
+
   const created = await prisma.moment.create({
     data: {
       content,
       authorId: auth.user.id,
       tags: tagNames,
+      images,
     },
     include: {
       author: {

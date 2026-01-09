@@ -59,6 +59,7 @@ export type MomentCountAggregateOutputType = {
   content: number
   authorId: number
   tags: number
+  images: number
   favCount: number
   createdAt: number
   _all: number
@@ -98,6 +99,7 @@ export type MomentCountAggregateInputType = {
   content?: true
   authorId?: true
   tags?: true
+  images?: true
   favCount?: true
   createdAt?: true
   _all?: true
@@ -194,6 +196,7 @@ export type MomentGroupByOutputType = {
   content: string
   authorId: number
   tags: string[]
+  images: string[]
   favCount: number
   createdAt: Date
   _count: MomentCountAggregateOutputType | null
@@ -226,6 +229,7 @@ export type MomentWhereInput = {
   content?: Prisma.StringFilter<"Moment"> | string
   authorId?: Prisma.IntFilter<"Moment"> | number
   tags?: Prisma.StringNullableListFilter<"Moment">
+  images?: Prisma.StringNullableListFilter<"Moment">
   favCount?: Prisma.IntFilter<"Moment"> | number
   createdAt?: Prisma.DateTimeFilter<"Moment"> | Date | string
   author?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
@@ -237,6 +241,7 @@ export type MomentOrderByWithRelationInput = {
   content?: Prisma.SortOrder
   authorId?: Prisma.SortOrder
   tags?: Prisma.SortOrder
+  images?: Prisma.SortOrder
   favCount?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   author?: Prisma.UserOrderByWithRelationInput
@@ -251,6 +256,7 @@ export type MomentWhereUniqueInput = Prisma.AtLeast<{
   content?: Prisma.StringFilter<"Moment"> | string
   authorId?: Prisma.IntFilter<"Moment"> | number
   tags?: Prisma.StringNullableListFilter<"Moment">
+  images?: Prisma.StringNullableListFilter<"Moment">
   favCount?: Prisma.IntFilter<"Moment"> | number
   createdAt?: Prisma.DateTimeFilter<"Moment"> | Date | string
   author?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
@@ -262,6 +268,7 @@ export type MomentOrderByWithAggregationInput = {
   content?: Prisma.SortOrder
   authorId?: Prisma.SortOrder
   tags?: Prisma.SortOrder
+  images?: Prisma.SortOrder
   favCount?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   _count?: Prisma.MomentCountOrderByAggregateInput
@@ -279,6 +286,7 @@ export type MomentScalarWhereWithAggregatesInput = {
   content?: Prisma.StringWithAggregatesFilter<"Moment"> | string
   authorId?: Prisma.IntWithAggregatesFilter<"Moment"> | number
   tags?: Prisma.StringNullableListFilter<"Moment">
+  images?: Prisma.StringNullableListFilter<"Moment">
   favCount?: Prisma.IntWithAggregatesFilter<"Moment"> | number
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Moment"> | Date | string
 }
@@ -286,6 +294,7 @@ export type MomentScalarWhereWithAggregatesInput = {
 export type MomentCreateInput = {
   content: string
   tags?: Prisma.MomentCreatetagsInput | string[]
+  images?: Prisma.MomentCreateimagesInput | string[]
   favCount?: number
   createdAt?: Date | string
   author: Prisma.UserCreateNestedOneWithoutMomentsInput
@@ -297,6 +306,7 @@ export type MomentUncheckedCreateInput = {
   content: string
   authorId: number
   tags?: Prisma.MomentCreatetagsInput | string[]
+  images?: Prisma.MomentCreateimagesInput | string[]
   favCount?: number
   createdAt?: Date | string
   comments?: Prisma.CommentUncheckedCreateNestedManyWithoutMomentInput
@@ -305,6 +315,7 @@ export type MomentUncheckedCreateInput = {
 export type MomentUpdateInput = {
   content?: Prisma.StringFieldUpdateOperationsInput | string
   tags?: Prisma.MomentUpdatetagsInput | string[]
+  images?: Prisma.MomentUpdateimagesInput | string[]
   favCount?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   author?: Prisma.UserUpdateOneRequiredWithoutMomentsNestedInput
@@ -316,6 +327,7 @@ export type MomentUncheckedUpdateInput = {
   content?: Prisma.StringFieldUpdateOperationsInput | string
   authorId?: Prisma.IntFieldUpdateOperationsInput | number
   tags?: Prisma.MomentUpdatetagsInput | string[]
+  images?: Prisma.MomentUpdateimagesInput | string[]
   favCount?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   comments?: Prisma.CommentUncheckedUpdateManyWithoutMomentNestedInput
@@ -326,6 +338,7 @@ export type MomentCreateManyInput = {
   content: string
   authorId: number
   tags?: Prisma.MomentCreatetagsInput | string[]
+  images?: Prisma.MomentCreateimagesInput | string[]
   favCount?: number
   createdAt?: Date | string
 }
@@ -333,6 +346,7 @@ export type MomentCreateManyInput = {
 export type MomentUpdateManyMutationInput = {
   content?: Prisma.StringFieldUpdateOperationsInput | string
   tags?: Prisma.MomentUpdatetagsInput | string[]
+  images?: Prisma.MomentUpdateimagesInput | string[]
   favCount?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -342,6 +356,7 @@ export type MomentUncheckedUpdateManyInput = {
   content?: Prisma.StringFieldUpdateOperationsInput | string
   authorId?: Prisma.IntFieldUpdateOperationsInput | number
   tags?: Prisma.MomentUpdatetagsInput | string[]
+  images?: Prisma.MomentUpdateimagesInput | string[]
   favCount?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -369,6 +384,7 @@ export type MomentCountOrderByAggregateInput = {
   content?: Prisma.SortOrder
   authorId?: Prisma.SortOrder
   tags?: Prisma.SortOrder
+  images?: Prisma.SortOrder
   favCount?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
@@ -452,7 +468,16 @@ export type MomentCreatetagsInput = {
   set: string[]
 }
 
+export type MomentCreateimagesInput = {
+  set: string[]
+}
+
 export type MomentUpdatetagsInput = {
+  set?: string[]
+  push?: string | string[]
+}
+
+export type MomentUpdateimagesInput = {
   set?: string[]
   push?: string | string[]
 }
@@ -474,6 +499,7 @@ export type MomentUpdateOneRequiredWithoutCommentsNestedInput = {
 export type MomentCreateWithoutAuthorInput = {
   content: string
   tags?: Prisma.MomentCreatetagsInput | string[]
+  images?: Prisma.MomentCreateimagesInput | string[]
   favCount?: number
   createdAt?: Date | string
   comments?: Prisma.CommentCreateNestedManyWithoutMomentInput
@@ -483,6 +509,7 @@ export type MomentUncheckedCreateWithoutAuthorInput = {
   id?: number
   content: string
   tags?: Prisma.MomentCreatetagsInput | string[]
+  images?: Prisma.MomentCreateimagesInput | string[]
   favCount?: number
   createdAt?: Date | string
   comments?: Prisma.CommentUncheckedCreateNestedManyWithoutMomentInput
@@ -522,6 +549,7 @@ export type MomentScalarWhereInput = {
   content?: Prisma.StringFilter<"Moment"> | string
   authorId?: Prisma.IntFilter<"Moment"> | number
   tags?: Prisma.StringNullableListFilter<"Moment">
+  images?: Prisma.StringNullableListFilter<"Moment">
   favCount?: Prisma.IntFilter<"Moment"> | number
   createdAt?: Prisma.DateTimeFilter<"Moment"> | Date | string
 }
@@ -529,6 +557,7 @@ export type MomentScalarWhereInput = {
 export type MomentCreateWithoutCommentsInput = {
   content: string
   tags?: Prisma.MomentCreatetagsInput | string[]
+  images?: Prisma.MomentCreateimagesInput | string[]
   favCount?: number
   createdAt?: Date | string
   author: Prisma.UserCreateNestedOneWithoutMomentsInput
@@ -539,6 +568,7 @@ export type MomentUncheckedCreateWithoutCommentsInput = {
   content: string
   authorId: number
   tags?: Prisma.MomentCreatetagsInput | string[]
+  images?: Prisma.MomentCreateimagesInput | string[]
   favCount?: number
   createdAt?: Date | string
 }
@@ -562,6 +592,7 @@ export type MomentUpdateToOneWithWhereWithoutCommentsInput = {
 export type MomentUpdateWithoutCommentsInput = {
   content?: Prisma.StringFieldUpdateOperationsInput | string
   tags?: Prisma.MomentUpdatetagsInput | string[]
+  images?: Prisma.MomentUpdateimagesInput | string[]
   favCount?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   author?: Prisma.UserUpdateOneRequiredWithoutMomentsNestedInput
@@ -572,6 +603,7 @@ export type MomentUncheckedUpdateWithoutCommentsInput = {
   content?: Prisma.StringFieldUpdateOperationsInput | string
   authorId?: Prisma.IntFieldUpdateOperationsInput | number
   tags?: Prisma.MomentUpdatetagsInput | string[]
+  images?: Prisma.MomentUpdateimagesInput | string[]
   favCount?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -580,6 +612,7 @@ export type MomentCreateManyAuthorInput = {
   id?: number
   content: string
   tags?: Prisma.MomentCreatetagsInput | string[]
+  images?: Prisma.MomentCreateimagesInput | string[]
   favCount?: number
   createdAt?: Date | string
 }
@@ -587,6 +620,7 @@ export type MomentCreateManyAuthorInput = {
 export type MomentUpdateWithoutAuthorInput = {
   content?: Prisma.StringFieldUpdateOperationsInput | string
   tags?: Prisma.MomentUpdatetagsInput | string[]
+  images?: Prisma.MomentUpdateimagesInput | string[]
   favCount?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   comments?: Prisma.CommentUpdateManyWithoutMomentNestedInput
@@ -596,6 +630,7 @@ export type MomentUncheckedUpdateWithoutAuthorInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   content?: Prisma.StringFieldUpdateOperationsInput | string
   tags?: Prisma.MomentUpdatetagsInput | string[]
+  images?: Prisma.MomentUpdateimagesInput | string[]
   favCount?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   comments?: Prisma.CommentUncheckedUpdateManyWithoutMomentNestedInput
@@ -605,6 +640,7 @@ export type MomentUncheckedUpdateManyWithoutAuthorInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   content?: Prisma.StringFieldUpdateOperationsInput | string
   tags?: Prisma.MomentUpdatetagsInput | string[]
+  images?: Prisma.MomentUpdateimagesInput | string[]
   favCount?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -645,6 +681,7 @@ export type MomentSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs =
   content?: boolean
   authorId?: boolean
   tags?: boolean
+  images?: boolean
   favCount?: boolean
   createdAt?: boolean
   author?: boolean | Prisma.UserDefaultArgs<ExtArgs>
@@ -657,6 +694,7 @@ export type MomentSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extens
   content?: boolean
   authorId?: boolean
   tags?: boolean
+  images?: boolean
   favCount?: boolean
   createdAt?: boolean
   author?: boolean | Prisma.UserDefaultArgs<ExtArgs>
@@ -667,6 +705,7 @@ export type MomentSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extens
   content?: boolean
   authorId?: boolean
   tags?: boolean
+  images?: boolean
   favCount?: boolean
   createdAt?: boolean
   author?: boolean | Prisma.UserDefaultArgs<ExtArgs>
@@ -677,11 +716,12 @@ export type MomentSelectScalar = {
   content?: boolean
   authorId?: boolean
   tags?: boolean
+  images?: boolean
   favCount?: boolean
   createdAt?: boolean
 }
 
-export type MomentOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "content" | "authorId" | "tags" | "favCount" | "createdAt", ExtArgs["result"]["moment"]>
+export type MomentOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "content" | "authorId" | "tags" | "images" | "favCount" | "createdAt", ExtArgs["result"]["moment"]>
 export type MomentInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   author?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   comments?: boolean | Prisma.Moment$commentsArgs<ExtArgs>
@@ -705,6 +745,7 @@ export type $MomentPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs
     content: string
     authorId: number
     tags: string[]
+    images: string[]
     favCount: number
     createdAt: Date
   }, ExtArgs["result"]["moment"]>
@@ -1136,6 +1177,7 @@ export interface MomentFieldRefs {
   readonly content: Prisma.FieldRef<"Moment", 'String'>
   readonly authorId: Prisma.FieldRef<"Moment", 'Int'>
   readonly tags: Prisma.FieldRef<"Moment", 'String[]'>
+  readonly images: Prisma.FieldRef<"Moment", 'String[]'>
   readonly favCount: Prisma.FieldRef<"Moment", 'Int'>
   readonly createdAt: Prisma.FieldRef<"Moment", 'DateTime'>
 }
