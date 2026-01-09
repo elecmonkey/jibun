@@ -50,7 +50,7 @@ export default defineEventHandler(async (event) => {
   })
 
   if (!inbound || !inbound.tokenHint) {
-    return fail('connect not found', null)
+    return ok(null, 'inbound not found')
   }
 
   const signaturePayload = `${timestamp}.${rawBody}`
