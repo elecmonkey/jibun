@@ -23,8 +23,26 @@ const displayName = ref('')
 const avatarUrl = ref('')
 const loading = ref(false)
 const error = ref('')
+const { name, email: profileEmail, avatar } = useAuthToken()
 
 const close = () => emit('update:modelValue', false)
+
+const fillDefaults = () => {
+  email.value = profileEmail.value || ''
+  displayName.value = name.value || ''
+  avatarUrl.value = avatar.value || ''
+}
+
+watch(
+  () => props.modelValue,
+  (open) => {
+    if (open) {
+      fillDefaults()
+      password.value = ''
+      error.value = ''
+    }
+  },
+)
 
 const signPayload = async (secret: string, payload: string) => {
   const encoder = new TextEncoder()
@@ -106,7 +124,7 @@ const submit = async () => {
     window.open(resp.data.redirect, '_blank', 'noopener,noreferrer')
     emit('completed')
     close()
-  } catch (err) {
+  } catch {
     error.value = '申请失败'
   } finally {
     loading.value = false
