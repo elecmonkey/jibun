@@ -32,6 +32,9 @@ const inboundList = ref<Array<{
 const userLoading = ref(false)
 const showConnectModal = ref(false)
 const connectTarget = ref<null | { id: number; serverName: string; serverUrl: string; sysUsername: string; tokenHint: string | null }>(null)
+const showRevokeModal = ref(false)
+const revokeTargetId = ref<number | null>(null)
+const revokeMessage = ref('')
 
 type UserItem = {
   id: number
@@ -184,19 +187,18 @@ const deleteConnect = async (id: number) => {
     })
 
     if (resp.code !== 1) {
-      if (resp.msg === 'revoke failed') {
-        if (import.meta.client && window.confirm('对方服务器不可用或拒绝删除，是否强制删除本地连接？')) {
-          const forceResp = await $fetch<{ code: number; msg: string }>(`/api/delConnect/${id}?force=1`, {
-            method: 'DELETE',
-            headers: token.value ? { Authorization: `Bearer ${token.value}` } : undefined,
-          })
-          if (forceResp.code !== 1) {
-            showMessage('error', forceResp.msg || '强制删除失败')
-            return
-          }
-        } else {
-          return
-        }
+      const revokeErrors = new Set([
+        'revoke failed',
+        'system setting not configured',
+        'invalid signature',
+        'verify failed',
+        'expired',
+      ])
+      if (revokeErrors.has(resp.msg)) {
+        revokeTargetId.value = id
+        revokeMessage.value = resp.msg || '对方服务器不可用或拒绝删除'
+        showRevokeModal.value = true
+        return
       } else {
         showMessage('error', resp.msg || '删除失败')
         return
@@ -207,7 +209,32 @@ const deleteConnect = async (id: number) => {
     await refreshConnects()
     await fetchUsers()
   } catch {
-    showMessage('error', '删除失败，请检查账号权限')
+    revokeTargetId.value = id
+    revokeMessage.value = '对方服务器不可用或拒绝删除'
+    showRevokeModal.value = true
+  }
+}
+
+const forceDeleteConnect = async () => {
+  if (!revokeTargetId.value) {
+    return
+  }
+  try {
+    const resp = await $fetch<{ code: number; msg: string }>(`/api/delConnect/${revokeTargetId.value}?force=1`, {
+      method: 'DELETE',
+      headers: token.value ? { Authorization: `Bearer ${token.value}` } : undefined,
+    })
+    if (resp.code !== 1) {
+      showMessage('error', resp.msg || '强制删除失败')
+      return
+    }
+    showRevokeModal.value = false
+    revokeTargetId.value = null
+    showMessage('success', '已删除连接')
+    await refreshConnects()
+    await fetchUsers()
+  } catch {
+    showMessage('error', '强制删除失败')
   }
 }
 
@@ -678,6 +705,19 @@ onMounted(() => {
       :local-server-url="serverUrl"
       @completed="loadInbound"
     />
+
+    <v-dialog v-model="showRevokeModal" max-width="520">
+      <v-card class="p-6" rounded="lg">
+        <div class="mb-2 text-base font-semibold text-black/80">删除连接失败</div>
+        <div class="text-sm text-black/60">
+          对方服务器不可用或拒绝删除（{{ revokeMessage || '未知原因' }}）。你可以稍后再试，或强制仅删除本地连接。
+        </div>
+        <div class="mt-4 flex justify-end gap-2">
+          <v-btn variant="text" @click="showRevokeModal = false">稍后再试</v-btn>
+          <v-btn color="error" variant="flat" @click="forceDeleteConnect">强制删除</v-btn>
+        </div>
+      </v-card>
+    </v-dialog>
 
     <v-row class="mt-4">
       <v-col cols="12">
