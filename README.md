@@ -13,6 +13,7 @@
 
 - [Ech0](https://github.com/lin-snow/Ech0) - 面向个人的新一代开源、自托管、专注思想流动的轻量级联邦发布平台
 - [L1nSn0w](https://github.com/lin-snow/) - Ech0 的作者
+- [MetingJS](https://github.com/metowolf/MetingJS) - 🍰 A powerful plugin connect APlayer and Meting
 
 本项目参考了 Ech0 的设计与实现。或者说 Jibun 就是因为需要和朋友的 Ech0 实例连接，但是自己又希望部署无需自己服务器、想 DIY 更多功能而开始的项目～
 

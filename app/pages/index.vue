@@ -657,12 +657,9 @@ watch(
                   v-if="getExtensionType(moment) === 'MUSIC'"
                   variant="tonal"
                   class="extension-card"
-                  v-ripple
-                  @click="openExternalLink(String(getExtensionValue(moment)))"
                 >
-                  <v-card-text class="d-flex align-center gap-2">
-                    <v-icon size="18" icon="mdi-music" />
-                    <span class="extension-title">音乐分享</span>
+                  <v-card-text class="extension-music">
+                    <MetingPlayer :source="String(getExtensionValue(moment))" />
                   </v-card-text>
                 </v-card>
                 <v-responsive
@@ -860,12 +857,9 @@ watch(
               v-if="modalMoment.extensionType === 'MUSIC'"
               variant="tonal"
               class="extension-card"
-              v-ripple
-              @click="openExternalLink(modalMoment.extension)"
             >
-              <v-card-text class="d-flex align-center gap-2">
-                <v-icon size="18" icon="mdi-music" />
-                <span class="extension-title">音乐分享</span>
+              <v-card-text class="extension-music">
+                <MetingPlayer :source="modalMoment.extension" />
               </v-card-text>
             </v-card>
             <v-responsive
@@ -1172,6 +1166,10 @@ watch(
 
 .extension-card {
   border: 1px solid rgba(var(--v-theme-on-surface), 0.08);
+}
+
+.extension-music {
+  padding: 0;
 }
 
 .extension-link {
