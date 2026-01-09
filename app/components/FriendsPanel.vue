@@ -26,6 +26,13 @@ onMounted(() => {
   emit('update:showFriends', storedShowFriends.value)
 })
 
+const handleShowFriendsUpdate = (value: unknown) => {
+  const next = Boolean(value)
+  storedShowFriends.value = next
+  localStorage.setItem('jibun-show-friends', next ? 'true' : 'false')
+  emit('update:showFriends', next)
+}
+
 watch(
   () => connectItems.value.length,
   (value) => {
@@ -48,12 +55,7 @@ watch(
           hide-details
           density="compact"
           color="secondary"
-          @update:model-value="(value) => {
-            const next = Boolean(value)
-            storedShowFriends.value = next
-            localStorage.setItem('jibun-show-friends', next ? 'true' : 'false')
-            emit('update:showFriends', next)
-          }"
+          @update:model-value="handleShowFriendsUpdate"
         />
         <v-chip color="secondary" variant="tonal" size="small">
           {{ connectItems.length }}
