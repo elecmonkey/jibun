@@ -105,7 +105,12 @@ onMounted(() => {
         </div>
         <v-text-field v-model="form.email" label="邮箱" variant="outlined" density="compact" />
         <v-text-field v-model="form.displayName" label="显示名称" variant="outlined" density="compact" />
-        <v-text-field v-model="form.avatarUrl" label="头像 URL" variant="outlined" density="compact" />
+        <AvatarInput
+          v-model="form.avatarUrl"
+          label="头像"
+          manual-label="手动填写 URL"
+          :token="token"
+        />
         <v-text-field v-model="form.password" label="新密码（可选）" type="password" variant="outlined" density="compact" />
         <v-btn color="accent" variant="flat" :disabled="saving" @click="saveProfile">
           保存

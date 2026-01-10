@@ -538,11 +538,11 @@ onMounted(() => {
             variant="outlined"
             density="comfortable"
           />
-          <v-text-field
+          <AvatarInput
             v-model="serverLogo"
-            label="站点头像 URL（可选）"
-            variant="outlined"
-            density="comfortable"
+            label="站点头像"
+            manual-label="手动填写 URL"
+            :token="token"
           />
           <v-btn color="accent" variant="flat" @click="saveProfile">
             保存
@@ -642,10 +642,7 @@ onMounted(() => {
       <v-col cols="12">
         <v-card class="panel-card" rounded="md">
           <div class="d-flex align-center justify-space-between mb-4">
-            <div>
-              <div class="text-subtitle-1">以下人添加了我</div>
-              <div class="text-caption text-muted">Jibun 实例通知你已被连接</div>
-            </div>
+            <div class="text-subtitle-1">以下 Jibun 实例添加了我</div>
             <v-chip variant="tonal" color="secondary">{{ inboundList.length }}</v-chip>
           </div>
           <v-list class="connect-list" density="compact">
@@ -718,10 +715,7 @@ onMounted(() => {
       <v-col cols="12">
         <v-card class="panel-card" rounded="md">
           <div class="d-flex align-center justify-space-between mb-4">
-            <div>
-              <div class="text-subtitle-1">用户管理</div>
-              <div class="text-caption text-muted">新增 / 编辑 / 删除用户，站主用户在主页不显示名字。</div>
-            </div>
+            <div class="text-subtitle-1">用户管理</div>
             <v-btn color="accent" variant="flat" @click="openCreateModal">
               新增用户
             </v-btn>
@@ -792,7 +786,12 @@ onMounted(() => {
         <v-text-field v-model="createForm.email" label="邮箱" variant="outlined" density="compact" />
         <v-text-field v-model="createForm.password" label="密码" type="password" variant="outlined" density="compact" />
         <v-text-field v-model="createForm.displayName" label="显示名称" variant="outlined" density="compact" />
-        <v-text-field v-model="createForm.avatarUrl" label="头像 URL" variant="outlined" density="compact" />
+        <AvatarInput
+          v-model="createForm.avatarUrl"
+          label="用户头像"
+          manual-label="手动填写 URL"
+          :token="token"
+        />
         <v-select v-model="createForm.role" :items="userRoles" label="角色" variant="outlined" density="compact" />
         <v-switch v-model="createForm.isOwner" label="设为站主" />
         <div class="d-flex justify-end gap-2 mt-4">
@@ -807,7 +806,12 @@ onMounted(() => {
         <div class="text-subtitle-1 mb-4">编辑用户</div>
         <v-text-field v-model="editForm.email" label="邮箱" variant="outlined" density="compact" />
         <v-text-field v-model="editForm.displayName" label="显示名称" variant="outlined" density="compact" />
-        <v-text-field v-model="editForm.avatarUrl" label="头像 URL" variant="outlined" density="compact" />
+        <AvatarInput
+          v-model="editForm.avatarUrl"
+          label="用户头像"
+          manual-label="手动填写 URL"
+          :token="token"
+        />
         <v-select v-model="editForm.role" :items="userRoles" label="角色" variant="outlined" density="compact" />
         <v-switch v-model="editDisableLogin" label="禁止登录" />
         <v-text-field v-model="editForm.password" label="重置密码（可选）" type="password" variant="outlined" density="compact" />
