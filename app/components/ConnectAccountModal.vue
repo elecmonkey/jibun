@@ -110,7 +110,8 @@ const submit = async () => {
     const signature = await signPayload(props.inbound.tokenHint, signaturePayload)
 
     const baseUrl = props.inbound.serverUrl.replace(/\/+$/, '')
-    const resp = (await $fetch(
+    const fetchAny = $fetch as unknown as (input: string, init?: Record<string, unknown>) => Promise<unknown>
+    const resp = (await fetchAny(
       `${baseUrl}/api/connect/issue-account`,
       {
         method: 'POST',
@@ -130,7 +131,6 @@ const submit = async () => {
 
     try {
       if (props.inbound?.id && token.value) {
-        const fetchAny = $fetch as unknown as (input: string, init?: Record<string, unknown>) => Promise<unknown>
         await fetchAny(`/api/connect/inbound/${props.inbound.id}/registered`, {
           method: 'POST',
           headers: { Authorization: `Bearer ${token.value}` },

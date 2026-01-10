@@ -24,6 +24,35 @@ const getOptionalEnv = (key: string) => {
   return process.env[key] || ''
 }
 
+const normalizeBaseUrl = (value: string) => value.replace(/\/+$/, '')
+
+const getS3PublicBases = () => {
+  const bases = new Set<string>()
+  const custom = getOptionalEnv('S3_PUBLIC_BASE_URL').trim()
+  if (custom) {
+    bases.add(normalizeBaseUrl(custom))
+  }
+  const endpoint = getOptionalEnv('S3_ENDPOINT').trim()
+  const bucket = getOptionalEnv('S3_BUCKET').trim()
+  if (endpoint && bucket) {
+    bases.add(`${normalizeBaseUrl(endpoint)}/${bucket}`)
+  }
+  return [...bases]
+}
+
+const resolveKeyFromUrl = (url: string) => {
+  if (!url) {
+    return ''
+  }
+  for (const base of getS3PublicBases()) {
+    const prefix = `${base}/`
+    if (url.startsWith(prefix)) {
+      return url.slice(prefix.length)
+    }
+  }
+  return ''
+}
+
 export const getS3Client = () => {
   const forcePathStyle = (process.env.S3_FORCE_PATH_STYLE || '').toLowerCase() === 'true'
   return new S3Client({
@@ -123,3 +152,14 @@ export const confirmImage = async (userId: number, key: string) => {
 
 export const MAX_IMAGE_COUNT = 9
 export const MAX_IMAGE_SIZE_BYTES = MAX_IMAGE_SIZE
+
+export const deleteImageByUrl = async (url: string) => {
+  const key = resolveKeyFromUrl(url)
+  if (!key) {
+    return false
+  }
+  const client = getS3Client()
+  const bucket = getS3Bucket()
+  await client.send(new DeleteObjectCommand({ Bucket: bucket, Key: key }))
+  return true
+}

@@ -50,6 +50,7 @@ const loading = ref(false)
 const remoteLoading = ref(false)
 const modalOpen = ref(false)
 const editingModal = ref(false)
+const modalDeleting = ref(false)
 const modalMoment = ref<null | {
   id: number
   content: string
@@ -449,6 +450,7 @@ const openMomentModal = async (id: number, imageUrl?: string) => {
       commentContent.value = ''
       replyTarget.value = null
       editingModal.value = false
+      modalDeleting.value = false
       await loadComments(id)
       modalOpen.value = true
     }
@@ -540,6 +542,30 @@ const handleModalUpdated = async () => {
     modalImage.value = images[0] || null
   }
   editingModal.value = false
+}
+
+const deleteModalMoment = async () => {
+  if (!modalMoment.value || modalDeleting.value) {
+    return
+  }
+  modalDeleting.value = true
+  try {
+    const resp = await $fetch<{ code: number; msg: string }>(
+      `/api/moments/${modalMoment.value.id}`,
+      {
+        method: 'DELETE',
+        headers: token.value ? { Authorization: `Bearer ${token.value}` } : undefined,
+      },
+    )
+    if (resp.code === 1) {
+      const targetId = modalMoment.value.id
+      moments.value = moments.value.filter((item) => item.id !== targetId)
+      modalOpen.value = false
+      modalMoment.value = null
+    }
+  } finally {
+    modalDeleting.value = false
+  }
 }
 
 
@@ -843,7 +869,7 @@ watch(
           </div>
           <div v-if="editingModal" class="mt-2">
             <ComposeMoment
-              :disabled="!isLoggedIn"
+              :disabled="!isLoggedIn || modalDeleting"
               mode="edit"
               :moment-id="modalMoment.id"
               :initial="{
@@ -969,21 +995,34 @@ watch(
               v-if="canEditModal"
               size="x-small"
               variant="text"
+              :disabled="modalDeleting"
               @click.stop="editingModal = !editingModal"
             >
               <v-icon size="16" :icon="editingModal ? 'mdi-close' : 'mdi-pencil-outline'" />
-              <span class="moment-like-count">{{ editingModal ? '取消' : '编辑' }}</span>
+              <span class="moment-like-count">{{ editingModal ? '取消编辑' : '编辑' }}</span>
+            </v-btn>
+            <v-btn
+              v-if="canEditModal"
+              size="x-small"
+              variant="text"
+              color="error"
+              :disabled="modalDeleting"
+              @click.stop="deleteModalMoment"
+            >
+              <v-icon size="16" icon="mdi-delete-outline" />
+              <span class="moment-like-count">删除</span>
             </v-btn>
             <v-btn
               size="x-small"
               variant="text"
               :color="hasLikedMoment(modalMoment.id) ? 'secondary' : undefined"
+              :disabled="modalDeleting"
               @click.stop="likeMoment(modalMoment.id)"
             >
               <v-icon size="16" :icon="hasLikedMoment(modalMoment.id) ? 'mdi-heart' : 'mdi-heart-outline'" />
               <span class="moment-like-count">{{ modalMoment.favCount || 0 }}</span>
             </v-btn>
-            <v-btn size="x-small" variant="text">
+            <v-btn size="x-small" variant="text" :disabled="modalDeleting">
               <v-icon size="16" icon="mdi-comment-outline" />
               <span class="moment-like-count">{{ modalMoment._count?.comments || 0 }}</span>
             </v-btn>
@@ -1006,6 +1045,7 @@ watch(
                     v-if="isLoggedIn"
                     size="x-small"
                     variant="outlined"
+                    :disabled="modalDeleting"
                     @click="replyTarget = {
                       id: comment.id,
                       name: comment.author.displayName || comment.author.email,
@@ -1035,7 +1075,7 @@ watch(
                     <span>回复：{{ replyTarget.name }}</span>
                     <span>{{ replyTarget.time }}</span>
                   </div>
-                  <v-btn size="x-small" variant="outlined" @click="replyTarget = null">取消</v-btn>
+                  <v-btn size="x-small" variant="outlined" :disabled="modalDeleting" @click="replyTarget = null">取消</v-btn>
                 </div>
                 <div class="reply-content text-body-2 markdown-body" v-html="renderMarkdown(replyTarget.content)" />
               </div>
@@ -1047,7 +1087,12 @@ watch(
                 rows="2"
                 auto-grow
               />
-              <v-btn color="accent" class="mt-2" :disabled="commentPosting || !commentContent.trim()" @click="postComment">
+              <v-btn
+                color="accent"
+                class="mt-2"
+                :disabled="modalDeleting || commentPosting || !commentContent.trim()"
+                @click="postComment"
+              >
                 发布评论
               </v-btn>
             </div>
