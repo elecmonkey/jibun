@@ -88,6 +88,7 @@ const modalComments = ref<Array<{
   replyTo?: {
     id: number
     content: string
+    deletedAt?: string | null
     author: {
       id: number
       displayName: string | null
@@ -102,6 +103,7 @@ const imageLightboxImages = ref<string[]>([])
 const imageLightboxIndex = ref(0)
 const commentContent = ref('')
 const commentPosting = ref(false)
+const commentDeletingId = ref<number | null>(null)
 const replyTarget = ref<null | { id: number; name: string; content: string; time: string }>(null)
 const route = useRoute()
 const showFriends = ref(false)
@@ -111,6 +113,12 @@ const canEditModal = computed(() => {
   }
   return role.value === 'ADMIN' || modalMoment.value.author.email === email.value
 })
+const canDeleteComment = (comment: (typeof modalComments.value)[number]) => {
+  if (!isLoggedIn.value) {
+    return false
+  }
+  return role.value === 'ADMIN' || comment.author.email === email.value
+}
 const markdown = new MarkdownExit({ linkify: true, breaks: true })
 markdown.renderer.rules.link_open = (tokens, idx, options, env, self) => {
   const token = tokens[idx]
@@ -393,6 +401,31 @@ const postComment = async () => {
     }
   } finally {
     commentPosting.value = false
+  }
+}
+
+const deleteComment = async (commentId: number) => {
+  if (!modalMoment.value || commentDeletingId.value !== null) {
+    return
+  }
+  commentDeletingId.value = commentId
+  try {
+    const resp = await $fetch<{ code: number; msg: string }>(
+      `/api/moments/${modalMoment.value.id}/comments/${commentId}`,
+      {
+        method: 'DELETE',
+        headers: token.value ? { Authorization: `Bearer ${token.value}` } : undefined,
+      },
+    )
+    if (resp.code === 1) {
+      if (replyTarget.value?.id === commentId) {
+        replyTarget.value = null
+      }
+      await loadComments(modalMoment.value.id)
+      await refreshLocalMoment(modalMoment.value.id)
+    }
+  } finally {
+    commentDeletingId.value = null
   }
 }
 
@@ -1045,7 +1078,7 @@ watch(
                     v-if="isLoggedIn"
                     size="x-small"
                     variant="outlined"
-                    :disabled="modalDeleting"
+                    :disabled="modalDeleting || commentDeletingId !== null"
                     @click="replyTarget = {
                       id: comment.id,
                       name: comment.author.displayName || comment.author.email,
@@ -1055,13 +1088,29 @@ watch(
                   >
                     回复
                   </v-btn>
+                  <v-btn
+                    v-if="canDeleteComment(comment)"
+                    size="x-small"
+                    variant="text"
+                    color="error"
+                    :loading="commentDeletingId === comment.id"
+                    :disabled="modalDeleting || commentDeletingId !== null"
+                    @click="deleteComment(comment.id)"
+                  >
+                    删除
+                  </v-btn>
                 </div>
                 <div class="comment-body">
                   <div v-if="comment.replyTo" class="comment-quote">
                   <div class="comment-quote-name">
-                      {{ comment.replyTo.author.displayName || comment.replyTo.author.email || '匿名' }}
+                      {{
+                        comment.replyTo.deletedAt
+                          ? '原评论已删除'
+                          : (comment.replyTo.author.displayName || comment.replyTo.author.email || '匿名')
+                      }}
                   </div>
-                  <div class="comment-quote-content markdown-body" v-html="renderMarkdown(comment.replyTo.content)" />
+                  <div v-if="comment.replyTo.deletedAt" class="comment-quote-content text-caption text-muted">【原评论已删除】</div>
+                  <div v-else class="comment-quote-content markdown-body" v-html="renderMarkdown(comment.replyTo.content)" />
                   </div>
                   <div class="text-body-2 markdown-body" v-html="renderMarkdown(comment.content)" />
                 </div>
@@ -1075,7 +1124,14 @@ watch(
                     <span>回复：{{ replyTarget.name }}</span>
                     <span>{{ replyTarget.time }}</span>
                   </div>
-                  <v-btn size="x-small" variant="outlined" :disabled="modalDeleting" @click="replyTarget = null">取消</v-btn>
+                  <v-btn
+                    size="x-small"
+                    variant="outlined"
+                    :disabled="modalDeleting || commentDeletingId !== null"
+                    @click="replyTarget = null"
+                  >
+                    取消
+                  </v-btn>
                 </div>
                 <div class="reply-content text-body-2 markdown-body" v-html="renderMarkdown(replyTarget.content)" />
               </div>
@@ -1090,7 +1146,7 @@ watch(
               <v-btn
                 color="accent"
                 class="mt-2"
-                :disabled="modalDeleting || commentPosting || !commentContent.trim()"
+                :disabled="modalDeleting || commentDeletingId !== null || commentPosting || !commentContent.trim()"
                 @click="postComment"
               >
                 发布评论

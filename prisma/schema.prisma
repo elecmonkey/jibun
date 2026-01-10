@@ -59,6 +59,7 @@ model Comment {
   replyToId Int?
   replies   Comment[] @relation("CommentReplies")
   createdAt DateTime @default(now())
+  deletedAt DateTime?
 }
 
 model Connect {

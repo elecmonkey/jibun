@@ -9,7 +9,7 @@ export default defineEventHandler(async (event) => {
   }
 
   const comments = await prisma.comment.findMany({
-    where: { momentId: id },
+    where: { momentId: id, deletedAt: null },
     orderBy: { createdAt: 'asc' },
     include: {
       author: {
@@ -26,6 +26,7 @@ export default defineEventHandler(async (event) => {
         select: {
           id: true,
           content: true,
+          deletedAt: true,
           author: {
             select: {
               id: true,

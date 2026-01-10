@@ -31,9 +31,9 @@ export default defineEventHandler(async (event) => {
     if (Number.isInteger(replyToId)) {
       const replyTo = await prisma.comment.findUnique({
         where: { id: replyToId as number },
-        select: { momentId: true },
+        select: { momentId: true, deletedAt: true },
       })
-      if (!replyTo || replyTo.momentId !== id) {
+      if (!replyTo || replyTo.momentId !== id || replyTo.deletedAt) {
         return fail('invalid reply target', null)
       }
     }
@@ -60,6 +60,7 @@ export default defineEventHandler(async (event) => {
           select: {
             id: true,
             content: true,
+            deletedAt: true,
             author: {
               select: {
                 id: true,

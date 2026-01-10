@@ -115,7 +115,8 @@ export const CommentScalarFieldEnum = {
   momentId: 'momentId',
   authorId: 'authorId',
   replyToId: 'replyToId',
-  createdAt: 'createdAt'
+  createdAt: 'createdAt',
+  deletedAt: 'deletedAt'
 } as const
 
 export type CommentScalarFieldEnum = (typeof CommentScalarFieldEnum)[keyof typeof CommentScalarFieldEnum]

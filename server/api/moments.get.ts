@@ -26,7 +26,9 @@ export default defineEventHandler(async (event) => {
         },
         _count: {
           select: {
-            comments: true,
+            comments: {
+              where: { deletedAt: null },
+            },
           },
         },
       },

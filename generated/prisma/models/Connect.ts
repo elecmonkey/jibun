@@ -431,10 +431,6 @@ export type ConnectUpdateOneWithoutInvitedUsersNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.ConnectUpdateToOneWithWhereWithoutInvitedUsersInput, Prisma.ConnectUpdateWithoutInvitedUsersInput>, Prisma.ConnectUncheckedUpdateWithoutInvitedUsersInput>
 }
 
-export type NullableDateTimeFieldUpdateOperationsInput = {
-  set?: Date | string | null
-}
-
 export type ConnectCreateNestedOneWithoutConnectLoginTokensInput = {
   create?: Prisma.XOR<Prisma.ConnectCreateWithoutConnectLoginTokensInput, Prisma.ConnectUncheckedCreateWithoutConnectLoginTokensInput>
   connectOrCreate?: Prisma.ConnectCreateOrConnectWithoutConnectLoginTokensInput
