@@ -15,7 +15,8 @@ const emit = defineEmits<{
 
 const { data: connectInfo, pending: connectPending } = useFetch('/api/connects/info', { server: false })
 const connectItems = computed<ConnectCardInfo[]>(() => {
-  return connectInfo.value?.data ?? []
+  const items = connectInfo.value?.data ?? []
+  return [...items].sort((a, b) => (b.today_moments || 0) - (a.today_moments || 0))
 })
 
 const storedShowFriends = ref(false)
