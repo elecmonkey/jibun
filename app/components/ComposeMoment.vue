@@ -314,7 +314,6 @@ const postMoment = async () => {
       :disabled="disabled"
     />
     <v-file-input
-      class="mt-2"
       label="添加图片（最多 9 张）"
       variant="outlined"
       density="compact"
@@ -349,7 +348,6 @@ const postMoment = async () => {
     </div>
     <v-combobox
       v-model="momentTags"
-      class="mt-2"
       label="添加标签"
       variant="outlined"
       density="compact"
@@ -360,7 +358,6 @@ const postMoment = async () => {
     />
     <v-select
       v-model="extensionType"
-      class="mt-2"
       label="扩展内容"
       variant="outlined"
       density="compact"
