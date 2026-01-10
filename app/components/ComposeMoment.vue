@@ -28,6 +28,7 @@ const extensionRaw = ref('')
 const websiteTitle = ref('')
 const websiteSite = ref('')
 const extensionError = ref('')
+const contentInput = ref<unknown>(null)
 
 const MAX_IMAGE_COUNT = 9
 const MAX_IMAGE_SIZE = 15 * 1024 * 1024
@@ -137,6 +138,54 @@ const uploadedImageUrls = computed(() =>
   momentUploads.value.map((item) => item.url).filter((item): item is string => Boolean(item)),
 )
 
+const getTextarea = () => {
+  const root = contentInput.value as { $el?: HTMLElement } | null
+  return root?.$el?.querySelector('textarea') ?? null
+}
+
+const applyWrap = (prefix: string, suffix: string, placeholder = '') => {
+  const textarea = getTextarea()
+  const value = momentContent.value
+  if (!textarea) {
+    momentContent.value = value + prefix + placeholder + suffix
+    return
+  }
+
+  const start = textarea.selectionStart ?? value.length
+  const end = textarea.selectionEnd ?? value.length
+  const selected = value.slice(start, end) || placeholder
+  const nextValue = value.slice(0, start) + prefix + selected + suffix + value.slice(end)
+  momentContent.value = nextValue
+
+  nextTick(() => {
+    const cursorStart = start + prefix.length
+    const cursorEnd = cursorStart + selected.length
+    textarea.focus()
+    textarea.setSelectionRange(cursorStart, cursorEnd)
+  })
+}
+
+const insertLinePrefix = (prefix: string) => {
+  const textarea = getTextarea()
+  const value = momentContent.value
+  if (!textarea) {
+    momentContent.value = value + `\n${prefix}`
+    return
+  }
+
+  const start = textarea.selectionStart ?? value.length
+  const end = textarea.selectionEnd ?? value.length
+  const lines = value.slice(start, end || start).split('\n')
+  const prefixed = lines.map((line) => (line ? `${prefix}${line}` : prefix)).join('\n')
+  const nextValue = value.slice(0, start) + prefixed + value.slice(end)
+  momentContent.value = nextValue
+
+  nextTick(() => {
+    textarea.focus()
+    textarea.setSelectionRange(start + prefix.length, start + prefixed.length)
+  })
+}
+
 const getNormalizedExtension = () => {
   let error = ''
   const type = extensionType.value.trim()
@@ -234,8 +283,29 @@ const postMoment = async () => {
     <div class="mb-2 text-sm font-semibold text-[rgba(var(--v-theme-on-surface),0.85)]">
       写一条
     </div>
+    <div class="mb-2 flex flex-wrap gap-2">
+      <v-btn size="x-small" variant="text" class="h-8 w-8 min-w-0 rounded-md" @click="applyWrap('**', '**', '加粗文本')">
+        <v-icon size="16" icon="mdi-format-bold" />
+      </v-btn>
+      <v-btn size="x-small" variant="text" class="h-8 w-8 min-w-0 rounded-md" @click="applyWrap('_', '_', '斜体文本')">
+        <v-icon size="16" icon="mdi-format-italic" />
+      </v-btn>
+      <v-btn size="x-small" variant="text" class="h-8 w-8 min-w-0 rounded-md" @click="applyWrap('`', '`', '代码')">
+        <v-icon size="16" icon="mdi-code-tags" />
+      </v-btn>
+      <v-btn size="x-small" variant="text" class="h-8 w-8 min-w-0 rounded-md" @click="applyWrap('[', '](url)', '链接文本')">
+        <v-icon size="16" icon="mdi-link-variant" />
+      </v-btn>
+      <v-btn size="x-small" variant="text" class="h-8 w-8 min-w-0 rounded-md" @click="insertLinePrefix('> ')">
+        <v-icon size="16" icon="mdi-format-quote-close" />
+      </v-btn>
+      <v-btn size="x-small" variant="text" class="h-8 w-8 min-w-0 rounded-md" @click="insertLinePrefix('- ')">
+        <v-icon size="16" icon="mdi-format-list-bulleted" />
+      </v-btn>
+    </div>
     <v-textarea
       v-model="momentContent"
+      ref="contentInput"
       label="此刻想到..."
       variant="outlined"
       density="compact"
