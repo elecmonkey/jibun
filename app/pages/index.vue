@@ -2,7 +2,7 @@
 import { MarkdownExit } from 'markdown-exit'
 import DOMPurify from 'isomorphic-dompurify'
 const { data: localInfo, pending: localPending } = useFetch('/api/connect')
-const { token, role } = useAuthToken()
+const { token, role, email } = useAuthToken()
 
 const isLoggedIn = computed(() => Boolean(token.value))
 const canPost = computed(() => role.value === 'ADMIN' || role.value === 'POSTER')
@@ -49,6 +49,7 @@ const remoteHasMore = ref(true)
 const loading = ref(false)
 const remoteLoading = ref(false)
 const modalOpen = ref(false)
+const editingModal = ref(false)
 const modalMoment = ref<null | {
   id: number
   content: string
@@ -103,6 +104,12 @@ const commentPosting = ref(false)
 const replyTarget = ref<null | { id: number; name: string; content: string; time: string }>(null)
 const route = useRoute()
 const showFriends = ref(false)
+const canEditModal = computed(() => {
+  if (!isLoggedIn.value || !modalMoment.value) {
+    return false
+  }
+  return role.value === 'ADMIN' || modalMoment.value.author.email === email.value
+})
 const markdown = new MarkdownExit({ linkify: true, breaks: true })
 markdown.renderer.rules.link_open = (tokens, idx, options, env, self) => {
   const token = tokens[idx]
@@ -441,6 +448,7 @@ const openMomentModal = async (id: number, imageUrl?: string) => {
       modalImage.value = imageUrl || resp.data.images?.[0] || null
       commentContent.value = ''
       replyTarget.value = null
+      editingModal.value = false
       await loadComments(id)
       modalOpen.value = true
     }
@@ -518,6 +526,20 @@ const handlePosted = async () => {
   page.value = 1
   hasMore.value = true
   await loadMoments()
+}
+
+const handleModalUpdated = async () => {
+  if (!modalMoment.value) {
+    return
+  }
+  await refreshLocalMoment(modalMoment.value.id)
+  const images = modalMoment.value?.images || []
+  if (images.length === 0) {
+    modalImage.value = null
+  } else if (!modalImage.value || !images.includes(modalImage.value)) {
+    modalImage.value = images[0] || null
+  }
+  editingModal.value = false
 }
 
 
@@ -687,9 +709,9 @@ watch(
                 </v-responsive>
                 <v-card
                   v-else-if="getExtensionType(moment) === 'GITHUBPROJ'"
+                  v-ripple
                   variant="tonal"
                   class="extension-card"
-                  v-ripple
                   @click="openExternalLink(String(getExtensionValue(moment)))"
                 >
                   <v-card-text class="d-flex align-center gap-2">
@@ -701,9 +723,9 @@ watch(
                 </v-card>
                 <v-card
                   v-else-if="getExtensionType(moment) === 'WEBSITE'"
+                  v-ripple
                   variant="tonal"
                   class="extension-card"
-                  v-ripple
                   @click="
                     openExternalLink(
                       parseWebsiteExtension(String(getExtensionValue(moment)))?.site ||
@@ -819,113 +841,139 @@ watch(
               {{ modalMoment.author.displayName || modalMoment.author.email }}
             </span>
           </div>
-          <div class="text-body-2 markdown-body" v-html="renderMarkdown(modalMoment.content)" />
-            <div v-if="modalMoment.images?.length" class="modal-images">
-              <div v-if="modalImage" class="modal-image-main">
-                <v-img :src="modalImage" aspect-ratio="16/9" cover @click="openImageLightboxForModal(modalImage)" />
-              </div>
-              <div class="modal-image-list">
-                <div
-                  v-for="image in modalMoment.images"
-                  :key="image"
-                  class="modal-image-thumb"
-                  :class="{ 'is-active': image === modalImage }"
-                @click="modalImage = image"
-                >
-                  <v-img :src="image" aspect-ratio="1" cover />
+          <div v-if="editingModal" class="mt-2">
+            <ComposeMoment
+              :disabled="!isLoggedIn"
+              mode="edit"
+              :moment-id="modalMoment.id"
+              :initial="{
+                content: modalMoment.content,
+                tags: modalMoment.tags,
+                images: modalMoment.images,
+                extension: modalMoment.extension,
+                extensionType: modalMoment.extensionType,
+              }"
+              @updated="handleModalUpdated"
+            />
+          </div>
+          <template v-else>
+            <div class="text-body-2 markdown-body" v-html="renderMarkdown(modalMoment.content)" />
+              <div v-if="modalMoment.images?.length" class="modal-images">
+                <div v-if="modalImage" class="modal-image-main">
+                  <v-img :src="modalImage" aspect-ratio="16/9" cover @click="openImageLightboxForModal(modalImage)" />
+                </div>
+                <div class="modal-image-list">
+                  <div
+                    v-for="image in modalMoment.images"
+                    :key="image"
+                    class="modal-image-thumb"
+                    :class="{ 'is-active': image === modalImage }"
+                  @click="modalImage = image"
+                  >
+                    <v-img :src="image" aspect-ratio="1" cover />
+                  </div>
                 </div>
               </div>
+            <div v-if="modalMoment.tags?.length" class="moment-tags mt-2">
+              <v-chip
+                v-for="tag in modalMoment.tags"
+                :key="tag"
+                size="x-small"
+                variant="tonal"
+                color="secondary"
+                class="me-1"
+              >
+                {{ tag }}
+              </v-chip>
             </div>
-          <div v-if="modalMoment.tags?.length" class="moment-tags mt-2">
-            <v-chip
-              v-for="tag in modalMoment.tags"
-              :key="tag"
-              size="x-small"
-              variant="tonal"
-              color="secondary"
-              class="me-1"
+            <div
+              v-if="modalMoment.extensionType && modalMoment.extension"
+              class="moment-extension mt-2"
+              @click.stop
             >
-              {{ tag }}
-            </v-chip>
-          </div>
-          <div
-            v-if="modalMoment.extensionType && modalMoment.extension"
-            class="moment-extension mt-2"
-            @click.stop
-          >
-            <v-card
-              v-if="modalMoment.extensionType === 'MUSIC'"
-              variant="tonal"
-              class="extension-card"
-            >
-              <v-card-text class="extension-music">
-                <MetingPlayer :source="modalMoment.extension" />
-              </v-card-text>
-            </v-card>
-            <v-responsive
-              v-else-if="modalMoment.extensionType === 'VIDEO'"
-              aspect-ratio="16/9"
-              class="extension-video"
-            >
-              <iframe
-                v-if="normalizeVideoId(modalMoment.extension).provider === 'bilibili'"
-                :src="`https://www.bilibili.com/blackboard/html5mobileplayer.html?bvid=${normalizeVideoId(modalMoment.extension).id}&as_wide=1&high_quality=1&danmaku=0`"
-                frameborder="no"
-                allowfullscreen
-                loading="lazy"
-                class="extension-iframe"
-              />
-              <iframe
-                v-else
-                :src="`https://www.youtube.com/embed/${normalizeVideoId(modalMoment.extension).id}`"
-                frameborder="0"
-                allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                allowfullscreen
-                loading="lazy"
-                class="extension-iframe"
-              />
-            </v-responsive>
-            <v-card
-              v-else-if="modalMoment.extensionType === 'GITHUBPROJ'"
-              variant="tonal"
-              class="extension-card"
-              v-ripple
-              @click="openExternalLink(modalMoment.extension)"
-            >
-              <v-card-text class="d-flex align-center gap-2">
-                <v-icon size="18" icon="mdi-github" />
-                <span class="extension-title">
-                  {{ modalMoment.extension }}
-                </span>
-              </v-card-text>
-            </v-card>
-            <v-card
-              v-else-if="modalMoment.extensionType === 'WEBSITE'"
-              variant="tonal"
-              class="extension-card"
-              v-ripple
-              @click="
-                openExternalLink(
-                  parseWebsiteExtension(modalMoment.extension)?.site || modalMoment.extension,
-                )
-              "
-            >
-              <v-card-text class="d-flex align-center gap-2">
-                <v-icon size="18" icon="mdi-link-variant" />
-                <template v-if="parseWebsiteExtension(modalMoment.extension)">
-                  <span class="extension-title">
-                    {{ parseWebsiteExtension(modalMoment.extension)?.title }}
-                  </span>
-                </template>
-                <template v-else>
+              <v-card
+                v-if="modalMoment.extensionType === 'MUSIC'"
+                variant="tonal"
+                class="extension-card"
+              >
+                <v-card-text class="extension-music">
+                  <MetingPlayer :source="modalMoment.extension" />
+                </v-card-text>
+              </v-card>
+              <v-responsive
+                v-else-if="modalMoment.extensionType === 'VIDEO'"
+                aspect-ratio="16/9"
+                class="extension-video"
+              >
+                <iframe
+                  v-if="normalizeVideoId(modalMoment.extension).provider === 'bilibili'"
+                  :src="`https://www.bilibili.com/blackboard/html5mobileplayer.html?bvid=${normalizeVideoId(modalMoment.extension).id}&as_wide=1&high_quality=1&danmaku=0`"
+                  frameborder="no"
+                  allowfullscreen
+                  loading="lazy"
+                  class="extension-iframe"
+                />
+                <iframe
+                  v-else
+                  :src="`https://www.youtube.com/embed/${normalizeVideoId(modalMoment.extension).id}`"
+                  frameborder="0"
+                  allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                  allowfullscreen
+                  loading="lazy"
+                  class="extension-iframe"
+                />
+              </v-responsive>
+              <v-card
+                v-else-if="modalMoment.extensionType === 'GITHUBPROJ'"
+                v-ripple
+                variant="tonal"
+                class="extension-card"
+                @click="openExternalLink(modalMoment.extension)"
+              >
+                <v-card-text class="d-flex align-center gap-2">
+                  <v-icon size="18" icon="mdi-github" />
                   <span class="extension-title">
                     {{ modalMoment.extension }}
                   </span>
-                </template>
-              </v-card-text>
-            </v-card>
-          </div>
+                </v-card-text>
+              </v-card>
+              <v-card
+                v-else-if="modalMoment.extensionType === 'WEBSITE'"
+                v-ripple
+                variant="tonal"
+                class="extension-card"
+                @click="
+                  openExternalLink(
+                    parseWebsiteExtension(modalMoment.extension)?.site || modalMoment.extension,
+                  )
+                "
+              >
+                <v-card-text class="d-flex align-center gap-2">
+                  <v-icon size="18" icon="mdi-link-variant" />
+                  <template v-if="parseWebsiteExtension(modalMoment.extension)">
+                    <span class="extension-title">
+                      {{ parseWebsiteExtension(modalMoment.extension)?.title }}
+                    </span>
+                  </template>
+                  <template v-else>
+                    <span class="extension-title">
+                      {{ modalMoment.extension }}
+                    </span>
+                  </template>
+                </v-card-text>
+              </v-card>
+            </div>
+          </template>
           <div class="moment-actions mt-2">
+            <v-btn
+              v-if="canEditModal"
+              size="x-small"
+              variant="text"
+              @click.stop="editingModal = !editingModal"
+            >
+              <v-icon size="16" :icon="editingModal ? 'mdi-close' : 'mdi-pencil-outline'" />
+              <span class="moment-like-count">{{ editingModal ? '取消' : '编辑' }}</span>
+            </v-btn>
             <v-btn
               size="x-small"
               variant="text"

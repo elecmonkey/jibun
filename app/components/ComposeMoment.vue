@@ -1,7 +1,7 @@
 <script setup lang="ts">
 type UploadItem = {
   id: string
-  file: File
+  file?: File
   previewUrl: string
   key?: string
   url?: string
@@ -9,12 +9,25 @@ type UploadItem = {
   error?: string
 }
 
-defineProps<{
+const props = withDefaults(defineProps<{
   disabled: boolean
-}>()
+  mode?: 'create' | 'edit'
+  momentId?: number
+  initial?: {
+    content?: string
+    tags?: string[]
+    images?: string[]
+    extension?: string | null
+    extensionType?: string | null
+  }
+}>(), {
+  mode: 'create',
+  momentId: undefined,
+  initial: undefined,
+})
 
 const emit = defineEmits<{
-  (e: 'posted'): void
+  (e: 'posted' | 'updated'): void
 }>()
 
 const { token } = useAuthToken()
@@ -37,6 +50,10 @@ const uploadImageToS3 = async (item: UploadItem) => {
   item.uploading = true
   item.error = undefined
   try {
+    const file = item.file
+    if (!file) {
+      throw new Error('missing file')
+    }
     if (!token.value) {
       throw new Error('unauthorized')
     }
@@ -46,9 +63,9 @@ const uploadImageToS3 = async (item: UploadItem) => {
         method: 'POST',
         headers: { Authorization: `Bearer ${token.value}` },
         body: {
-          filename: item.file.name,
-          contentType: item.file.type,
-          size: item.file.size,
+          filename: file.name,
+          contentType: file.type,
+          size: file.size,
         },
       },
     )
@@ -60,7 +77,7 @@ const uploadImageToS3 = async (item: UploadItem) => {
     Object.entries(presign.data.fields).forEach(([key, value]) => {
       formData.append(key, value)
     })
-    formData.append('file', item.file)
+    formData.append('file', file)
     const controller = new AbortController()
     const timer = setTimeout(() => controller.abort(), 15000)
     const resp = await fetch(presign.data.url, { method: 'POST', body: formData, signal: controller.signal })
@@ -136,6 +153,55 @@ const removeUploadImage = (id: string) => {
 const hasUploadingImages = computed(() => momentUploads.value.some((item) => item.uploading))
 const uploadedImageUrls = computed(() =>
   momentUploads.value.map((item) => item.url).filter((item): item is string => Boolean(item)),
+)
+
+const isEditMode = computed(() => props.mode === 'edit')
+const submitLabel = computed(() => (isEditMode.value ? '保存' : '发布'))
+
+const setUploadsFromUrls = (urls: string[]) => {
+  momentUploads.value = urls.map((url) => ({
+    id: `${Date.now()}-${Math.random().toString(16).slice(2)}`,
+    previewUrl: url,
+    url,
+    uploading: false,
+  }))
+}
+
+const applyInitial = () => {
+  if (!props.initial) {
+    return
+  }
+  momentContent.value = props.initial.content || ''
+  momentTags.value = props.initial.tags || []
+  setUploadsFromUrls(props.initial.images || [])
+  extensionType.value = props.initial.extensionType || ''
+  extensionRaw.value = ''
+  websiteTitle.value = ''
+  websiteSite.value = ''
+  extensionError.value = ''
+
+  if (extensionType.value === 'WEBSITE' && props.initial.extension) {
+    try {
+      const parsed = JSON.parse(props.initial.extension) as { title?: string; site?: string }
+      websiteTitle.value = parsed?.title || ''
+      websiteSite.value = parsed?.site || ''
+    } catch {
+      websiteTitle.value = ''
+      websiteSite.value = ''
+    }
+  } else if (props.initial.extension) {
+    extensionRaw.value = props.initial.extension
+  }
+}
+
+watch(
+  () => props.initial,
+  () => {
+    if (isEditMode.value) {
+      applyInitial()
+    }
+  },
+  { immediate: true },
 )
 
 const getTextarea = () => {
@@ -246,31 +312,54 @@ const postMoment = async () => {
   }
   posting.value = true
   try {
-    const resp = await $fetch<{ code: number }>(
-      '/api/moments',
-      {
-        method: 'POST',
-        headers: token.value ? { Authorization: `Bearer ${token.value}` } : undefined,
-        body: {
-          content,
-          tags: momentTags.value,
-          images: uploadedImageUrls.value,
-          extension: extension || null,
-          extension_type: extension_type || null,
+    if (isEditMode.value) {
+      if (!props.momentId) {
+        return
+      }
+      const resp = await $fetch<{ code: number; msg: string }>(
+        `/api/moments/${props.momentId}`,
+        {
+          method: 'PUT',
+          headers: token.value ? { Authorization: `Bearer ${token.value}` } : undefined,
+          body: {
+            content,
+            tags: momentTags.value,
+            images: uploadedImageUrls.value,
+            extension: extension || null,
+            extension_type: extension_type || null,
+          },
         },
-      },
-    )
-    if (resp.code === 1) {
-      momentContent.value = ''
-      momentTags.value = []
-      extensionType.value = ''
-      extensionRaw.value = ''
-      websiteTitle.value = ''
-      websiteSite.value = ''
-      extensionError.value = ''
-      momentUploads.value.forEach((item) => URL.revokeObjectURL(item.previewUrl))
-      momentUploads.value = []
-      emit('posted')
+      )
+      if (resp.code === 1) {
+        emit('updated')
+      }
+    } else {
+      const resp = await $fetch<{ code: number }>(
+        '/api/moments',
+        {
+          method: 'POST',
+          headers: token.value ? { Authorization: `Bearer ${token.value}` } : undefined,
+          body: {
+            content,
+            tags: momentTags.value,
+            images: uploadedImageUrls.value,
+            extension: extension || null,
+            extension_type: extension_type || null,
+          },
+        },
+      )
+      if (resp.code === 1) {
+        momentContent.value = ''
+        momentTags.value = []
+        extensionType.value = ''
+        extensionRaw.value = ''
+        websiteTitle.value = ''
+        websiteSite.value = ''
+        extensionError.value = ''
+        momentUploads.value.forEach((item) => URL.revokeObjectURL(item.previewUrl))
+        momentUploads.value = []
+        emit('posted')
+      }
     }
   } finally {
     posting.value = false
@@ -304,8 +393,8 @@ const postMoment = async () => {
       </v-btn>
     </div>
     <v-textarea
-      v-model="momentContent"
       ref="contentInput"
+      v-model="momentContent"
       label="此刻想到..."
       variant="outlined"
       density="compact"
@@ -323,7 +412,7 @@ const postMoment = async () => {
       :disabled="disabled"
       @update:model-value="addImages"
     />
-    <div v-if="momentUploads.length" class="mt-2 flex flex-wrap gap-2">
+    <div v-if="momentUploads.length" class="mb-4 flex flex-wrap gap-2">
       <div v-for="item in momentUploads" :key="item.id" class="relative h-16 w-16">
         <v-img :src="item.previewUrl" aspect-ratio="1" cover class="rounded-md border border-[rgba(var(--v-theme-on-surface),0.08)]" />
         <v-btn
@@ -406,7 +495,7 @@ const postMoment = async () => {
       :disabled="disabled || posting || hasUploadingImages"
       @click="postMoment"
     >
-      发布
+      {{ submitLabel }}
     </v-btn>
   </div>
 </template>
