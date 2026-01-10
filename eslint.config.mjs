@@ -12,4 +12,9 @@ export default withNuxt([
       'coverage/**',
     ],
   },
+  {
+    rules: {
+      'vue/no-v-html': 'off',
+    },
+  },
 ])
