@@ -161,40 +161,7 @@ const getExtensionType = (moment: TimelineItem) =>
   moment.kind === 'local' ? moment.extensionType : moment.extension_type
 const getExtensionValue = (moment: TimelineItem) =>
   moment.kind === 'local' ? moment.extension : moment.extension
-const parseWebsiteExtension = (value?: string | null) => {
-  if (!value) {
-    return null
-  }
-  try {
-    const parsed = JSON.parse(value) as { title?: string; site?: string }
-    if (!parsed || !parsed.site) {
-      return null
-    }
-    return { title: parsed.title || '外部链接', site: parsed.site }
-  } catch {
-    return null
-  }
-}
-const normalizeVideoId = (value: string) => {
-  const trimmed = value.trim()
-  const bvMatch = trimmed.match(/(BV[0-9A-Za-z]{10})/)
-  if (bvMatch) {
-    return { id: bvMatch[1] ?? bvMatch[0], provider: 'bilibili' }
-  }
-  const ytMatch =
-    trimmed.match(/(?:https?:\/\/(?:www\.)?)?(?:youtu\.be\/|youtube\.com\/(?:(?:watch)?\?(?:.*&)?v(?:i)?=|(?:embed)\/))([\w-]+)/)
-  if (ytMatch) {
-    return { id: ytMatch[1] ?? '', provider: 'youtube' }
-  }
-  return { id: trimmed, provider: trimmed.startsWith('BV') ? 'bilibili' : 'youtube' }
-}
 
-const openExternalLink = (url: string) => {
-  if (!url) {
-    return
-  }
-  window.open(url, '_blank', 'noopener,noreferrer')
-}
 type ConnectCardInfo = {
   server_name: string
   server_url: string
@@ -734,78 +701,10 @@ watch(
                 class="moment-extension"
                 @click.stop
               >
-                <v-card
-                  v-if="getExtensionType(moment) === 'MUSIC'"
-                  variant="tonal"
-                  class="extension-card"
-                >
-                  <v-card-text class="extension-music">
-                    <MetingPlayer :source="String(getExtensionValue(moment))" />
-                  </v-card-text>
-                </v-card>
-                <v-responsive
-                  v-else-if="getExtensionType(moment) === 'VIDEO'"
-                  aspect-ratio="16/9"
-                  class="extension-video"
-                >
-                  <iframe
-                    v-if="normalizeVideoId(String(getExtensionValue(moment))).provider === 'bilibili'"
-                    :src="`https://www.bilibili.com/blackboard/html5mobileplayer.html?bvid=${normalizeVideoId(String(getExtensionValue(moment))).id}&as_wide=1&high_quality=1&danmaku=0`"
-                    frameborder="no"
-                    allowfullscreen
-                    loading="lazy"
-                    class="extension-iframe"
-                  />
-                  <iframe
-                    v-else
-                    :src="`https://www.youtube.com/embed/${normalizeVideoId(String(getExtensionValue(moment))).id}`"
-                    frameborder="0"
-                    allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                    allowfullscreen
-                    loading="lazy"
-                    class="extension-iframe"
-                  />
-                </v-responsive>
-                <v-card
-                  v-else-if="getExtensionType(moment) === 'GITHUBPROJ'"
-                  v-ripple
-                  variant="tonal"
-                  class="extension-card"
-                  @click="openExternalLink(String(getExtensionValue(moment)))"
-                >
-                  <v-card-text class="d-flex align-center gap-2">
-                    <v-icon size="18" icon="mdi-github" />
-                    <span class="extension-title">
-                      {{ String(getExtensionValue(moment)) }}
-                    </span>
-                  </v-card-text>
-                </v-card>
-                <v-card
-                  v-else-if="getExtensionType(moment) === 'WEBSITE'"
-                  v-ripple
-                  variant="tonal"
-                  class="extension-card"
-                  @click="
-                    openExternalLink(
-                      parseWebsiteExtension(String(getExtensionValue(moment)))?.site ||
-                        String(getExtensionValue(moment)),
-                    )
-                  "
-                >
-                  <v-card-text class="d-flex align-center gap-2">
-                    <v-icon size="18" icon="mdi-link-variant" />
-                    <template v-if="parseWebsiteExtension(String(getExtensionValue(moment)))">
-                      <span class="extension-title">
-                        {{ parseWebsiteExtension(String(getExtensionValue(moment)))?.title }}
-                      </span>
-                    </template>
-                    <template v-else>
-                      <span class="extension-title">
-                        {{ String(getExtensionValue(moment)) }}
-                      </span>
-                    </template>
-                  </v-card-text>
-                </v-card>
+                <MomentExtension
+                  :type="getExtensionType(moment)"
+                  :value="String(getExtensionValue(moment))"
+                />
               </div>
             </div>
             <div class="moment-actions-left">
@@ -950,77 +849,10 @@ watch(
               class="moment-extension mt-2"
               @click.stop
             >
-              <v-card
-                v-if="modalMoment.extensionType === 'MUSIC'"
-                variant="tonal"
-                class="extension-card"
-              >
-                <v-card-text class="extension-music">
-                  <MetingPlayer :source="modalMoment.extension" />
-                </v-card-text>
-              </v-card>
-              <v-responsive
-                v-else-if="modalMoment.extensionType === 'VIDEO'"
-                aspect-ratio="16/9"
-                class="extension-video"
-              >
-                <iframe
-                  v-if="normalizeVideoId(modalMoment.extension).provider === 'bilibili'"
-                  :src="`https://www.bilibili.com/blackboard/html5mobileplayer.html?bvid=${normalizeVideoId(modalMoment.extension).id}&as_wide=1&high_quality=1&danmaku=0`"
-                  frameborder="no"
-                  allowfullscreen
-                  loading="lazy"
-                  class="extension-iframe"
-                />
-                <iframe
-                  v-else
-                  :src="`https://www.youtube.com/embed/${normalizeVideoId(modalMoment.extension).id}`"
-                  frameborder="0"
-                  allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                  allowfullscreen
-                  loading="lazy"
-                  class="extension-iframe"
-                />
-              </v-responsive>
-              <v-card
-                v-else-if="modalMoment.extensionType === 'GITHUBPROJ'"
-                v-ripple
-                variant="tonal"
-                class="extension-card"
-                @click="openExternalLink(modalMoment.extension)"
-              >
-                <v-card-text class="d-flex align-center gap-2">
-                  <v-icon size="18" icon="mdi-github" />
-                  <span class="extension-title">
-                    {{ modalMoment.extension }}
-                  </span>
-                </v-card-text>
-              </v-card>
-              <v-card
-                v-else-if="modalMoment.extensionType === 'WEBSITE'"
-                v-ripple
-                variant="tonal"
-                class="extension-card"
-                @click="
-                  openExternalLink(
-                    parseWebsiteExtension(modalMoment.extension)?.site || modalMoment.extension,
-                  )
-                "
-              >
-                <v-card-text class="d-flex align-center gap-2">
-                  <v-icon size="18" icon="mdi-link-variant" />
-                  <template v-if="parseWebsiteExtension(modalMoment.extension)">
-                    <span class="extension-title">
-                      {{ parseWebsiteExtension(modalMoment.extension)?.title }}
-                    </span>
-                  </template>
-                  <template v-else>
-                    <span class="extension-title">
-                      {{ modalMoment.extension }}
-                    </span>
-                  </template>
-                </v-card-text>
-              </v-card>
+              <MomentExtension
+                :type="modalMoment.extensionType"
+                :value="modalMoment.extension"
+              />
             </div>
           </template>
           <div class="moment-actions mt-2">
