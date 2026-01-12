@@ -98,7 +98,7 @@ onMounted(() => {
     
     <div v-else-if="repoInfo" class="pa-3">
       <div class="d-flex align-start mb-2">
-        <v-avatar size="40" rounded class="me-3 border">
+        <v-avatar size="40" rounded class="me-3">
           <v-img :src="repoInfo.owner.avatar_url" />
         </v-avatar>
         <div class="flex-grow-1 overflow-hidden">
