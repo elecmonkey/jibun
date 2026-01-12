@@ -11,14 +11,10 @@ export default defineEventHandler(async (event) => {
     })
   }
 
-  const token = process.env.GITHUB_TOKEN
+  // Explicitly anonymous: no token usage
   const headers: HeadersInit = {
     'User-Agent': 'Jibun/1.0',
     'Accept': 'application/vnd.github.v3+json',
-  }
-
-  if (token) {
-    headers.Authorization = `token ${token}`
   }
 
   try {
@@ -31,12 +27,12 @@ export default defineEventHandler(async (event) => {
     }
   } catch (error) {
     // If rate limited or other error, return error code so frontend can try direct access
-    const err = error as { message?: string; response?: { status?: number } }
-    console.error('GitHub API Proxy Error:', err)
+    const fetchError = error as { message?: string; response?: { status?: number } }
+    console.error('GitHub API Proxy Error:', fetchError)
     return {
       code: 0,
-      msg: err.message || 'Failed to fetch from GitHub',
-      status: err.response?.status,
+      msg: fetchError.message || 'Failed to fetch from GitHub',
+      status: fetchError.response?.status,
     }
   }
 })
